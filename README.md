@@ -87,9 +87,7 @@ In short:
 ## Repo map
 
 - [`dream_team_v2.md`](./dream_team_v2.md) — main runbook
-- [`ARTIFACTS.md`](./ARTIFACTS.md) — artifact definitions
-- [`QA_PLAYBOOK.md`](./QA_PLAYBOOK.md) — lightweight QA rules
-- [`EXAMPLES.md`](./EXAMPLES.md) — canonical examples
+- [`dream_team_v2_examples.md`](./dream_team_v2_examples.md) — practical examples
 - [`handoff_contracts.md`](./handoff_contracts.md) — compact handoff formats
 
 ---

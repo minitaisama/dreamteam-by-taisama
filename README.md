@@ -92,6 +92,52 @@ In short:
 
 ---
 
+## Layer 4 token lookback (Tu Vi project)
+
+One practical reason this repo exists is the earlier **Tu Vi Layer 4** work.
+That project exposed how expensive the old Dream Team style could become once scope drift, repeated analysis, and long-thread context replay started stacking.
+
+### Log-anchored observations from the old style
+
+A few concrete archived anchors around the Layer 4 / immediate follow-up work:
+- **Coach / PM anchors:** ~`46.5k` for one PM/backend review task, plus multiple PM micro-spec / review turns in the `~10k–15k` range, and several old-style long PM turns that could swell into the `~167k–205k` range when context kept accumulating.
+- **Lebron / execution anchors:** `27.8k`, `10.6k`, and `12.1k` for clean-repo / execution / closure-style coding checks around the same period.
+- **Curry / QA anchors:** one archived QA-heavy follow-up thread alone shows turns around `51.1k`, `65.5k`, `66.4k`, `66.5k`, `67.0k`, `88.0k`, `88.3k`, and `89.4k` tokens — a good example of how old QA behavior could become extremely expensive when validation drifted into repeated diagnosis.
+
+These logs are not a perfect one-thread-to-one-thread role ledger, but they are strong enough to explain the economic direction change.
+
+### Practical planning estimate
+
+| Model | Coach | Lebron | Curry | Total | Delta vs Dream Team 1.0 |
+|---|---:|---:|---:|---:|---:|
+| **Dream Team 1.0** | ~220k–300k | ~60k–90k | ~300k–370k | **~580k–760k** | baseline |
+| **DreamTeam 2.0 + gstack** | ~60k–90k | ~120k–180k | ~40k–70k | **~220k–340k** | **~55%–70% lower** |
+
+### Why the new model is cheaper
+
+With the old style:
+- Coach often kept reframing while execution was already in motion
+- Lebron sometimes inherited too much context
+- Curry could drift from scoped validation into repeated diagnosis
+
+With **DreamTeam 2.0 + gstack**:
+- Coach freezes a tiny task card earlier
+- Lebron gets bounded work instead of a giant evolving brief
+- Curry validates the changed surface against a fixed contract
+- handoffs stay short and phase-based
+
+### Practical takeaway
+
+For Layer 4-style work, the safest planning assumption is:
+- **Dream Team 1.0:** ~`580k–760k`
+- **DreamTeam 2.0 + gstack:** ~`220k–340k`
+
+That means a realistic midpoint improvement of roughly:
+- `~650k` → `~280k`
+- about **`~57%` token reduction**
+
+---
+
 ## English
 
 DreamTeam 2.0 is a lightweight stage-based runbook where Coach freezes the problem, Lebron executes bounded work fast, Curry validates with evidence when needed, and every handoff stays small to minimize token burn.

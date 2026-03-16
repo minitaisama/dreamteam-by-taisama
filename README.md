@@ -247,6 +247,73 @@ These are the reasons the project looks the way it does now.
 
 ---
 
+## Example run: Layer 4 retrospective (old runbook vs Dream Team v2)
+
+One of the clearest real-world inputs for Dream Team v2 came from the earlier **Tu Vi Layer 4** work.
+
+That work exposed a few recurring problems in the older operating style:
+- scope was not frozen early enough
+- PM, engineering, and QA often re-analyzed the same problem
+- long-thread context kept getting replayed
+- QA sometimes validated an evolving target instead of a fixed contract
+- token burn grew much faster than delivery quality
+
+Dream Team v2 was designed to fix exactly that.
+
+### Real retrospective summary
+
+Based on archived Layer 4 work, several major turns landed in the **~167k to ~205k token** range by themselves.
+That makes the old style expensive very quickly once a task requires multiple reframes, clarifications, and review loops.
+
+The biggest lessons from that retrospective were:
+- split work into explicit micro-slices early
+- freeze a tiny spec before coding
+- validate against a fixed contract
+- classify failures before recoding (`parser`, `scorer`, `corpus/data-shape`, `infra/env`, or real code bug)
+- stop paying for repeated re-explanation
+
+### Before vs after
+
+| Dimension | Old runbook (Layer 4 style) | Dream Team v2 |
+|---|---:|---:|
+| Typical operating shape | PM-heavy, evolving thread, overlapping analysis | Fixed task card, bounded execution, lean QA |
+| Typical large-turn range | ~167k–205k tokens | much smaller bounded turns |
+| Estimated total task burn | ~580k–760k tokens | ~220k–340k tokens |
+| Estimated token savings | — | ~360k–420k tokens saved |
+| Estimated reduction | — | ~55%–70% lower |
+| Most realistic planning midpoint | ~650k | ~280k |
+| Midpoint reduction | — | ~57% lower |
+
+### What changes operationally
+
+With the old runbook:
+- the system often kept discussing the problem while building it
+- PM, executor, and QA overlapped more than they should
+- context forwarding was too expensive
+- progress reports were sometimes more narrative than necessary
+
+With Dream Team v2:
+- **Coach** freezes the problem earlier
+- **Lebron/Codex** gets a bounded task instead of a long evolving brief
+- **Curry** validates the changed surface against a fixed contract
+- inter-agent handoffs stay extremely small
+- updates only happen on real state changes (`started`, `blocked`, `risk found`, `finished`)
+
+### Why the new model is better
+
+Dream Team v2 improves the same kind of work by making it:
+- **cheaper** — far less token waste from re-reading and overlap
+- **clearer** — role ownership is sharper
+- **safer** — QA becomes a real gate, not a loose afterthought
+- **more Codex-friendly** — bounded execution fits Codex much better than long ambiguous threads
+- **more scalable** — artifacts and contracts carry the work, not giant transcripts
+
+### Short takeaway
+
+For Layer 4-style work, Dream Team v2 is expected to preserve quality while cutting token burn by roughly **55%–70%**, with a practical planning assumption of about **57% savings**.
+
+---
+
 ## Current status
 
 Dream Team v2 is the current active model.

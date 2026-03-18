@@ -1,26 +1,30 @@
-# Long-Term Memory
+# Dream Team v3.1 Memory
 
-- Masters prefers assigned tasks handled directly without ETA. Instead of promising ETA up front, report the actual processing time after completion in a compact format like `Thời gian xử lý - 2m32s`.
-- **Always note task duration:** For any significant task, track and report the actual time taken upon completion. This helps with performance monitoring and quota management.
-- **YouTube transcript fetching best practices:** When using unofficial APIs like `youtube_transcript_api`, implement high-variability patterns to avoid detection: random batch sizes (1-5), random delays between requests (10-60s), random intervals between batches (2-5 hours), and add jitter. Use exponential backoff with jitter for retries. Residential proxies recommended for higher volumes.
-- For the current workspace, long-term memory should be organized by domain/project where possible; `MEMORY.md` should stay focused on global preferences and cross-project rules, while domain-specific rules live under `memory/<domain>/`.
-- Working structure from now on: 3 domain agents — contract, proposal, and tử vi.
-- Cross-project shared agent trio is now: `Coach` (`pm-agent`), `Lebron` (`code-agent`), and `Curry` (`qa-agent`). Coach owns scope/spec/workflow/DoD/release gating; Lebron owns coding execution; Curry owns testing/QA/regression/release validation.
-- Before spawning any so-called “dream team”, first verify whether those agents are real pre-created external agents versus just an internal task framing; do not imply they are pre-existing external agents unless that has been explicitly checked.
-- When coordinating multiple agents/subagents, optimize prompts for minimum token burn: communication between agents must be short, direct, and only include the minimum context needed to act correctly.
-- Dream team communication rule: prompts/updates between Coach, Lebron, and Curry must be gãy gọn, ngắn, and on-point; default to terse tasking/status format rather than narrative prose.
-- When reporting multi-agent progress back to Taisama, go straight to the point, keep it compact, and avoid orchestration fluff.
-- Multi-agent coding retro rule after tu-vi Layer 4: freeze a tiny Definition of Done and response contract per micro-slice before coding (`parse`, `rank`, `synthesize`, `gate`, `UX`); have Coach hand Lebron a tiny spec + acceptance tests, and have Curry validate against that fixed contract instead of evolving behavior.
-- For retrieval/answering work, create a small golden query set up front and tune against it; do not keep changing schema/scoring reactively from intuition alone.
-- For QA on backend/UI contract changes, require at least one pinned API contract test and one representative UI/render or fixture check before calling the slice done.
-- When code quality issues may actually come from corpus/index shape, explicitly classify misses as parser vs scorer vs corpus-quality before editing code.
-- Reply preference: when asked a binary/practical question, answer yes/no first, keep it short, and avoid vòng vo; in group chat especially, prioritize directness.
-- Global style preference: prioritize short, on-point replies that save tokens; avoid over-explaining unless the user asks for depth.
-- Do not call the user "Masters" anymore; call them Taisama unless they ask otherwise.
-- Language preference: if the user writes in Vietnamese, reply in Vietnamese; if the user writes fully in English, reply in English.
-- Keep replies short, direct, and to the point by default to save tokens.
-- For long-running jobs: default is no auto-polling, but if the user explicitly asks for periodic updates/follow-up, then auto-poll is allowed for that job. Prefer spaced intervals to save tokens rather than aggressive polling.
-- For large tasks by default, act as PM: break work into parallelizable streams, spawn sub-agents when useful, avoid unnecessary overlap, and report back with a single synthesized update instead of making the user manage each agent manually.
-- For the tử vi project, user shorthand: `update layer 2` means run the full owner-triggered Layer 2 AI cleanup flow; `update layer 3` means run the full owner-triggered KB update flow; if the user says `update layer 2 and layer 3`, run the full end-to-end update for both in sequence.
-- For tử vi ingest summaries, always include the next expected ingest run time / nextEligibleRunAt in the summary.
-- Contract-agent long-term rule: default contract delivery must be a Google Drive folder + Google Doc contract link + Party A fields filled + permission summary when relevant; do not treat local markdown/docx output as success unless the user explicitly asked for local output or Google Workspace is blocked.
+## Team Structure
+- CEO: MiniSama — reframe, vision, retro, conflict resolution
+- PM: Coach (pm-agent) — spec, workflow, DoD, dispatch
+- Dev: Lebron (code-agent) — implementation
+- QA: Curry (qa-agent) — quality, design audit, regression
+
+## Pipeline
+You → CEO → PM → Dev → QA → PM → You
+
+## Key Rules
+- Reframe before implement (CEO step)
+- Freeze scope before coding (PM)
+- Diagram-first for complex tasks (PM decides)
+- Test against frozen contract (QA)
+- Design audit 7 dimensions for UI (QA)
+- Artifact-first handoffs
+- Quality per token
+
+## Retro
+- Weekly Sunday 20:00 cron
+- Dashboard: https://dreamteam20.vercel.app
+- Repo: minitaisama/dreamteam2.0
+
+## Evolution
+- v1: Original Dream Team concept
+- v2: Gstack-inspired, 3 roles, token optimization
+- v3: Added CEO role, design audit, retro dashboard
+- v3.1: Formalized 4 roles, scoped down, Dream Team reviewed own playbook

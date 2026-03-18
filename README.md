@@ -1,151 +1,166 @@
-# DreamTeam 2.0
+# Dream Team v3.1
 
-```text
-User ask
-   |
-   v
- Coach
-(scope / task card / gate)
-   |
-   +--------> Solo ------------------------------+
-   |                                             |
-   v                                             v
- Lebron ----------------------------------> final update
-(build / verify)                                ^
-   |                                            |
-   v                                            |
- Curry (when needed) ---------------------------+
-(QA / risk / ship-hold)
+> A 4-agent software factory: CEO rethinks the product, PM locks the spec, Dev builds it, QA ships it. Multi-agent parallel execution, not single-session slash commands.
+
+---
+
+## The idea
+
+Most AI coding setups are a single session with a single model trying to be everything — PM, architect, developer, QA, and release engineer all at once.
+
+Dream Team is different. It's **four specialized agents**, each running independently, coordinated through a structured pipeline:
+
+```
+You → CEO (reframe) → PM (spec) → Dev (build) → QA (verify) → PM (synthesize) → You
 ```
 
-A lightweight operating model for AI-assisted software work.
+Each agent has one job. They communicate through artifacts (task cards, QA reports, diagrams), not through forwarding chat history. The result: **parallel execution with less token burn and clearer accountability**.
+
+Inspired by [gstack](https://github.com/garrytan/gstack) — we borrowed the "structured roles + review gates" philosophy, then built on top of multi-agent orchestration instead of single-session slash commands.
 
 ---
 
-## Inspiration & profile
+## The team
 
-DreamTeam 2.0 is inspired by one primary open-source direction:
-
-### Garry Tan / gstack
-- Repo: <https://github.com/garrytan/gstack>
-- Why it matters: strong workflow abstraction, explicit modes, builder-facing orchestration
-
-DreamTeam 2.0 does **not** copy gstack directly.
-It takes the workflow clarity and operating-mode thinking, then compresses them into a lighter, more Codex-friendly runbook with stronger token discipline.
+| Role | Agent | What they do |
+|------|-------|-------------|
+| **CEO** | MiniSama | Rethink the problem. Find the 10-star product hiding in the request. 4 scope modes: Expansion, Selective, Hold, Reduction. |
+| **PM** | Coach | Lock the spec. Freeze a tiny task card. Dispatch work. Own scope, DoD, and handoff quality. |
+| **Dev** | Lebron | Build it. Diagram-first for complex tasks. Stay strictly inside scope. YAGNI. |
+| **QA** | Curry | Verify it. Test against the frozen contract, not a moving target. Design audit for UI. Severity-rated issues. |
 
 ---
 
-## What DreamTeam 2.0 is
+## See it work
 
-DreamTeam 2.0 is a small runbook for running software work with AI agents without turning every task into process theater.
+```
+You:      "Thêm nút thanh toán"
+CEO:      "Thanh toán là ticket. Job thật là 'cho user hoàn thành mua hàng'.
+           Options: a) chỉ nút, b) full checkout, c) one-click + saved cards.
+           Selective expansion — recommend c, defer saved cards phase 2."
+You:      "b, keep scope tight"
+PM:       → Freeze task card
+            Task: Payment checkout flow
+            Scope: Cart → Payment → Confirmation
+            Non-goals: Saved cards, payment methods settings
+            Acceptance: User completes purchase, order created, email sent
+            Design: loading/error/success states, mobile responsive
 
-It is optimized for:
-- **Codex-first execution**
-- **lightweight handoffs**
-- **clear role ownership**
-- **quality per token**
+Dev:      → Diagram before code:
+            ┌──────┐    ┌─────────┐    ┌────────────┐    ┌───────────┐
+            │ Cart │───▶│ Payment │───▶│ Process    │───▶│ Confirm   │
+            │      │    │ Form    │    │ (async)    │    │ + Email   │
+            └──────┘    └─────────┘    └────────────┘    └───────────┘
+            Failure: payment fails → retry modal, not dead end
+            
+          → Implement (3 files, 2 tests)
 
-Core roles:
-- **Coach** (`pm-agent`) — scope, task framing, release gate
-- **Lebron** (`code-agent`) — implementation and local execution
-- **Curry** (`qa-agent`) — independent validation and release confidence
+QA:       → Standard QA: contract tests pass ✓
+          → Design audit:
+            Info Architecture: 8/10 ✓
+            Interaction States: 7/10 ✓ (loading/empty/error/success covered)
+            AI Slop Risk: 8/10 ✓ (no gradient hero, intentional design)
+            Responsive: 7/10 ✓
+            Overall: 7.5/10 — PASS
 
-Default modes:
-- **Solo**
-- **Build**
-- **Release-critical**
+PM:       → Synthesize: "Checkout flow shipped. 3 files, 2 tests, design score 7.5.
+           No blockers. Ready for staging deploy."
+```
 
----
-
-## Why “2.0”
-
-The earlier internal framing was **Dream Team**.
-
-**DreamTeam 2.0** means the public refined version:
-- lighter
-- more Codex-friendly
-- stricter about QA gates
-- more explicit about token efficiency
-
-In short:
-- **Dream Team** = original concept
-- **DreamTeam 2.0** = refined public runbook
+One feature. Four agents. Each with the right cognitive mode. That's the difference between an assistant and a team.
 
 ---
 
 ## Core principles
 
-- freeze scope before coding
-- use tiny task cards
-- keep handoffs brutally short
-- validate a fixed contract, not an evolving target
-- use the lightest mode that still preserves quality
-- optimize for **quality per token**
+**Reframe, don't implement literally.** The CEO step catches the gap between what you ask for and what you actually need. "Photo upload" isn't the feature — "helping sellers create listings that sell" is.
+
+**Freeze before coding.** The PM writes a tiny task card with scope, non-goals, acceptance criteria, and DoD. Scope doesn't change after freeze.
+
+**Diagram-first for complexity.** When a task involves async flows, state machines, or multi-component architecture — draw the diagram before writing code. Diagrams expose hidden assumptions that text hides.
+
+**Test against a fixed contract.** QA validates against the frozen task card, not the code as it currently exists. Moving-target QA is the #1 quality killer.
+
+**Design audit before slop ships.** Every UI task gets a 7-dimension design audit: information architecture, interaction states, user journey, AI slop risk, design system, responsive, and unresolved decisions. Rated 0-10.
+
+**Artifact-first handoffs.** Agents communicate through task cards, QA reports, and diagrams — not by forwarding 50 messages of chat history. Less token burn, clearer contracts.
+
+**Quality per token.** The lightest mode that preserves quality. Solo for small tasks. Build for normal work. Release-critical only for auth/payment/core-flow.
 
 ---
 
-## Repo map
+## Operating modes
 
-- [`dream_team_v2.md`](./dream_team_v2.md) — main runbook
-- [`dream_team_v2_examples.md`](./dream_team_v2_examples.md) — practical examples
-- [`handoff_contracts.md`](./handoff_contracts.md) — compact handoff formats
-
----
-
-## Layer 4 token lookback (Tu Vi project)
-
-One practical reason this repo exists is the earlier **Tu Vi Layer 4** work.
-That project exposed how expensive the old Dream Team style could become once scope drift, repeated analysis, and long-thread context replay started stacking.
-
-### Log-anchored observations from the old style
-
-A few concrete archived anchors around the Layer 4 / immediate follow-up work:
-- **Coach / PM anchors:** ~`46.5k` for one PM/backend review task, plus multiple PM micro-spec / review turns in the `~10k–15k` range, and several old-style long PM turns that could swell into the `~167k–205k` range when context kept accumulating.
-- **Lebron / execution anchors:** `27.8k`, `10.6k`, and `12.1k` for clean-repo / execution / closure-style coding checks around the same period.
-- **Curry / QA anchors:** one archived QA-heavy follow-up thread alone shows turns around `51.1k`, `65.5k`, `66.4k`, `66.5k`, `67.0k`, `88.0k`, `88.3k`, and `89.4k` tokens — a good example of how old QA behavior could become extremely expensive when validation drifted into repeated diagnosis.
-
-These logs are not a perfect one-thread-to-one-thread role ledger, but they are strong enough to explain the economic direction change.
-
-### Practical planning estimate
-
-| Model | Coach | Lebron | Curry | Total | Delta vs Dream Team 1.0 |
-|---|---:|---:|---:|---:|---:|
-| **Dream Team 1.0** | ~220k–300k | ~60k–90k | ~300k–370k | **~580k–760k** | baseline |
-| **DreamTeam 2.0 + gstack** | ~60k–90k | ~120k–180k | ~40k–70k | **~220k–340k** | **~55%–70% lower** |
-
-### Why the new model is cheaper
-
-With the old style:
-- Coach often kept reframing while execution was already in motion
-- Lebron sometimes inherited too much context
-- Curry could drift from scoped validation into repeated diagnosis
-
-With **DreamTeam 2.0 + gstack**:
-- Coach freezes a tiny task card earlier
-- Lebron gets bounded work instead of a giant evolving brief
-- Curry validates the changed surface against a fixed contract
-- handoffs stay short and phase-based
-
-### Practical takeaway
-
-For Layer 4-style work, the safest planning assumption is:
-- **Dream Team 1.0:** ~`580k–760k`
-- **DreamTeam 2.0 + gstack:** ~`220k–340k`
-
-That means a realistic midpoint improvement of roughly:
-- `~650k` → `~280k`
-- about **`~57%` token reduction**
+| Mode | When | CEO | Diagram | Design audit | QA gate |
+|------|------|-----|---------|--------------|---------|
+| **Solo** | <30 min, clear scope, low risk | Skip | No | No | Optional |
+| **Build** | Normal dev task | Yes | If PM requires | If UI | Yes |
+| **Release-critical** | Auth, payment, core flow | Yes | PM requires | If UI | `ship` / `ship_with_risk` / `hold` |
 
 ---
 
-## English
+## Retro dashboard
 
-DreamTeam 2.0 is a lightweight stage-based runbook where Coach freezes the problem, Lebron executes bounded work fast, Curry validates with evidence when needed, and every handoff stays small to minimize token burn.
+Every Sunday at 20:00, all three agents submit structured retrospectives. The CEO aggregates them with commentary, trends, and action items.
 
-## Tiếng Việt
+📊 **Live dashboard:** [dreamteam20.vercel.app](https://dreamteam20.vercel.app)
 
-DreamTeam 2.0 là một runbook stage-based gọn nhẹ: Coach chốt bài toán trước, Lebron execute bounded work nhanh, Curry validate bằng evidence khi cần, và mọi handoff đều được giữ rất nhỏ để giảm token burn.
+Tracks: velocity, quality scores, blockers, action items — all visualized with charts over time.
 
-## 中文
+---
 
-DreamTeam 2.0 是一个轻量级、stage-based 的 runbook：Coach 先冻结问题，Lebron 快速执行有边界的工作，Curry 在需要时基于证据做验证，而所有 handoff 都尽量保持很小，以降低 token burn。
+## Anti-patterns we avoid
+
+| Pattern | Symptom | Fix |
+|---------|---------|-----|
+| Literal ticket taking | Implement exactly what was asked, not what was needed | CEO reframe |
+| Moving target QA | Testing against code that keeps changing | Frozen task card contract |
+| Gold-plating | Adding features not in scope | Scope freeze + QA adherence check |
+| AI slop UI | Generic gradients, icon grids, uniform SaaS look | Design audit dimension 4 |
+| Premature optimization | Caching/refactoring "just in case" | YAGNI |
+| History forwarding | Sending full chat history between agents | Artifact-first handoffs |
+
+---
+
+## Architecture
+
+```
+agents/
+├── pm-agent/          # Coach — PM/orchestration
+├── code-agent/        # Lebron — implementation
+└── qa-agent/          # Curry — QA/validation
+data/
+└── weeks/             # Retro data (JSON)
+index.html             # Retro dashboard
+```
+
+### Key files
+
+| File | What it covers |
+|------|---------------|
+| [`PLAYBOOK.md`](./PLAYBOOK.md) | Full runbook: roles, task cards, handoffs, design audit, retro |
+| [`dream_team_v2.md`](./dream_team_v2.md) | v2 runbook (archived) |
+| [`dream_team_v2_examples.md`](./dream_team_v2_examples.md) | v2 examples (archived) |
+| [`handoff_contracts.md`](./handoff_contracts.md) | Handoff format reference |
+
+---
+
+## What's different from gstack
+
+| | gstack | Dream Team |
+|--|--------|------------|
+| Runtime | Single Claude Code session | 4 independent agents |
+| Execution | Sequential slash commands | Parallel multi-agent |
+| Orchestration | Manual (you run each command) | Automated pipeline |
+| Design review | `/plan-design-review` + `/design-review` | Built into Curry's QA flow |
+| Retro | `/retro` on demand | Weekly automated + dashboard |
+| Scope | Claude Code only | Any agent runtime (Codex, Claude, etc.) |
+| Review gates | Formal dashboard (Eng/CEO/Design) | Lightweight (Curry gate for release-critical) |
+
+We're not competing with gstack. We learned from it: the "structured roles + review gates" philosophy is sound. We just run it across multiple agents instead of one.
+
+---
+
+## License
+
+MIT. Use it, fork it, make it yours.

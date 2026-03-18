@@ -21,18 +21,81 @@
 }
 
 .pixel-scene {
+  display: none; /* superseded by Phaser scene */
+}
+
+/* Phaser shell (At Work) */
+.phaser-shell {
   position: relative;
   width: min(980px, 100%);
-  height: 220px;
-  margin: 0 auto;
-  background:
-    radial-gradient(1200px 320px at 50% 0%, rgba(139,92,246,0.16), transparent 55%),
-    linear-gradient(180deg, rgba(255,255,255,0.04), transparent 35%),
-    linear-gradient(180deg, var(--pixel-sky), var(--pixel-bg));
-  border: 1px solid var(--pixel-border);
-  border-radius: 16px;
+  aspect-ratio: 20 / 15;
+  border-radius: 18px;
   overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.10);
+  background:
+    radial-gradient(1200px 520px at 50% 0%, rgba(139,92,246,0.18), transparent 56%),
+    linear-gradient(180deg, rgba(255,255,255,0.05), transparent 32%),
+    linear-gradient(180deg, #0b0b12, #0a0a0f);
+  box-shadow: 0 22px 70px rgba(0,0,0,0.38);
+}
+
+.phaser-mount {
+  width: 100%;
+  height: 100%;
+}
+
+.phaser-mount canvas {
+  width: 100% !important;
+  height: 100% !important;
+  image-rendering: pixelated;
+}
+
+.phaser-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  background: rgba(10,10,15,0.55);
+  backdrop-filter: blur(8px);
+}
+
+.phaser-loading {
+  width: min(420px, 85%);
+  padding: 14px 14px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(18,18,26,0.92);
   box-shadow: 0 18px 60px rgba(0,0,0,0.35);
+}
+
+.phaser-loading .bar {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.10);
+  overflow: hidden;
+}
+
+.phaser-loading .fill {
+  height: 100%;
+  width: 32%;
+  background: linear-gradient(90deg, #8b5cf6, #22c55e);
+  border-radius: 999px;
+  animation: phaserProgress 1.2s ease-in-out infinite;
+}
+
+.phaser-loading .txt {
+  margin-top: 10px;
+  font: 12px/1.3 "Press Start 2P", monospace;
+  color: rgba(232,232,236,0.9);
+  letter-spacing: 0.2px;
+}
+
+@keyframes phaserProgress {
+  0% { transform: translateX(-60%); }
+  50% { transform: translateX(0%); }
+  100% { transform: translateX(60%); }
 }
 
 .pixel-scene::after {

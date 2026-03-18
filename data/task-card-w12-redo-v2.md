@@ -96,11 +96,25 @@ Dashboard (single HTML page)
 
 ## Phase B: Activity Feed (P1)
 
-### Content requirements
-- **50+ seeded messages** telling a coherent story
-- Agent interactions: CEO assigns task → PM freezes card → Dev starts work → QA reviews → CEO approves
-- Message types: task assignments, status updates, questions/replies, bug reports, deploy confirmations
-- References real artifacts (file paths, gist URLs, commit hashes)
+### Content requirements — REAL DATA ONLY
+- **Real agent reports** from OpenClaw subagent completions
+- **Real chat messages** between agents and CEO in the gateway
+- NO fabricated/templated messages
+- Message types: task completions, progress reports, QA findings, deploy confirmations
+- References real artifacts (file paths, gist URLs, commit hashes) from actual work
+
+### Data source approach
+1. **Live**: OpenClaw writes agent events to Gist live.json feed array via update-live.sh
+2. **Seed**: Extract REAL messages from past session history (today's W12 work):
+   - Coach's research report (real completion event)
+   - Lebron's Phase 1 completion (real)
+   - Lebron's Phase 2+3 completion (real)
+   - Lebron's fix completion (real)
+   - Curry's first audit (real — note it was wrong)
+   - Curry's corrected audit (real)
+   - Lebron's self-review (real)
+3. **Format each real event** into feed entry: agent name, role, timestamp (actual), summary of what they reported
+4. **Future**: As agents complete work, events flow into live.json automatically
 
 ### UI requirements
 - Discord/Slack-quality dark theme chat

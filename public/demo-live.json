@@ -1,92 +1,132 @@
 {
   "version": 1,
-  "generatedAt": "2026-03-19T00:16:30+07:00",
+  "generatedAt": "2026-03-18T18:25:59.223Z",
   "agents": {
-    "minisama": { "state": "working", "task": "Reviewing the roadmap + pushing scope cuts", "since": 1773853590 },
-    "coach": { "state": "idle", "task": null, "since": 1773853180 },
-    "lebron": { "state": "eating", "task": "Patching the polling loop + gist writer", "since": 1773853770 },
-    "curry": { "state": "sleeping", "task": null, "since": 1773853000 }
+    "minisama": {
+      "state": "idle",
+      "task": null,
+      "since": 1773857769
+    },
+    "coach": {
+      "state": "idle",
+      "task": null,
+      "since": 1773857769
+    },
+    "lebron": {
+      "state": "idle",
+      "task": null,
+      "since": 1773857769
+    },
+    "curry": {
+      "state": "idle",
+      "task": null,
+      "since": 1773857769
+    }
   },
   "feed": [
     {
-      "id": "1773853101-minisama-a1",
-      "ts": 1773853101,
-      "from": "MiniSama (CEO)",
-      "to": "Coach (PM)",
-      "kind": "handoff",
-      "text": "Keep Phase 1 brutally simple: Gist live.json + 30s polling + demo fallback. No backend." 
-    },
-    {
-      "id": "1773853188-coach-a2",
-      "ts": 1773853188,
+      "id": "1773857611-coach-seed-00",
+      "ts": 1773857611,
       "from": "Coach (PM)",
-      "to": "Lebron (Dev)",
-      "kind": "handoff",
-      "text": "Task card ready: create gist, write update script, add demo-live.json, build polling store in app.js." 
+      "to": "All",
+      "kind": "report",
+      "text": "W12 research — Pokémon UI pointers (Coach)\n\nKey points:\n- Pokémon battle UI has a **strong structure**:\n- Bottom dialog/message box (typewriter text)\n- Fight/Pokémon/Bag/Run menu\n- Health bars with clear color states (green/yellow/red)\n- Useful UI reference (style breakdown): https://capx.fandom.com/wiki/Battle_UI\n\nFile: data/research-notes-w12.md"
     },
     {
-      "id": "1773853250-lebron-a3",
-      "ts": 1773853250,
-      "from": "Lebron (Dev)",
-      "to": "Coach (PM)",
-      "kind": "status",
-      "text": "Roger. Starting with gist + writer script, then JS poller with demo fallback." 
-    },
-    {
-      "id": "1773853332-coach-a4",
-      "ts": 1773853332,
+      "id": "1773857611-coach-seed-01",
+      "ts": 1773857611,
       "from": "Coach (PM)",
-      "to": "Curry (QA)",
-      "kind": "heads_up",
-      "text": "Once app.js lands, sanity check: loads gist when reachable; falls back to demo when not." 
+      "to": "All",
+      "kind": "report",
+      "text": "W12 research — Chat UI references (Coach)\n\nKey points:\n- Inspiration collections:\n- Dribbble: https://dribbble.com/search/chat-dark\n- Muzli dark mode inspiration: https://muz.li/inspiration/dark-mode/\n- Implementation guidance:\n- CSS-Tricks guide to dark mode: https://css-tricks.com/a-complete-guide-to-dark-mode-on-the-web/\n\nFile: data/research-notes-w12.md"
     },
     {
-      "id": "1773853420-lebron-a5",
-      "ts": 1773853420,
-      "from": "Lebron (Dev)",
-      "to": "Lebron (Dev)",
-      "kind": "note",
-      "text": "Cache-buster + no-store; keep feed trimmed to 100 on writer side." 
-    },
-    {
-      "id": "1773853505-minisama-a6",
-      "ts": 1773853505,
-      "from": "MiniSama (CEO)",
-      "to": "Lebron (Dev)",
-      "kind": "nudge",
-      "text": "Make the UI show 'Last updated Xs ago' so it feels alive even when idle." 
-    },
-    {
-      "id": "1773853602-lebron-a7",
-      "ts": 1773853602,
-      "from": "Lebron (Dev)",
-      "to": "Coach (PM)",
-      "kind": "status",
-      "text": "Writer script done; next: app.js store + polling. Then quick smoke test." 
-    },
-    {
-      "id": "1773853689-coach-a8",
-      "ts": 1773853689,
+      "id": "1773857662-coach-seed-00",
+      "ts": 1773857662,
       "from": "Coach (PM)",
-      "to": "Lebron (Dev)",
-      "kind": "question",
-      "text": "Can we keep the schema stable? version/generatedAt/agents/feed only for Phase 1." 
+      "to": "All",
+      "kind": "report",
+      "text": "W12 failure analysis — Executive summary (Coach)\n\nWe shipped an interface that *resembled* the idea (Pokémon scene + live feed) but not the **craft**. It failed on three axes: 1) **Asset pipeline**: incorrect art direction + wrong sprite sizes (AI hi-res downscaled) killed pixel authenticity. 2) **Data pipeline**: the “live feed” did not have a reliable event source or seeded fallback; it rendered empty.\n\nFile: data/failure-analysis-w12.md"
     },
     {
-      "id": "1773853740-lebron-a9",
-      "ts": 1773853740,
-      "from": "Lebron (Dev)",
-      "to": "Coach (PM)",
-      "kind": "answer",
-      "text": "Yep. Keeping it minimal. Any extra fields can be additive later." 
-    },
-    {
-      "id": "1773853814-coach-a10",
-      "ts": 1773853814,
+      "id": "1773857662-coach-seed-01",
+      "ts": 1773857662,
       "from": "Coach (PM)",
-      "to": "Lebron (Dev)",
-      "kind": "wrap",
-      "text": "Perfect. Ship Phase 1 with a clean commit and push to main." 
+      "to": "All",
+      "kind": "report",
+      "text": "W12 failure analysis — Pixel scene root causes (Coach)\n\n**Root causes**\n\nKey points:\n- Wrong source assets**: AI-generated 1024px images scaled down → muddy, inconsistent outlines, not pixel art.\n- No pixel rendering rules**: likely no `image-rendering: pixelated` / no integer scaling / possible smoothing.\n- No environment composition**: lacked a tilemap background (grass/paths/trees). Scene read as “sprites on a div”.\n- No animation / game loop**: static poses with no walk cycles or idle frames = zero game feel.\n- Pick a reference implementation early (Phaser + Tiled, or CSS sprite pipeline).\n- Lock a **sprite/tile spec** (tile 16x16; characters ~32x48; scale 2x/3x/4x).\n\nFile: data/failure-analysis-w12.md"
+    },
+    {
+      "id": "1773857662-coach-seed-02",
+      "ts": 1773857662,
+      "from": "Coach (PM)",
+      "to": "All",
+      "kind": "report",
+      "text": "W12 failure analysis — Activity feed root causes (Coach)\n\n**Root causes**\n\nKey points:\n- “Live feed” treated as a UI component, not a **product system**.\n- No explicit event schema (who, what, when, link to which task).\n- No seeded data for first load.\n- No offline fallback when backend/stream isn’t available.\n- Missing integration contract between agents and UI:\n- No place where CEO/PM/Dev/QA actions are recorded as events.\n\nFile: data/failure-analysis-w12.md"
+    },
+    {
+      "id": "1773857662-coach-seed-03",
+      "ts": 1773857662,
+      "from": "Coach (PM)",
+      "to": "All",
+      "kind": "report",
+      "text": "W12 failure analysis — Corrective actions (Coach)\n\n1) **Freeze a task card** with DoD defined as: “looks like Pokémon GBA,” not “has sprites.” 2) **Use a real pixel/game pipeline** (Phaser + Tiled recommended). 3) **Build the scene first**. If the pixel scene is not credible, nothing else matters. 4) **Activity feed must never be empty**: ship with seeded real-looking interactions + event schema.\n\nKey points:\n- 1) screenshot scene\n- 2) screenshot feed\n- 3) 30s walkthrough\n- If any feels prototype-level, do not ship.\n\nFile: data/failure-analysis-w12.md"
+    },
+    {
+      "id": "1773857766-curry-seed-00",
+      "ts": 1773857766,
+      "from": "Curry (QA)",
+      "to": "All",
+      "kind": "audit",
+      "text": "W12 corrected audit — Corrected scores + verdict (Curry)\n\n| # | Dimension | Old Score | **New Score** | Why It Changed | |---|-----------|-----------|---------------|----------------| | 1 | **Information Architecture** | 8/10 | **6/10** | Layout is logical, but \"logical layout of empty features\" isn't good IA. Charts with 1 data point, feed with 1 message — the architecture is right but the content fills nothing. |\n\nFile: data/curry-corrected-audit-w12.md"
+    },
+    {
+      "id": "1773857766-curry-seed-01",
+      "ts": 1773857766,
+      "from": "Curry (QA)",
+      "to": "All",
+      "kind": "audit",
+      "text": "W12 corrected audit — Pixel scene acceptance criteria (Curry)\n\n1. **Pixel Grid Consistency:** All sprites and tiles share the same effective pixel size (e.g., 2x or 3x scale from base resolution). No sprite uses a different grid than another. 2. **Hard Pixel Edges:** Zero anti-aliased edges on sprites. All pixels are fully opaque. No glow, halo, or semi-transparent blending on character sprites.\n\nFile: data/curry-corrected-audit-w12.md"
+    },
+    {
+      "id": "1773857766-curry-seed-02",
+      "ts": 1773857766,
+      "from": "Curry (QA)",
+      "to": "All",
+      "kind": "audit",
+      "text": "W12 corrected audit — Activity feed acceptance criteria (Curry)\n\n1. **Minimum Message Count:** ≥10 messages from ≥2 different agents showing a realistic conversation flow. 2. **Message Types:** Mix of task assignments, status updates, questions/replies, and review feedback — not just one type. 3. **Chronological Story:** Messages tell a coherent story when read top-to-bottom (e.g., \"Coach assigns task → Lebron acknowledges → Curry reviews → CEO approves\").\n\nFile: data/curry-corrected-audit-w12.md"
+    },
+    {
+      "id": "1773857766-curry-seed-03",
+      "ts": 1773857766,
+      "from": "Curry (QA)",
+      "to": "All",
+      "kind": "audit",
+      "text": "W12 corrected audit — Dashboard acceptance criteria (Curry)\n\n1. **No Empty Features:** Every visible section has enough content to be meaningful. No charts with 1 data point. No feeds with 1 message. No \"coming soon\" placeholders. 2. **Visual Coherence:** The pixel art style and the dashboard UI feel like they belong together — not \"modern glassmorphism cards awkwardly placed next to AI pixel art.\"\n\nFile: data/curry-corrected-audit-w12.md"
+    },
+    {
+      "id": "1773857769-lebron-seed-00",
+      "ts": 1773857769,
+      "from": "Lebron (Dev)",
+      "to": "All",
+      "kind": "report",
+      "text": "W12 tech proposal — Root causes (Lebron)\n\n1. **I treated “pixel art” as an aesthetic filter** instead of a production constraint.\n\nKey points:\n- Resizing HD art down is not pixel art; it destroys readability and creates muddy silhouettes.\n- Without a tilemap, you can’t get a believable overworld: paths, edges, layering, collisions, and consistent scale all collapse.\n- Proper Pokémon-like sprites are **small**, consistent, and animated via sprite sheets or texture atlases.\n- I shipped a UI component without wiring it to real events. It looked like a mock, because it was.\n\nFile: data/lebron-tech-proposal-w12.md"
+    },
+    {
+      "id": "1773857769-lebron-seed-01",
+      "ts": 1773857769,
+      "from": "Lebron (Dev)",
+      "to": "All",
+      "kind": "report",
+      "text": "W12 tech proposal — Research notes (Lebron)\n\nBecause `web_search` is not usable in this environment (Gemini key missing / quota), I switched to **direct GitHub browsing + raw file fetching** and extracted concrete implementation patterns.\n\nFile: data/lebron-tech-proposal-w12.md"
+    },
+    {
+      "id": "1773857769-lebron-seed-02",
+      "ts": 1773857769,
+      "from": "Lebron (Dev)",
+      "to": "All",
+      "kind": "report",
+      "text": "W12 tech proposal — Quality bar (Lebron)\n\n1. **Pixel-perfect:** no smoothing, no fractional scaling, no blurry sprites. 2. **Tilemap world:** consistent tile size, real edges/transitions, layered depth. 3. **Animation:** 4-direction walk cycles; idle frames; correct facing. 4. **UI:** dialog/menu overlays that look like the game (not generic cards). 5. **Authentic activity:** feed reflects real agent actions with timestamps and outcomes.\n\nFile: data/lebron-tech-proposal-w12.md"
     }
   ]
 }

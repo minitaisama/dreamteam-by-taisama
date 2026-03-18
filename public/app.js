@@ -53,10 +53,45 @@
     }
 
     // Attempt gist first, then fallback to demo
+    // IMPORTANT: even when Gist succeeds, we still want seeded demo feed as a baseline
+    // (so the UI is never empty) and then we append newer live events.
+    let demoData = null;
+    try {
+      demoData = await fetchJson(`/demo-live.json?ts=${nowMs()}`);
+    } catch (_) {
+      // ignore
+    }
+
     if (state.liveUrl) {
       try {
-        const data = await fetchJson(`${state.liveUrl}?ts=${nowMs()}`);
-        state.data = data;
+        const gistData = await fetchJson(`${state.liveUrl}?ts=${nowMs()}`);
+
+        // Merge feed: demo seed first, then gist entries (dedupe by id)
+        const seen = new Set();
+        const mergedFeed = [];
+
+        for (const m of (demoData?.feed || [])) {
+          const id = m?.id || `${m?.ts}-${m?.from}-${m?.text}`;
+          if (seen.has(id)) continue;
+          seen.add(id);
+          mergedFeed.push(m);
+        }
+        for (const m of (gistData?.feed || [])) {
+          const id = m?.id || `${m?.ts}-${m?.from}-${m?.text}`;
+          if (seen.has(id)) continue;
+          seen.add(id);
+          mergedFeed.push(m);
+        }
+
+        // If gist has agents state, keep it; otherwise fall back to demo.
+        const mergedAgents = gistData?.agents || demoData?.agents || {};
+
+        state.data = {
+          ...(demoData || {}),
+          ...(gistData || {}),
+          agents: mergedAgents,
+          feed: mergedFeed
+        };
         state.source = 'gist';
         state.lastFetchedAt = nowMs();
         state.error = null;
@@ -71,7 +106,7 @@
         return;
       } catch (e) {
         state.error = e;
-        // fall through to demo
+        // fall through to demo-only below
       }
     }
 
@@ -164,6 +199,12 @@
     getAgents,
     getFeed,
     reload: loadOnce
+  };
+
+  // Debug: expose a quick check in console
+  window.__dt_debug = {
+    version: 'merge-seed-v1',
+    peek: () => ({ source: state.source, feed: state.data?.feed?.length || 0, liveUrl: state.liveUrl })
   };
 
   // Boot

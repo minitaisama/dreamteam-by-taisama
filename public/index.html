@@ -20,6 +20,14 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <!-- Pixel font for dialog box + UI accents -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+
+  <!-- Phaser 3 (CDN, no build) -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+
   <link rel="stylesheet" href="/sprites.css" />
 
   <style>
@@ -48,10 +56,66 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
       background: var(--bg);
       color: var(--text);
       line-height: 1.6;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(18,18,26,0.75);
+      border-radius: 14px;
+      margin-bottom: 1rem;
+      box-shadow: 0 18px 55px rgba(0,0,0,0.28);
+      backdrop-filter: blur(10px);
+    }
+
+    .tab {
+      appearance: none;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      color: rgba(232,232,236,0.85);
+      font-weight: 760;
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      letter-spacing: 0.2px;
+      transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+    }
+
+    .tab:hover {
+      transform: translateY(-1px);
+      border-color: rgba(196,181,253,0.45);
+      background: rgba(139,92,246,0.10);
+    }
+
+    .tab.active {
+      background: linear-gradient(135deg, rgba(139,92,246,0.35), rgba(245,158,11,0.15));
+      border-color: rgba(196,181,253,0.55);
+      color: #f5f3ff;
+      box-shadow: 0 10px 30px rgba(109,40,217,0.22);
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .retro-frame {
+      width: 100%;
+      height: 980px;
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 16px;
+      background: #0a0a0f;
+      box-shadow: 0 18px 60px rgba(0,0,0,0.32);
+    }
+
+    @media (max-width: 760px) {
+      .retro-frame { height: 1200px; }
+      .tabs { position: sticky; top: 10px; z-index: 20; }
     }
 
     a { color: #c4b5fd; text-decoration: none; }
@@ -366,17 +430,24 @@
     .bubble .meta {
       display: flex;
       gap: 0.55rem;
-      align-items: baseline;
-      justify-content: space-between;
-      margin-bottom: 0.2rem;
+      align-items: center;
+      margin-bottom: 0.25rem;
       color: var(--text3);
       font-size: 0.75rem;
     }
 
     .bubble .meta .name {
-      font-weight: 850;
+      font-weight: 860;
       color: #fff;
     }
+
+    .bubble .meta .badge {
+      font-size: 0.66rem;
+      padding: 0.12rem 0.45rem;
+      opacity: 0.92;
+    }
+
+    .bubble .meta span:last-child { margin-left: auto; }
 
     .bubble .text {
       color: var(--text2);
@@ -478,36 +549,51 @@
     </header>
 
     <main>
-      <section aria-label="Agent status strip">
-        <div class="agents-strip" id="agentsStrip"></div>
-      </section>
+      <!-- Tabs -->
+      <nav class="tabs" aria-label="Dashboard tabs">
+        <button class="tab active" type="button" data-tab="atwork" aria-controls="tab-atwork" aria-selected="true">🎮 At Work</button>
+        <button class="tab" type="button" data-tab="retro" aria-controls="tab-retro" aria-selected="false">📊 Retro</button>
+      </nav>
 
-      <section aria-label="KPIs">
-        <div class="kpi-grid" id="kpiGrid"></div>
-      </section>
+      <section id="tab-atwork" class="tab-panel active" aria-label="At Work tab">
+        <section aria-label="Agent status strip">
+          <div class="agents-strip" id="agentsStrip"></div>
+        </section>
 
-      <section class="grid-main" aria-label="Pixel scene and activity feed">
-        <div>
-          <div class="section-title">Pixel scene</div>
-          <div class="pixel-scene" id="pixelScene" aria-label="Dreamteam pixel scene">
-            <div class="pixel-prop campfire" aria-hidden="true"></div>
+        <section aria-label="KPIs">
+          <div class="kpi-grid" id="kpiGrid"></div>
+        </section>
 
-            <div class="pixel-character trainer state-idle dir-right" id="char-minisama" aria-label="MiniSama"></div>
-            <div class="pixel-character coach state-idle dir-left" id="char-coach" aria-label="Coach"></div>
-            <div class="pixel-character lebron state-idle dir-left" id="char-lebron" aria-label="Lebron"></div>
-            <div class="pixel-character curry state-idle dir-left" id="char-curry" aria-label="Curry"></div>
-          </div>
-        </div>
+        <section class="grid-main" aria-label="Pixel scene and activity feed">
+          <div>
+            <div class="section-title">Pixel scene</div>
 
-        <div class="feed-card" aria-label="Activity feed">
-          <div class="feed-header">
-            <h2>Activity Feed</h2>
-            <div class="feed-actions">
-              <button class="btn" id="showMoreBtn" type="button">Show more</button>
+            <!-- Phaser mount (replaces CSS prototype scene) -->
+            <div class="phaser-shell" aria-label="Dreamteam Phaser pixel scene">
+              <div class="phaser-overlay" id="phaserOverlay" aria-hidden="true">
+                <div class="phaser-loading">
+                  <div class="bar"><div class="fill" id="phaserFill"></div></div>
+                  <div class="txt">Loading pixel scene…</div>
+                </div>
+              </div>
+              <div id="phaserMount" class="phaser-mount"></div>
             </div>
           </div>
-          <div class="feed-body" id="feedBody"></div>
-        </div>
+
+          <div class="feed-card" aria-label="Activity feed">
+            <div class="feed-header">
+              <h2>Activity Feed</h2>
+              <div class="feed-actions">
+                <button class="btn" id="showMoreBtn" type="button">Show more</button>
+              </div>
+            </div>
+            <div class="feed-body" id="feedBody"></div>
+          </div>
+        </section>
+      </section>
+
+      <section id="tab-retro" class="tab-panel" aria-label="Retro tab">
+        <iframe class="retro-frame" title="Dream Team Retro Dashboard" src="/retro.html" loading="lazy"></iframe>
       </section>
 
       <section class="charts-section" aria-labelledby="chartsTitle">
@@ -536,9 +622,9 @@
   </div>
 
   <!-- Live layer (polling) -->
-  <script src="/app.js"></script>
-  <!-- Pixel scene updater -->
-  <script src="/pixel-scene.js"></script>
+  <script src="/app.js?v=20260319"></script>
+  <!-- Phaser pixel scene -->
+  <script src="/phaser-atwork.js?v=20260319"></script>
 
   <script>
     // --------- UI helpers ---------
@@ -696,16 +782,18 @@
         const wrap = document.createElement('div');
         wrap.className = `msg ${right ? 'right' : ''} ${accentFor(fromKey)}`;
 
+        const roleBadge = m.kind ? `<span class="badge">${m.kind}</span>` : '';
+
         wrap.innerHTML = right ? `
           <div class="bubble">
-            <div class="meta"><span class="name">${m.from || 'Unknown'}</span><span>${fmtTime(m.ts)}</span></div>
+            <div class="meta"><span class="name">${m.from || 'Unknown'}</span>${roleBadge}<span>${fmtTime(m.ts)}</span></div>
             <div class="text">${m.text || ''}</div>
           </div>
           <div class="avatar" aria-hidden="true">${initialsFor(fromKey)}</div>
         ` : `
           <div class="avatar" aria-hidden="true">${initialsFor(fromKey)}</div>
           <div class="bubble">
-            <div class="meta"><span class="name">${m.from || 'Unknown'}</span><span>${fmtTime(m.ts)}</span></div>
+            <div class="meta"><span class="name">${m.from || 'Unknown'}</span>${roleBadge}<span>${fmtTime(m.ts)}</span></div>
             <div class="text">${m.text || ''}</div>
           </div>
         `;
@@ -721,7 +809,7 @@
     function resetAndRenderAll(live) {
       renderAgentsStrip(live?.agents || {});
       renderKPIGrid(calcKPIs(live));
-      window.DreamteamPixelScene?.update(live);
+      // Phaser scene listens to dreamteam:live events directly (from app.js polling layer).
       renderFeed(live?.feed || [], { reset: true });
 
       // demo badge
@@ -832,10 +920,34 @@
         if (!st || !st.data) return;
         renderAgentsStrip(st.data.agents || {});
         renderKPIGrid(calcKPIs(st.data));
-        window.DreamteamPixelScene?.update(st.data);
         renderFeed(st.data.feed || []);
         document.getElementById('demoBadge').style.display = (st.source === 'demo') ? 'inline-flex' : 'none';
       }, 2000);
+
+      // Tabs (instant switch; no reload)
+      const tabButtons = Array.from(document.querySelectorAll('.tab'));
+      const panels = {
+        atwork: document.getElementById('tab-atwork'),
+        retro: document.getElementById('tab-retro')
+      };
+
+      function setActiveTab(key) {
+        for (const b of tabButtons) {
+          const is = b.dataset.tab === key;
+          b.classList.toggle('active', is);
+          b.setAttribute('aria-selected', is ? 'true' : 'false');
+        }
+        for (const [k, el] of Object.entries(panels)) {
+          if (!el) continue;
+          el.classList.toggle('active', k === key);
+        }
+      }
+
+      for (const b of tabButtons) {
+        b.addEventListener('click', () => setActiveTab(b.dataset.tab));
+      }
+
+      setActiveTab('atwork');
 
       // Show more
       document.getElementById('showMoreBtn').addEventListener('click', () => {

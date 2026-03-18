@@ -102,10 +102,10 @@
 }
 
 /* character sheets */
-.pixel-character.trainer .pixel-sprite { background-image: url('/public/sprites/trainer-sheet.png'); }
-.pixel-character.coach .pixel-sprite { background-image: url('/public/sprites/coach-sheet.png'); }
-.pixel-character.lebron .pixel-sprite { background-image: url('/public/sprites/lebron-sheet.png'); }
-.pixel-character.curry .pixel-sprite { background-image: url('/public/sprites/curry-sheet.png'); }
+.pixel-character.trainer .pixel-sprite { background-image: url('/sprites/trainer-sheet.png'); }
+.pixel-character.coach .pixel-sprite { background-image: url('/sprites/coach-sheet.png'); }
+.pixel-character.lebron .pixel-sprite { background-image: url('/sprites/lebron-sheet.png'); }
+.pixel-character.curry .pixel-sprite { background-image: url('/sprites/curry-sheet.png'); }
 
 /* Flip direction without breaking movement transforms */
 .pixel-character.dir-left .pixel-sprite { transform: scaleX(-1); transform-origin: 50% 50%; }

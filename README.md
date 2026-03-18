@@ -34,37 +34,51 @@ Inspired by [gstack](https://github.com/garrytan/gstack) — we borrowed the "st
 ## See it work
 
 ```
-You:      "Thêm nút thanh toán"
-CEO:      "Thanh toán là ticket. Job thật là 'cho user hoàn thành mua hàng'.
-           Options: a) chỉ nút, b) full checkout, c) one-click + saved cards.
-           Selective expansion — recommend c, defer saved cards phase 2."
-You:      "b, keep scope tight"
+You:      "Build a user profile page"
+CEO:      "A profile page is a table. The real job is letting users
+           build identity and trust. What if the profile shows
+           contribution history, skill endorsements from peers,
+           and a verified badge system? That's 10 stars.
+           A form with a avatar upload is 3 stars."
+           Selective expansion — recommend contributions + endorsements,
+           defer verified badges to phase 2.
+You:      "Sounds good, defer badges. Keep the rest."
 PM:       → Freeze task card
-            Task: Payment checkout flow
-            Scope: Cart → Payment → Confirmation
-            Non-goals: Saved cards, payment methods settings
-            Acceptance: User completes purchase, order created, email sent
-            Design: loading/error/success states, mobile responsive
+            Task: User profile with identity signals
+            Scope: Avatar, bio, contribution history, skill endorsements
+            Non-goals: Badges, social links, activity feed
+            Acceptance: User can edit profile, view contributions,
+                        receive endorsements
+            Design: empty state for new users, loading skeleton,
+                    edit vs view mode
 
 Dev:      → Diagram before code:
-            ┌──────┐    ┌─────────┐    ┌────────────┐    ┌───────────┐
-            │ Cart │───▶│ Payment │───▶│ Process    │───▶│ Confirm   │
-            │      │    │ Form    │    │ (async)    │    │ + Email   │
-            └──────┘    └─────────┘    └────────────┘    └───────────┘
-            Failure: payment fails → retry modal, not dead end
-            
-          → Implement (3 files, 2 tests)
+            ┌──────────┐     ┌──────────────────┐
+            │ Profile  │────▶│ Contributions     │
+            │ (edit)   │     │ (read-only feed)  │
+            └────┬─────┘     └──────────────────┘
+                 │
+                 ▼
+            ┌──────────┐     ┌──────────────────┐
+            │ Avatar   │     │ Skill Endorsements│
+            │ Upload   │     │ (peer actions)    │
+            └──────────┘     └──────────────────┘
+
+          → Implement (5 files, 3 tests)
 
 QA:       → Standard QA: contract tests pass ✓
           → Design audit:
-            Info Architecture: 8/10 ✓
-            Interaction States: 7/10 ✓ (loading/empty/error/success covered)
-            AI Slop Risk: 8/10 ✓ (no gradient hero, intentional design)
-            Responsive: 7/10 ✓
-            Overall: 7.5/10 — PASS
+            Info Architecture: 8/10 ✓ (clear hierarchy)
+            Interaction States: 7/10 ✓ (empty state for new users)
+            User Journey: 8/10 ✓ (edit → save → view flow)
+            AI Slop Risk: 9/10 ✓ (no generic card grid)
+            Design System: 7/10 ✓
+            Responsive: 8/10 ✓ (mobile-first)
+            Unresolved Decisions: 8/10 ✓
+            Overall: 7.9/10 — PASS
 
-PM:       → Synthesize: "Checkout flow shipped. 3 files, 2 tests, design score 7.5.
-           No blockers. Ready for staging deploy."
+PM:       → Synthesize: "Profile shipped. 5 files, 3 tests, design 7.9.
+           No blockers. Endorsement API ready for peer integration."
 ```
 
 One feature. Four agents. Each with the right cognitive mode. That's the difference between an assistant and a team.

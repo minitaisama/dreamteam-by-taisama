@@ -3,6 +3,12 @@
    - All art is code-generated pixel matrices (no AI images)
    - 20x15 tiles, 32px tile size (16px base @2x)
    - 4 characters + idle / walking states driven by window.DreamteamLive
+
+   Polish pass:
+   - Muted GBA-ish palette
+   - Pixel-perfect dialog (no rounded corners)
+   - 2-frame-ish idle bob (1px step, ~2.6s loop)
+   - Separate oval shadow sprites under characters
 */
 
 (function () {
@@ -79,63 +85,63 @@
     const p = new Array(64).fill(null);
     p[0] = null;
 
-    // universal inks
-    p[1] = 0x1f1d2b; // outline
-    p[2] = 0x141321; // deep shadow
+    // universal inks (muted, warm)
+    p[1] = 0x1c1b25; // outline
+    p[2] = 0x12111a; // deep shadow
     p[3] = 0xffffff; // highlight
 
-    // terrain
-    p[10] = 0x4ecb63; // grass light
-    p[11] = 0x2fa24a; // grass dark
-    p[12] = 0x1f7f37; // grass shade
+    // terrain (GBA-ish muted greens/browns)
+    p[10] = 0x6da36f; // grass light
+    p[11] = 0x4f7f55; // grass mid
+    p[12] = 0x3c5f41; // grass dark
 
-    p[15] = 0xcab27a; // path light
-    p[16] = 0xb0925b; // path mid
-    p[17] = 0x8f7348; // path dark
+    p[15] = 0xc2ab7e; // path light
+    p[16] = 0x9a845f; // path mid
+    p[17] = 0x786044; // path dark
 
-    p[20] = 0x2b7a38; // leaf light
-    p[21] = 0x1f5f2b; // leaf dark
-    p[22] = 0x17441f; // leaf deep
+    p[20] = 0x5e8e64; // leaf light
+    p[21] = 0x3f6c48; // leaf dark
+    p[22] = 0x2d4f36; // leaf deep
 
-    p[25] = 0x9a6a42; // trunk light
-    p[26] = 0x784b2f; // trunk dark
+    p[25] = 0x8f6a45; // trunk light
+    p[26] = 0x6c4b31; // trunk dark
 
-    p[30] = 0xe6dfd0; // wall light
-    p[31] = 0xcbbfa7; // wall shadow
+    p[30] = 0xe3d9c8; // wall light
+    p[31] = 0xbfb39b; // wall shadow
 
-    p[34] = 0xc35a54; // roof light
-    p[35] = 0x8f2f2f; // roof dark
+    p[34] = 0xa25d56; // roof light
+    p[35] = 0x6f3b3a; // roof dark
 
-    p[38] = 0xd7c89c; // indoor floor light
-    p[39] = 0xb9a978; // floor shadow
+    p[38] = 0xd9cba3; // indoor floor light
+    p[39] = 0xb6a77a; // floor shadow
 
-    p[42] = 0x8b6a44; // desk
-    p[43] = 0x6b4e33; // desk shadow
+    p[42] = 0x906a44; // desk
+    p[43] = 0x6c4b31; // desk shadow
     p[44] = 0x2a2a3a; // computer casing
     p[45] = 0x4b5563; // screen
 
-    // character common
-    p[50] = 0xf2c8a2; // skin
-    p[51] = 0xd9aa80; // skin shadow
-    p[52] = 0x5b3d2a; // hair
-    p[53] = 0x3f2a1d; // hair shadow
+    // character common (muted)
+    p[50] = 0xf0c9a5; // skin
+    p[51] = 0xd6a981; // skin shadow
+    p[52] = 0x4d3b2c; // hair
+    p[53] = 0x35251a; // hair shadow
 
     p[56] = 0x3c3f50; // pants
     p[57] = 0x232432; // shoes
 
     // jacket slots (set per agent)
-    p[60] = 0x7c3aed; // jacket base default
-    p[61] = 0x5b21b6; // jacket shadow default
+    p[60] = 0x6f67b8; // jacket base default (muted purple)
+    p[61] = 0x3f3a78; // jacket shadow default
 
     return p;
   }
 
   function paletteForRole(roleKey) {
     const p = basePalette();
-    if (roleKey === 'ceo') { p[60] = 0x7c3aed; p[61] = 0x4c1d95; }
-    if (roleKey === 'pm') { p[60] = 0x2563eb; p[61] = 0x1e40af; }
-    if (roleKey === 'dev') { p[60] = 0x16a34a; p[61] = 0x14532d; }
-    if (roleKey === 'qa') { p[60] = 0xeab308; p[61] = 0xa16207; }
+    if (roleKey === 'ceo') { p[60] = 0x7b5db4; p[61] = 0x4f3b7a; }
+    if (roleKey === 'pm') { p[60] = 0x466db4; p[61] = 0x2d3f6f; }
+    if (roleKey === 'dev') { p[60] = 0x4f8a5a; p[61] = 0x2f5a38; }
+    if (roleKey === 'qa') { p[60] = 0xc6a24d; p[61] = 0x7a5f2a; }
     return p;
   }
 
@@ -153,34 +159,49 @@
   }
 
   function tileGrass(seed = 0) {
-    // Simple grass with speckles and subtle checker.
-    const t = tileSolid(10);
+    // Muted grass with subtle banding: darker edges, lighter center.
+    const t = tileSolid(11);
+
     for (let y = 0; y < 16; y++) {
       for (let x = 0; x < 16; x++) {
-        if (((x + y + seed) % 5) === 0) t[y][x] = 11;
-        if (((x * 3 + y * 5 + seed) % 17) === 0) t[y][x] = 12;
+        const edge = (x <= 1 || y <= 1 || x >= 14 || y >= 14);
+        const innerEdge = (x === 2 || y === 2 || x === 13 || y === 13);
+        if (edge) t[y][x] = 12;
+        else if (innerEdge) t[y][x] = 11;
+        else t[y][x] = 10;
+
+        // speckles
+        const r1 = (x * 3 + y * 5 + seed * 7) % 19;
+        const r2 = (x * 7 + y * 3 + seed * 5) % 23;
+        if (r1 === 0) t[y][x] = 11;
+        if (r2 === 0) t[y][x] = 12;
       }
     }
-    // a few bright pixels
-    for (let i = 0; i < 10; i++) {
-      const x = (i * 7 + seed * 3) % 16;
-      const y = (i * 11 + seed * 5) % 16;
+
+    // a few highlight pixels
+    for (let i = 0; i < 6; i++) {
+      const x = (i * 5 + seed * 3) % 12 + 2;
+      const y = (i * 7 + seed * 2) % 12 + 2;
       t[y][x] = 10;
     }
+
     return t;
   }
 
   function tilePath() {
-    const t = tileSolid(15);
-    // subtle noisy edge
+    // Lighter center with darker edges (subtle, FireRed-ish)
+    const t = tileSolid(16);
     for (let y = 0; y < 16; y++) {
       for (let x = 0; x < 16; x++) {
+        const edge = (x <= 1 || y <= 1 || x >= 14 || y >= 14);
+        const innerEdge = (x === 2 || y === 2 || x === 13 || y === 13);
+        t[y][x] = edge ? 17 : (innerEdge ? 16 : 15);
+
+        // tiny noise
         if ((x + y) % 7 === 0) t[y][x] = 16;
-        if ((x * 5 + y * 3) % 23 === 0) t[y][x] = 17;
+        if ((x * 5 + y * 3) % 29 === 0) t[y][x] = 17;
       }
     }
-    // top-left highlight
-    for (let y = 0; y < 6; y++) for (let x = 0; x < 6; x++) if ((x + y) % 3 === 0) t[y][x] = 15;
     return t;
   }
 
@@ -205,43 +226,42 @@
       for (let x = 1; x < 15; x++) {
         const dx = x - 8;
         const dy = y - 7;
-        if (dx * dx + dy * dy < 52) t[y][x] = 20;
-        if (dx * dx + dy * dy < 36) t[y][x] = 21;
+        const d = dx * dx + dy * dy;
+        if (d < 52) t[y][x] = 20;
+        if (d < 36) t[y][x] = 21;
       }
     }
-    // shadow bottom
+    // shadow band bottom
     for (let x = 3; x < 13; x++) t[13][x] = 22;
-    // outline
+
+    // outline pass: mark border pixels as outline (1)
+    const copy = t.map(r => r.slice());
     for (let y = 0; y < 16; y++) {
       for (let x = 0; x < 16; x++) {
-        if (t[y][x] === 0) continue;
-        const n = [
-          t[y - 1]?.[x],
-          t[y + 1]?.[x],
-          t[y]?.[x - 1],
-          t[y]?.[x + 1]
-        ];
-        if (n.some(v => v === 0 || v == null)) t[y][x] = 1; // crisp outline edge
+        if (copy[y][x] === 0) continue;
+        const n = [copy[y - 1]?.[x], copy[y + 1]?.[x], copy[y]?.[x - 1], copy[y]?.[x + 1]];
+        if (n.some(v => v === 0 || v == null)) t[y][x] = 1;
       }
     }
-    // re-fill interior with greens (after outline pass)
-    for (let y = 0; y < 16; y++) {
-      for (let x = 0; x < 16; x++) {
-        if (t[y][x] !== 1) continue;
-        // keep only border pixels as 1; interior stays green
-      }
-    }
-    // second pass: put greens in interior excluding border
+
+    // re-fill interior (keep outline pixels as 1)
     for (let y = 1; y < 15; y++) {
       for (let x = 1; x < 15; x++) {
-        if (t[y][x] === 1) {
-          const n = [t[y - 1][x], t[y + 1][x], t[y][x - 1], t[y][x + 1]];
-          if (n.every(v => v === 1)) t[y][x] = 21;
-        }
+        if (t[y][x] === 1) continue;
+        if (t[y][x] === 0) continue;
+        // darker toward bottom
+        t[y][x] = (y > 10) ? 21 : 20;
       }
     }
-    // highlights
-    for (let y = 2; y < 8; y++) for (let x = 2; x < 8; x++) if ((x + y) % 4 === 0 && t[y][x] !== 0) t[y][x] = 20;
+
+    // highlights (top-left)
+    for (let y = 2; y < 8; y++) {
+      for (let x = 2; x < 8; x++) {
+        if (t[y][x] === 0 || t[y][x] === 1) continue;
+        if ((x + y) % 4 === 0) t[y][x] = 20;
+      }
+    }
+
     return t;
   }
 
@@ -334,8 +354,20 @@
     return t;
   }
 
+  // Shadow texture (pixel oval)
+  function shadowOval() {
+    // 12x4 (0 transparent, 2 deep shadow)
+    return [
+      [0,0,0,2,2,2,2,2,2,0,0,0],
+      [0,0,2,2,2,2,2,2,2,2,0,0],
+      [0,0,0,2,2,2,2,2,2,0,0,0],
+      [0,0,0,0,2,2,2,2,0,0,0,0]
+    ];
+  }
+
   // Character (top-down) 32x32, 3-frame walk cycles.
   // Indices: 0 transparent, 1 outline, 50 skin, 52 hair, 60/61 jacket, 56 pants, 57 shoes
+  // Proportions: smaller head, longer torso (closer to Pokémon NPC vibe).
   function charFrame({ facing, step }) {
     const w = 32, h = 32;
     const m = Array.from({ length: h }, () => Array.from({ length: w }, () => 0));
@@ -345,95 +377,89 @@
       m[y][x] = c;
     }
 
-    // body anchor
     const cx = 16;
-    const top = 6;
+    const top = 7;
 
-    // Head
-    for (let y = top; y < top + 10; y++) {
-      for (let x = cx - 5; x <= cx + 5; x++) {
+    // Head (smaller)
+    for (let y = top; y < top + 8; y++) {
+      for (let x = cx - 4; x <= cx + 4; x++) {
         const dx = x - cx;
-        const dy = y - (top + 5);
-        if (dx * dx + dy * dy <= 28) px(x, y, 50);
+        const dy = y - (top + 4);
+        if (dx * dx + dy * dy <= 18) px(x, y, 50);
       }
     }
 
-    // Hair cap (varies by facing)
-    for (let y = top; y < top + 5; y++) {
-      for (let x = cx - 6; x <= cx + 6; x++) {
-        if ((x + y) % 2 === 0) px(x, y, 52);
+    // Hair cap
+    for (let y = top; y < top + 4; y++) {
+      for (let x = cx - 5; x <= cx + 5; x++) {
+        if ((x + y) % 2 === 0 && m[y][x] !== 0) px(x, y, 52);
       }
     }
 
-    // Eyes / face hint
+    // Face hint
     if (facing === 'down') {
-      px(cx - 2, top + 6, 1);
-      px(cx + 2, top + 6, 1);
-      px(cx, top + 8, 51);
+      px(cx - 2, top + 4, 1);
+      px(cx + 2, top + 4, 1);
+      px(cx, top + 6, 51);
     } else if (facing === 'up') {
-      // hair dominates; no face
-      px(cx - 1, top + 8, 52);
-      px(cx + 1, top + 8, 52);
+      px(cx - 1, top + 6, 52);
+      px(cx + 1, top + 6, 52);
     } else {
-      // side
-      px(cx + 3, top + 6, 1);
-      px(cx + 3, top + 7, 51);
+      px(cx + 2, top + 4, 1);
+      px(cx + 2, top + 5, 51);
     }
 
     // Outline around head
-    for (let y = top - 1; y < top + 11; y++) {
-      for (let x = cx - 7; x <= cx + 7; x++) {
+    for (let y = top - 1; y < top + 10; y++) {
+      for (let x = cx - 6; x <= cx + 6; x++) {
         if (m[y]?.[x] !== 0) continue;
         const n = [m[y - 1]?.[x], m[y + 1]?.[x], m[y]?.[x - 1], m[y]?.[x + 1]];
         if (n.some(v => v && v !== 0)) px(x, y, 1);
       }
     }
 
-    // Torso
-    const torsoTop = top + 11;
-    for (let y = torsoTop; y < torsoTop + 9; y++) {
+    // Torso (longer)
+    const torsoTop = top + 9;
+    for (let y = torsoTop; y < torsoTop + 10; y++) {
       for (let x = cx - 6; x <= cx + 6; x++) {
         const shade = (x > cx + 2) ? 61 : 60;
         px(x, y, shade);
       }
     }
 
-    // Arms (simple)
-    for (let y = torsoTop + 2; y < torsoTop + 8; y++) {
+    // Arms
+    for (let y = torsoTop + 2; y < torsoTop + 9; y++) {
       px(cx - 7, y, 60);
       px(cx + 7, y, 61);
     }
 
     // Belt line
-    for (let x = cx - 6; x <= cx + 6; x++) px(x, torsoTop + 8, 1);
+    for (let x = cx - 6; x <= cx + 6; x++) px(x, torsoTop + 9, 1);
 
     // Legs — animate by step
-    const legTop = torsoTop + 9;
+    const legTop = torsoTop + 10;
     const swing = (step === 1) ? 1 : (step === 2 ? -1 : 0);
 
     if (facing === 'down') {
-      // two legs visible
-      for (let y = legTop; y < legTop + 6; y++) {
+      for (let y = legTop; y < legTop + 5; y++) {
         for (let x = cx - 4; x <= cx - 1; x++) px(x, y, 56);
         for (let x = cx + 1; x <= cx + 4; x++) px(x, y, 56);
       }
       // feet
-      for (let x = cx - 4 + swing; x <= cx - 1 + swing; x++) px(x, legTop + 6, 57);
-      for (let x = cx + 1 - swing; x <= cx + 4 - swing; x++) px(x, legTop + 6, 57);
+      for (let x = cx - 4 + swing; x <= cx - 1 + swing; x++) px(x, legTop + 5, 57);
+      for (let x = cx + 1 - swing; x <= cx + 4 - swing; x++) px(x, legTop + 5, 57);
     } else if (facing === 'up') {
-      // legs tucked
-      for (let y = legTop; y < legTop + 5; y++) for (let x = cx - 4; x <= cx + 4; x++) px(x, y, 56);
-      for (let x = cx - 3 + swing; x <= cx + 3 + swing; x++) px(x, legTop + 5, 57);
+      for (let y = legTop; y < legTop + 4; y++) for (let x = cx - 4; x <= cx + 4; x++) px(x, y, 56);
+      for (let x = cx - 3 + swing; x <= cx + 3 + swing; x++) px(x, legTop + 4, 57);
     } else {
-      // side legs
-      for (let y = legTop; y < legTop + 6; y++) for (let x = cx - 2; x <= cx + 3; x++) px(x, y, 56);
-      for (let x = cx - 1 + swing; x <= cx + 3 + swing; x++) px(x, legTop + 6, 57);
-      // backpack-ish pixel for pokemon vibe
+      for (let y = legTop; y < legTop + 5; y++) for (let x = cx - 2; x <= cx + 3; x++) px(x, y, 56);
+      for (let x = cx - 1 + swing; x <= cx + 3 + swing; x++) px(x, legTop + 5, 57);
+      // backpack pixel cluster (pokemon vibe)
       px(cx - 5, torsoTop + 4, 61);
       px(cx - 5, torsoTop + 5, 61);
     }
 
-    // Torso outline
+    // Outline around torso/legs
     for (let y = torsoTop - 1; y < legTop + 7; y++) {
       for (let x = cx - 9; x <= cx + 9; x++) {
         if (m[y]?.[x] !== 0) continue;
@@ -441,9 +467,6 @@
         if (n.some(v => v && v !== 0)) px(x, y, 1);
       }
     }
-
-    // Tiny shadow blob under feet (helps depth on grass)
-    for (let x = cx - 4; x <= cx + 4; x++) px(x, legTop + 7, 2);
 
     return m;
   }
@@ -492,6 +515,9 @@
       tilePC()
     ];
     renderSpriteSheet(scene, tiles, p, 'dt-tiles', 2);
+
+    // Shadow texture
+    renderPixelArt(scene, shadowOval(), p, 'dt-shadow', 2);
   }
 
   function buildCharacters(scene) {
@@ -608,22 +634,12 @@
     return { map, ground, world, above };
   }
 
-  function agentKeyFromName(s) {
-    const t = (s || '').toLowerCase();
-    if (t.includes('mini')) return 'minisama';
-    if (t.includes('coach')) return 'coach';
-    if (t.includes('lebron')) return 'lebron';
-    if (t.includes('curry')) return 'curry';
-    return 'coach';
-  }
-
   class AtWorkScene extends Phaser.Scene {
     constructor() {
       super('AtWorkScene');
       this.agents = {};
       this.dialog = null;
       this.dialogText = null;
-      this.lastLiveHash = '';
     }
 
     create() {
@@ -635,95 +651,96 @@
         buildCharacters(this);
         const layers = buildMapLayers(this);
 
-      this.cameras.main.setBounds(0, 0, MAP_W * TILE, MAP_H * TILE);
-      this.cameras.main.centerOn((MAP_W * TILE) / 2, (MAP_H * TILE) / 2);
-      this.cameras.main.setRoundPixels(true);
+        this.cameras.main.setBounds(0, 0, MAP_W * TILE, MAP_H * TILE);
+        this.cameras.main.centerOn((MAP_W * TILE) / 2, (MAP_H * TILE) / 2);
+        this.cameras.main.setRoundPixels(true);
 
-      // Place agents
-      const start = {
-        minisama: { x: 9.5 * TILE, y: 11 * TILE },
-        coach: { x: 11.0 * TILE, y: 11.5 * TILE },
-        lebron: { x: 10.2 * TILE, y: 12.3 * TILE },
-        curry: { x: 12.2 * TILE, y: 12.0 * TILE }
-      };
+        // Place agents
+        const start = {
+          minisama: { x: 9.5 * TILE, y: 11 * TILE },
+          coach: { x: 11.0 * TILE, y: 11.5 * TILE },
+          lebron: { x: 10.2 * TILE, y: 12.3 * TILE },
+          curry: { x: 12.2 * TILE, y: 12.0 * TILE }
+        };
 
-      for (const [k, pos] of Object.entries(start)) {
-        const spr = this.add.sprite(pos.x, pos.y, `dt-char-${k}`, 1);
-        spr.setOrigin(0.5, 0.85);
-        spr.setDepth(pos.y);
-        // NOTE: Don't force a pipeline by name here. On Phaser 3.80+ the old
-        // "TextureTintPipeline" key isn't registered, and throwing here will
-        // abort `create()` leaving the scene stuck in CREATING (black canvas).
-        // Default pipeline already handles tinting.
+        for (const [k, pos] of Object.entries(start)) {
+          const shadow = this.add.image(pos.x, pos.y + 4, 'dt-shadow');
+          shadow.setOrigin(0.5, 0.5);
+          shadow.setAlpha(0.35);
+          shadow.setDepth(pos.y - 1);
 
-        // idle bob tween
-        this.tweens.add({
-          targets: spr,
-          y: spr.y - 2,
-          duration: 1200 + Math.random() * 500,
-          yoyo: true,
-          repeat: -1,
-          ease: 'Sine.easeInOut'
+          const spr = this.add.sprite(pos.x, pos.y, `dt-char-${k}`, 1);
+          spr.setOrigin(0.5, 0.85);
+          spr.setDepth(pos.y);
+
+          this.agents[k] = {
+            key: k,
+            sprite: spr,
+            shadow,
+            state: 'idle',
+            moveTween: null,
+            idleTween: null,
+            facing: 'down'
+          };
+
+          this.setAgentIdle(k);
+        }
+
+        // Dialog box overlay (Pokémon-ish, pixel-perfect)
+        const cam = this.cameras.main;
+        const panelH = 84;
+        const pad = 10;
+
+        const x = Math.floor(pad);
+        const y = Math.floor(cam.height - panelH - pad);
+        const w = Math.floor(cam.width - pad * 2);
+        const h = Math.floor(panelH);
+
+        const g = this.add.graphics();
+        g.setScrollFactor(0);
+        g.setDepth(200);
+
+        // Fill (cream)
+        g.fillStyle(0xf6f4ea, 1);
+        g.fillRect(x, y, w, h);
+
+        // Border (2px), then inner line (1px)
+        g.lineStyle(2, 0x1c1b25, 1);
+        g.strokeRect(x + 1, y + 1, w - 2, h - 2);
+        g.lineStyle(1, 0x6b7280, 1);
+        g.strokeRect(x + 6, y + 6, w - 12, h - 12);
+
+        this.dialog = g;
+
+        this.dialogText = this.add.text(x + 16, y + 18, 'Dreamteam HQ: Live sync ready. Awaiting updates…', {
+          fontFamily: '"Press Start 2P", monospace',
+          fontSize: '10px',
+          color: '#1c1b25',
+          wordWrap: { width: w - 32 }
+        });
+        this.dialogText.setScrollFactor(0);
+        this.dialogText.setDepth(210);
+
+        // Hook live updates
+        window.addEventListener('dreamteam:live', (e) => {
+          this.applyLive(e?.detail?.state?.data);
         });
 
-        this.agents[k] = {
-          key: k,
-          sprite: spr,
-          state: 'idle',
-          moveTween: null,
-          facing: 'down'
-        };
-      }
+        // First render
+        const st = window.DreamteamLive?.getState?.();
+        this.applyLive(st?.data);
 
-      // Dialog box overlay (Pokémon-ish)
-      const cam = this.cameras.main;
-      const panelH = 84;
-      const pad = 10;
+        // Keep y-sorted depth (sprite + shadow)
+        this.events.on('update', () => {
+          for (const a of Object.values(this.agents)) {
+            a.shadow.setPosition(a.sprite.x, a.sprite.y + 6);
+            a.shadow.setDepth(a.sprite.y - 1);
+            a.sprite.setDepth(a.sprite.y);
+          }
+        });
 
-      const g = this.add.graphics();
-      g.setScrollFactor(0);
-      g.setDepth(200);
-      g.fillStyle(0xf6f4ea, 1);
-      g.fillRoundedRect(pad, cam.height - panelH - pad, cam.width - pad * 2, panelH, 10);
-      g.lineStyle(4, 0x1f1d2b, 1);
-      g.strokeRoundedRect(pad, cam.height - panelH - pad, cam.width - pad * 2, panelH, 10);
-      // inner stroke
-      g.lineStyle(2, 0x6b7280, 1);
-      g.strokeRoundedRect(pad + 6, cam.height - panelH - pad + 6, cam.width - pad * 2 - 12, panelH - 12, 8);
-
-      this.dialog = g;
-
-      this.dialogText = this.add.text(pad + 18, cam.height - panelH, 'Dreamteam HQ: Live sync ready. Awaiting updates…', {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '10px',
-        color: '#1f1d2b',
-        wordWrap: { width: cam.width - (pad + 18) * 2 }
-      });
-      this.dialogText.setScrollFactor(0);
-      this.dialogText.setDepth(210);
-
-      // Hook live updates (store already polls)
-      window.addEventListener('dreamteam:live', (e) => {
-        this.applyLive(e?.detail?.state?.data);
-      });
-
-      // First render
-      const st = window.DreamteamLive?.getState?.();
-      this.applyLive(st?.data);
-
-      // Sort depth by y for agent sprites every frame (cheap)
-      this.events.on('update', () => {
-        for (const a of Object.values(this.agents)) {
-          a.sprite.setDepth(a.sprite.y);
-        }
-      });
-
-      // subtle ambient shimmer on canopy layer
-      layers.above.setAlpha(1);
-
+        layers.above.setAlpha(1);
       } catch (err) {
-        // If anything throws during create(), Phaser leaves the scene stuck in
-        // CREATING (status=4) and the canvas stays black with no obvious error.
         console.error('[phaser-atwork] create() failed', err);
         const overlay = document.getElementById('phaserOverlay');
         if (overlay) {
@@ -731,6 +748,74 @@
           overlay.querySelector('.txt')?.replaceChildren(document.createTextNode('Pixel scene failed to load (see console).'));
         }
       }
+    }
+
+    setAgentIdle(k) {
+      const a = this.agents[k];
+      if (!a) return;
+
+      if (a.moveTween) {
+        a.moveTween.stop();
+        a.moveTween = null;
+      }
+
+      // stop existing idle tween before recreating
+      if (a.idleTween) {
+        a.idleTween.stop();
+        a.idleTween = null;
+      }
+
+      a.sprite.stop();
+      a.sprite.setFrame(1);
+
+      // Pixel-ish bob: 1px step, slow loop (~2.6s)
+      const y0 = a.sprite.y;
+      a.idleTween = this.tweens.add({
+        targets: a.sprite,
+        y: y0 - 1,
+        duration: 1300,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Stepped'
+      });
+    }
+
+    setAgentWorking(k) {
+      const a = this.agents[k];
+      if (!a) return;
+
+      if (a.idleTween) {
+        a.idleTween.stop();
+        a.idleTween = null;
+      }
+
+      if (a.moveTween) {
+        a.moveTween.stop();
+        a.moveTween = null;
+      }
+
+      const x0 = a.sprite.x;
+      const y0 = a.sprite.y;
+      const pts = [
+        { x: x0 + 28, y: y0 },
+        { x: x0 + 28, y: y0 - 18 },
+        { x: x0 - 18, y: y0 - 18 },
+        { x: x0 - 18, y: y0 }
+      ];
+
+      const tl = this.tweens.timeline({
+        targets: a.sprite,
+        loop: -1,
+        tweens: [
+          { x: pts[0].x, y: pts[0].y, duration: 420, ease: 'Linear' },
+          { x: pts[1].x, y: pts[1].y, duration: 420, ease: 'Linear' },
+          { x: pts[2].x, y: pts[2].y, duration: 420, ease: 'Linear' },
+          { x: pts[3].x, y: pts[3].y, duration: 420, ease: 'Linear' }
+        ]
+      });
+      a.moveTween = tl;
+
+      a.sprite.play(`${k}-walk-down`, true);
     }
 
     applyLive(live) {
@@ -748,77 +833,28 @@
 
       // animate each agent based on state
       for (const [k, data] of Object.entries(live.agents)) {
-        const agent = this.agents[k];
-        if (!agent) continue;
+        const a = this.agents[k];
+        if (!a) continue;
 
         const nextState = (data?.state || 'idle').toLowerCase();
-        if (nextState === agent.state) continue;
-        agent.state = nextState;
-
-        // stop prior movement tween
-        if (agent.moveTween) {
-          agent.moveTween.stop();
-          agent.moveTween = null;
-        }
+        if (nextState === a.state) continue;
+        a.state = nextState;
 
         if (nextState === 'working') {
-          // Walk a small loop near current position.
-          const x0 = agent.sprite.x;
-          const y0 = agent.sprite.y;
-          const pts = [
-            { x: x0 + 28, y: y0 },
-            { x: x0 + 28, y: y0 - 18 },
-            { x: x0 - 18, y: y0 - 18 },
-            { x: x0 - 18, y: y0 }
-          ];
-
-          // choose facing based on segment direction while tweening
-          const tween = this.tweens.add({
-            targets: agent.sprite,
-            duration: 1600,
-            repeat: -1,
-            yoyo: false,
-            ease: 'Linear',
-            props: {
-              x: { value: pts[0].x, duration: 400 },
-              y: { value: pts[0].y, duration: 400 }
-            }
-          });
-
-          // Use a timeline for more reliable segment changes.
-          tween.stop();
-          const tl = this.tweens.timeline({
-            targets: agent.sprite,
-            loop: -1,
-            tweens: [
-              { x: pts[0].x, y: pts[0].y, duration: 420 },
-              { x: pts[1].x, y: pts[1].y, duration: 420 },
-              { x: pts[2].x, y: pts[2].y, duration: 420 },
-              { x: pts[3].x, y: pts[3].y, duration: 420 }
-            ]
-          });
-          agent.moveTween = tl;
-
-          // default facing down walk
-          agent.sprite.play(`${k}-walk-down`, true);
-        } else {
-          // Idle pose
-          agent.sprite.stop();
-          // Choose idle frame by last facing
-          const idleFrame = 1; // middle frame of down
-          agent.sprite.setFrame(idleFrame);
+          this.setAgentWorking(k);
+          a.sprite.clearTint();
+          continue;
         }
 
+        // Idle-ish states keep bob; just tint.
+        this.setAgentIdle(k);
+
         if (nextState === 'sleeping') {
-          agent.sprite.stop();
-          agent.sprite.setFrame(1);
-          agent.sprite.setTint(0x9aa7ff);
+          a.sprite.setTint(0x9aa7ff);
         } else if (nextState === 'eating') {
-          agent.sprite.stop();
-          agent.sprite.setFrame(1);
-          agent.sprite.setTint(0xffe3a3);
+          a.sprite.setTint(0xffe3a3);
         } else {
-          agent.sprite.clearTint();
+          a.sprite.clearTint();
         }
       }
     }

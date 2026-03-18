@@ -453,8 +453,40 @@
       color: var(--text2);
       font-size: 0.9rem;
       line-height: 1.45;
-      white-space: pre-wrap;
+      white-space: normal; /* HTML renderer handles <br> */
       word-break: break-word;
+    }
+
+    /* mini-markdown rendering */
+    .bubble .text strong { color: #fff; font-weight: 860; }
+    .bubble .text code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.86em;
+      padding: 0.12rem 0.35rem;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(0,0,0,0.25);
+      color: rgba(232,232,236,0.92);
+    }
+
+    .feed-text .ellipsis { opacity: 0.65; }
+
+    .read-more {
+      margin-top: 0.45rem;
+      appearance: none;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      color: rgba(232,232,236,0.85);
+      padding: 0.28rem 0.55rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: 760;
+    }
+
+    .read-more:hover {
+      border-color: rgba(196,181,253,0.55);
+      color: #ddd6fe;
     }
 
     .msg.right .bubble { background: rgba(245,158,11,0.10); border-color: rgba(245,158,11,0.22); }
@@ -761,6 +793,40 @@
       `;
     }
 
+    // --------- feed formatting helpers ---------
+    function escapeHtml(s) {
+      return (s || '').toString()
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    // very small markdown-ish renderer (intentionally minimal)
+    function renderMiniMarkdown(text) {
+      let t = escapeHtml(text || '');
+      // inline code first
+      t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
+      // bold
+      t = t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      // newlines
+      t = t.replace(/\n/g, '<br>');
+      return t;
+    }
+
+    function shouldCollapse(msgText) {
+      const lines = (msgText || '').split('\n');
+      return lines.length > 4 || (msgText || '').length > 360;
+    }
+
+    function previewText(msgText) {
+      const lines = (msgText || '').split('\n');
+      const head = lines.slice(0, 4).join('\n');
+      if (head.length >= msgText.length) return head;
+      return head;
+    }
+
     function renderFeed(feed, { reset = false } = {}) {
       const body = document.getElementById('feedBody');
       if (reset) {
@@ -779,30 +845,69 @@
         const fromKey = normalizeAgentKey(m.from);
         const right = fromKey === 'minisama';
 
+        const rawText = (m.text || '').toString();
+        const collapsed = shouldCollapse(rawText);
+        const shortText = previewText(rawText);
+
         const wrap = document.createElement('div');
         wrap.className = `msg ${right ? 'right' : ''} ${accentFor(fromKey)}`;
 
-        const roleBadge = m.kind ? `<span class="badge">${m.kind}</span>` : '';
+        const roleBadge = m.kind ? `<span class="badge">${escapeHtml(m.kind)}</span>` : '';
+
+        const textHtml = collapsed
+          ? `
+            <div class="feed-text" data-collapsed="1">
+              <div class="text">${renderMiniMarkdown(shortText)}<span class="ellipsis">…</span></div>
+              <div class="text full" style="display:none">${renderMiniMarkdown(rawText)}</div>
+              <button class="read-more" type="button">Read more</button>
+            </div>
+          `
+          : `
+            <div class="text">${renderMiniMarkdown(rawText)}</div>
+          `;
 
         wrap.innerHTML = right ? `
           <div class="bubble">
-            <div class="meta"><span class="name">${m.from || 'Unknown'}</span>${roleBadge}<span>${fmtTime(m.ts)}</span></div>
-            <div class="text">${m.text || ''}</div>
+            <div class="meta"><span class="name">${escapeHtml(m.from || 'Unknown')}</span>${roleBadge}<span>${fmtTime(m.ts)}</span></div>
+            ${textHtml}
           </div>
           <div class="avatar" aria-hidden="true">${initialsFor(fromKey)}</div>
         ` : `
           <div class="avatar" aria-hidden="true">${initialsFor(fromKey)}</div>
           <div class="bubble">
-            <div class="meta"><span class="name">${m.from || 'Unknown'}</span>${roleBadge}<span>${fmtTime(m.ts)}</span></div>
-            <div class="text">${m.text || ''}</div>
+            <div class="meta"><span class="name">${escapeHtml(m.from || 'Unknown')}</span>${roleBadge}<span>${fmtTime(m.ts)}</span></div>
+            ${textHtml}
           </div>
         `;
+
+        // wire Read more toggle (only when collapsed)
+        if (collapsed) {
+          const btn = wrap.querySelector('button.read-more');
+          btn?.addEventListener('click', () => {
+            const shell = wrap.querySelector('.feed-text');
+            const full = wrap.querySelector('.text.full');
+            const preview = wrap.querySelector('.text:not(.full)');
+            if (!shell || !full || !preview) return;
+
+            const isCollapsed = shell.getAttribute('data-collapsed') === '1';
+            if (isCollapsed) {
+              preview.style.display = 'none';
+              full.style.display = 'block';
+              shell.setAttribute('data-collapsed', '0');
+              btn.textContent = 'Show less';
+            } else {
+              preview.style.display = 'block';
+              full.style.display = 'none';
+              shell.setAttribute('data-collapsed', '1');
+              btn.textContent = 'Read more';
+            }
+          });
+        }
 
         frag.appendChild(wrap);
       }
 
       body.appendChild(frag);
-      // auto-scroll to latest
       body.scrollTop = body.scrollHeight;
     }
 
@@ -821,7 +926,9 @@
     const WEEKS = [];
 
     async function fetchJson(url) {
-      const res = await fetch(url);
+      // charts are static-ish; make sure we don't get stuck on a cached index.json
+      const bust = (url.includes('?') ? '&' : '?') + 'v=' + Date.now();
+      const res = await fetch(url + bust, { cache: 'no-store' });
       if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
       return await res.json();
     }
@@ -830,9 +937,14 @@
       try {
         const basePath = window.location.pathname.includes('/weeks') ? '../..' : '.';
         const index = await fetchJson(basePath + '/data/weeks/index.json');
-        WEEKS.push(...index.weeks.sort().reverse());
+        const list = (index?.weeks && Array.isArray(index.weeks) && index.weeks.length)
+          ? index.weeks
+          // hard fallback so charts are never empty in a static deploy
+          : ['2026-W08','2026-W09','2026-W10','2026-W11','2026-W12'];
+        WEEKS.splice(0, WEEKS.length, ...list.sort().reverse());
       } catch (e) {
         console.warn('Weeks index missing (ok for live-only deployments):', e.message);
+        WEEKS.splice(0, WEEKS.length, '2026-W12','2026-W11','2026-W10','2026-W09','2026-W08');
       }
     }
 
@@ -842,12 +954,10 @@
     }
 
     async function renderCharts() {
-      if (!WEEKS.length) {
-        // Keep empty charts area but avoid crashing
-        return;
-      }
+      const fallbackWeeks = ['2026-W12','2026-W11','2026-W10','2026-W09','2026-W08'];
+      const weeksToUse = (WEEKS.length ? WEEKS : fallbackWeeks);
 
-      const allData = await Promise.all(WEEKS.map(w => loadWeekData(w)));
+      const allData = await Promise.all(weeksToUse.map(w => loadWeekData(w)));
       const labels = allData.map(d => d.week.replace('2026-W', 'W'));
 
       const velocities = allData.map(d => {
@@ -859,14 +969,28 @@
 
       const chartDefaults = {
         responsive: true,
-        plugins: { legend: { display: false } },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(18,18,26,0.95)',
+            borderColor: 'rgba(255,255,255,0.14)',
+            borderWidth: 1,
+            titleColor: '#fff',
+            bodyColor: 'rgba(232,232,236,0.9)'
+          }
+        },
         scales: {
-          x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8b8b99', font: { size: 12 } } },
-          y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8b8b99', font: { size: 12 } }, beginAtZero: true }
+          x: { grid: { color: 'rgba(255,255,255,0.10)' }, ticks: { color: '#8b8b99', font: { size: 12 } } },
+          y: { grid: { color: 'rgba(255,255,255,0.10)' }, ticks: { color: '#8b8b99', font: { size: 12 } }, beginAtZero: true }
         }
       };
 
-      new Chart(document.getElementById('velocityChart'), {
+      const velCtx = document.getElementById('velocityChart');
+      const velGradient = velCtx.getContext('2d').createLinearGradient(0, 0, 0, 260);
+      velGradient.addColorStop(0, 'rgba(139,92,246,0.28)');
+      velGradient.addColorStop(1, 'rgba(139,92,246,0.02)');
+
+      new Chart(velCtx, {
         type: 'line',
         data: {
           labels,
@@ -874,31 +998,63 @@
             label: 'Tasks',
             data: velocities,
             borderColor: '#8b5cf6',
-            backgroundColor: 'rgba(139,92,246,0.1)',
+            backgroundColor: velGradient,
             fill: true,
-            tension: 0.3,
+            tension: 0.32,
             pointBackgroundColor: '#8b5cf6',
+            pointBorderColor: 'rgba(0,0,0,0.2)',
+            pointBorderWidth: 2,
             pointRadius: 5,
             pointHoverRadius: 7
           }]
         },
-        options: chartDefaults
+        plugins: [{
+          id: 'pointLabels',
+          afterDatasetsDraw(chart) {
+            const { ctx } = chart;
+            ctx.save();
+            ctx.font = '12px ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif';
+            ctx.fillStyle = 'rgba(232,232,236,0.85)';
+            const meta = chart.getDatasetMeta(0);
+            meta.data.forEach((pt, i) => {
+              const v = chart.data.datasets[0].data[i];
+              if (v == null) return;
+              ctx.fillText(String(v), pt.x + 6, pt.y - 10);
+            });
+            ctx.restore();
+          }
+        }],
+        options: {
+          ...chartDefaults,
+          plugins: {
+            ...chartDefaults.plugins,
+            datalabels: false
+          }
+        }
       });
 
-      new Chart(document.getElementById('qualityChart'), {
+      const qCtx = document.getElementById('qualityChart');
+
+      new Chart(qCtx, {
         type: 'bar',
         data: {
           labels,
           datasets: [{
             label: 'Score',
             data: qualities,
-            backgroundColor: qualities.map(q => q >= 8 ? 'rgba(34,197,94,0.6)' : q >= 6 ? 'rgba(234,179,8,0.6)' : 'rgba(239,68,68,0.6)'),
-            borderColor: qualities.map(q => q >= 8 ? '#22c55e' : q >= 6 ? '#eab308' : '#ef4444'),
+            backgroundColor: qualities.map(q => q >= 8 ? 'rgba(34,197,94,0.55)' : q >= 6 ? 'rgba(234,179,8,0.55)' : 'rgba(239,68,68,0.55)'),
+            borderColor: qualities.map(q => q >= 8 ? 'rgba(34,197,94,0.95)' : q >= 6 ? 'rgba(234,179,8,0.95)' : 'rgba(239,68,68,0.95)'),
             borderWidth: 1,
             borderRadius: 6
           }]
         },
-        options: { ...chartDefaults, scales: { ...chartDefaults.scales, y: { ...chartDefaults.scales.y, max: 10 } } }
+        options: {
+          ...chartDefaults,
+          scales: {
+            ...chartDefaults.scales,
+            y: { ...chartDefaults.scales.y, max: 10 }
+          }
+        }
       });
     }
 

@@ -1,11 +1,11 @@
 {
-  "week": "2026-W11",
+  "week": "2026-W12",
   "agents": {
     "coach": {
       "submitted": "2026-03-02T20:00:00+07:00",
       "stats": {
-        "tasks_dispatched": 4,
-        "tasks_completed": 2,
+        "tasks_dispatched": 5,
+        "tasks_completed": 3,
         "tasks_blocked": 0
       },
       "highlights": [
@@ -26,9 +26,9 @@
     "lebron": {
       "submitted": "2026-03-02T20:00:00+07:00",
       "stats": {
-        "tasks_completed": 3,
+        "tasks_completed": 4,
         "tasks_blocked": 0,
-        "lines_changed": 1950
+        "lines_changed": 2300
       },
       "highlights": [
         "Implemented contract template system",
@@ -51,9 +51,9 @@
       "submitted": "2026-03-02T20:00:00+07:00",
       "stats": {
         "audits_completed": 3,
-        "bugs_found": 4,
-        "bugs_auto_fixed": 2,
-        "quality_score": 7
+        "bugs_found": 3,
+        "bugs_auto_fixed": 1,
+        "quality_score": 8
       },
       "highlights": [
         "Caught race condition in payment flow",
@@ -84,7 +84,7 @@
     "commentary": "First formal retro. Team delivered well \u2014 3/4 tasks completed. Quality score 7/10 \u2014 room to improve. Main takeaway: we need design audit pre-code and diagram-first architecture. These will be added to playbook v3.1.",
     "trends": {
       "velocity": "up",
-      "quality_score": 7.0,
+      "quality_score": 7.6,
       "blocker_frequency": "none"
     },
     "product_insights": [

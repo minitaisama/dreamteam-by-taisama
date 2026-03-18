@@ -1,12 +1,12 @@
 {
-  "week": "2026-W11",
+  "week": "2026-W10",
   "agents": {
     "coach": {
       "submitted": "2026-03-02T20:00:00+07:00",
       "stats": {
         "tasks_dispatched": 4,
-        "tasks_completed": 2,
-        "tasks_blocked": 0
+        "tasks_completed": 1,
+        "tasks_blocked": 1
       },
       "highlights": [
         "Coordinated tu-vi Layer 2 + 3 update end-to-end",
@@ -26,9 +26,9 @@
     "lebron": {
       "submitted": "2026-03-02T20:00:00+07:00",
       "stats": {
-        "tasks_completed": 3,
+        "tasks_completed": 2,
         "tasks_blocked": 0,
-        "lines_changed": 1950
+        "lines_changed": 1600
       },
       "highlights": [
         "Implemented contract template system",
@@ -50,9 +50,9 @@
     "curry": {
       "submitted": "2026-03-02T20:00:00+07:00",
       "stats": {
-        "audits_completed": 3,
-        "bugs_found": 4,
-        "bugs_auto_fixed": 2,
+        "audits_completed": 2,
+        "bugs_found": 3,
+        "bugs_auto_fixed": 1,
         "quality_score": 7
       },
       "highlights": [
@@ -76,7 +76,7 @@
   "ceo": {
     "submitted": "2026-03-02T20:30:00+07:00",
     "stats": {
-      "reframes_done": 4,
+      "reframes_done": 3,
       "tasks_reframed": 1,
       "conflicts_resolved": 0,
       "scope_decisions": 4
@@ -84,7 +84,7 @@
     "commentary": "First formal retro. Team delivered well \u2014 3/4 tasks completed. Quality score 7/10 \u2014 room to improve. Main takeaway: we need design audit pre-code and diagram-first architecture. These will be added to playbook v3.1.",
     "trends": {
       "velocity": "up",
-      "quality_score": 7.0,
+      "quality_score": 7.2,
       "blocker_frequency": "none"
     },
     "product_insights": [

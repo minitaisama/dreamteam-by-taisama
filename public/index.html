@@ -2,50 +2,11 @@
 <html class="dark" lang="vi">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Bảng điều khiển hiệu suất Agent - Kinetic Observatory</title>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>Dream Team Dashboard</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<style>
-  body { font-family: 'Inter', sans-serif; }
-  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-  .pulse-dot { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-  @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .5; transform: scale(1.2); } }
-  .glass-header { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-  .no-scrollbar::-webkit-scrollbar { display: none; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .spin { animation: spin 1s linear infinite; }
-
-  /* Pulsing red dot for overdue items */
-  @keyframes pulse-red { 0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(239,68,68,0.7); } 50% { opacity: .8; box-shadow: 0 0 0 6px rgba(239,68,68,0); } }
-  .pulse-red-dot { animation: pulse-red 1.5s ease-in-out infinite; }
-
-  /* Health score circle */
-  .health-circle { position: relative; width: 56px; height: 56px; }
-  .health-circle svg { transform: rotate(-90deg); }
-  .health-circle .score-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; }
-
-  /* Feedback timeline */
-  .feedback-timeline { position: relative; padding-left: 24px; }
-  .feedback-timeline::before { content: ''; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px; background: rgba(73,68,84,0.4); }
-  .feedback-dot { position: absolute; left: -20px; top: 6px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #33343b; }
-
-  /* Toast */
-  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); padding: 12px 24px; border-radius: 12px; background: #282a30; border: 1px solid rgba(73,68,84,0.3); color: #e2e2eb; font-size: 13px; z-index: 200; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
-  .toast.show { opacity: 1; pointer-events: auto; }
-
-  /* Improvement velocity bars */
-  .velocity-bar { transition: width 0.6s ease; }
-
-  /* Lesson filter buttons */
-  .lesson-filter-btn { padding: 4px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: 1px solid rgba(73,68,84,0.3); color: #cbc3d7; background: transparent; }
-  .lesson-filter-btn.active { background: rgba(208,188,255,0.15); color: #d0bcff; border-color: rgba(208,188,255,0.3); }
-  .lesson-filter-btn:hover { background: rgba(208,188,255,0.08); }
-
-  /* Feedback matrix cell */
-  .matrix-cell { display: flex; align-items: center; justify-content: center; min-height: 36px; font-size: 13px; font-weight: 700; border-radius: 6px; transition: background 0.2s; }
-</style>
 <script id="tailwind-config">
   tailwind.config = {
     darkMode: "class",
@@ -84,13 +45,77 @@
           "body": ["Inter"],
           "label": ["Inter"]
         },
-        borderRadius: {"DEFAULT": "0.25rem", "lg": "1rem", "xl": "1.25rem", "full": "9999px"},
       },
     },
   }
 </script>
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .pulse-dot { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .5; transform: scale(1.2); } }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spin { animation: spin 1s linear infinite; }
+  @keyframes pulse-red { 0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(239,68,68,0.7); } 50% { opacity: .8; box-shadow: 0 0 0 6px rgba(239,68,68,0); } }
+  .pulse-red-dot { animation: pulse-red 1.5s ease-in-out infinite; }
+
+  /* Health score circle */
+  .health-circle { position: relative; width: 48px; height: 48px; flex-shrink: 0; }
+  .health-circle svg { transform: rotate(-90deg); }
+  .health-circle .score-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; }
+
+  /* Feedback timeline */
+  .feedback-timeline { position: relative; padding-left: 20px; }
+  .feedback-timeline::before { content: ''; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px; background: rgba(73,68,84,0.4); }
+  .feedback-dot { position: absolute; left: -16px; top: 6px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid #33343b; }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); padding: 12px 24px; border-radius: 12px; background: #282a30; border: 1px solid rgba(73,68,84,0.3); color: #e2e2eb; font-size: 13px; z-index: 200; opacity: 0; transition: opacity 0.3s; pointer-events: none; max-width: calc(100vw - 32px); text-align: center; }
+  .toast.show { opacity: 1; pointer-events: auto; }
+
+  /* Collapsible sections */
+  .collapsible-body { max-height: 0; overflow: hidden; transition: max-height 0.35s ease, opacity 0.25s ease; opacity: 0; }
+  .collapsible-body.open { max-height: 2000px; opacity: 1; }
+  .collapsible-chevron { transition: transform 0.25s ease; }
+  .collapsible-chevron.open { transform: rotate(180deg); }
+
+  /* Velocity bars */
+  .velocity-bar { transition: width 0.6s ease; }
+
+  /* Lesson filter buttons */
+  .lesson-filter-btn { padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: 1px solid rgba(73,68,84,0.3); color: #cbc3d7; background: transparent; min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; }
+  .lesson-filter-btn.active { background: rgba(208,188,255,0.15); color: #d0bcff; border-color: rgba(208,188,255,0.3); }
+  .lesson-filter-btn:hover { background: rgba(208,188,255,0.08); }
+
+  /* Matrix cell */
+  .matrix-cell { display: flex; align-items: center; justify-content: center; min-height: 36px; font-size: 13px; font-weight: 700; border-radius: 6px; transition: background 0.2s; }
+
+  /* Mobile bottom nav */
+  .bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 0; font-size: 10px; color: #cbc3d7; cursor: pointer; transition: color 0.2s; min-height: 48px; justify-content: center; flex: 1; }
+  .bottom-nav-item.active { color: #d0bcff; }
+  .bottom-nav-item .material-symbols-outlined { font-size: 22px; }
+
+  /* KPI horizontal scroll */
+  .kpi-scroll { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px; scroll-snap-type: x mandatory; }
+  .kpi-scroll > div { scroll-snap-align: start; flex-shrink: 0; width: 140px; }
+
+  /* Agent card tap */
+  .agent-card-details { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+  .agent-card.expanded .agent-card-details { max-height: 500px; }
+
+  /* Desktop sidebar */
+  @media (min-width: 768px) {
+    .bottom-nav { display: none !important; }
+  }
+  @media (max-width: 767px) {
+    .desktop-sidebar { display: none !important; }
+    .main-content { padding-bottom: 80px !important; }
+  }
+</style>
 </head>
-<body class="bg-background text-on-surface min-h-screen">
+<body class="bg-background text-on-surface min-h-screen overflow-x-hidden">
 
 <!-- Loading Overlay -->
 <div id="loading-overlay" class="fixed inset-0 z-[100] bg-background flex items-center justify-center">
@@ -103,295 +128,243 @@
 <!-- Toast notification -->
 <div id="toast" class="toast"></div>
 
-<!-- Top Navigation Bar -->
-<header class="fixed top-0 w-full z-50 bg-[#1e1f26]/60 backdrop-blur-xl shadow-[0_0_20px_rgba(208,188,255,0.1)]">
-  <div class="flex justify-between items-center px-6 py-3">
-    <div class="flex items-center gap-4">
-      <span class="text-xl font-bold text-slate-100 tracking-tight font-['Inter']">Bảng điều khiển hiệu suất Agent</span>
-      <!-- Tab Switching -->
-      <div class="hidden md:flex gap-1 ml-8 bg-surface-container-lowest rounded-lg p-1 border border-outline-variant/10">
-        <button onclick="switchTab('today')" id="tab-today" class="tab-btn px-4 py-1.5 text-xs font-semibold rounded-md transition-all duration-200 bg-primary/20 text-primary">Hôm nay</button>
-        <button onclick="switchTab('week7')" id="tab-week7" class="tab-btn px-4 py-1.5 text-xs font-semibold rounded-md transition-all duration-200 text-slate-400 hover:text-slate-200">7 ngày</button>
-        <button onclick="switchTab('week')" id="tab-week" class="tab-btn px-4 py-1.5 text-xs font-semibold rounded-md transition-all duration-200 text-slate-400 hover:text-slate-200">Tuần</button>
+<!-- ===== HEADER ===== -->
+<header class="fixed top-0 w-full z-50 bg-surface-container/80 backdrop-blur-xl border-b border-outline-variant/10">
+  <div class="flex items-center justify-between px-4 py-3 md:px-6">
+    <!-- Title -->
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 bg-primary/15 rounded-lg flex items-center justify-center flex-shrink-0">
+        <span class="material-symbols-outlined text-primary text-lg">hub</span>
       </div>
+      <h1 class="text-lg font-bold text-slate-100 tracking-tight">Dream Team</h1>
     </div>
-    <div class="flex items-center gap-4">
-      <!-- Quick Actions (#15) -->
-      <div class="hidden sm:flex items-center gap-2">
-        <button onclick="showToast('📋 Coming soon — spawn Lebron via Telegram')" class="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold rounded-lg bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-colors">
-          <span class="material-symbols-outlined text-sm">assignment</span>
-          <span class="hidden lg:inline">Assign Task</span>
-        </button>
-        <button onclick="showToast('✅ Coming soon — mark via retro')" class="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold rounded-lg bg-secondary/10 text-secondary border border-secondary/20 hover:bg-secondary/20 transition-colors">
-          <span class="material-symbols-outlined text-sm">check_circle</span>
-          <span class="hidden lg:inline">Resolve Item</span>
-        </button>
-      </div>
-      <!-- Date Picker -->
-      <div class="flex items-center bg-surface-container-lowest px-3 py-1.5 rounded-lg border border-outline-variant/20">
-        <span class="material-symbols-outlined text-sm mr-2 text-violet-400">calendar_today</span>
-        <input type="date" id="date-picker" class="bg-transparent text-xs font-medium text-on-surface focus:outline-none cursor-pointer [color-scheme:dark]"/>
-      </div>
-      <button class="material-symbols-outlined p-2 text-on-surface-variant hover:text-primary transition-colors">notifications</button>
-      <button class="material-symbols-outlined p-2 text-on-surface-variant hover:text-primary transition-colors">settings</button>
-      <img alt="Avatar" class="w-8 h-8 rounded-full border border-primary/30" data-alt="Close up portrait of a professional male software architect" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzf5Mh0TJjUwPX1NRCRk9cu1qsIhTfWolaLP3N5jxcKcnMaWARs1zIo5mxLdATJy1vGY58UAFB5D_ogDtoG_WxlBamQrPUT34r1YcIYKBphlSSWxdCpfxDsu4kbeboL-S6T4Y93OVN7i-lk_Sv7iZOeP00B3o_7hTn6ataVJuNqUcDl9eJiWeoPykxtj0lpPbZitRB0ndswwYMGiIT3knnev8c2MpcvekgvZ2HL_UwBrlu7K0jw2S-uScLL0pO8BGSqTxIkNJ0P5xm"/>
+
+    <!-- Tabs: Hôm nay | Tuần -->
+    <div class="flex gap-1 bg-surface-container-lowest rounded-lg p-1 border border-outline-variant/10">
+      <button onclick="switchTab('today')" id="tab-today" class="tab-btn px-4 py-2 text-xs font-semibold rounded-md transition-all duration-200 bg-primary/20 text-primary min-h-[44px]">Hôm nay</button>
+      <button onclick="switchTab('week')" id="tab-week" class="tab-btn px-4 py-2 text-xs font-semibold rounded-md transition-all duration-200 text-slate-400 hover:text-slate-200 min-h-[44px]">Tuần</button>
+    </div>
+
+    <!-- Date picker -->
+    <div class="flex items-center bg-surface-container-lowest px-3 py-2 rounded-lg border border-outline-variant/20 min-h-[44px]">
+      <span class="material-symbols-outlined text-sm mr-2 text-violet-400">calendar_today</span>
+      <input type="date" id="date-picker" class="bg-transparent text-xs font-medium text-on-surface focus:outline-none cursor-pointer [color-scheme:dark]"/>
     </div>
   </div>
 </header>
 
-<!-- Side Navigation Bar -->
-<aside class="hidden md:flex h-screen w-64 fixed left-0 top-0 bg-[#111319] border-r border-slate-800/20 flex-col p-4 gap-8 z-40 pt-20">
+<!-- ===== DESKTOP SIDEBAR (md+) ===== -->
+<aside class="desktop-sidebar hidden md:flex h-screen w-56 fixed left-0 top-0 bg-[#111319] border-r border-slate-800/20 flex-col p-4 gap-6 z-40 pt-20">
   <div class="flex items-center gap-3 px-2">
-    <div class="w-10 h-10 bg-violet-500/10 rounded-xl flex items-center justify-center">
-      <span class="material-symbols-outlined text-violet-500">monitoring</span>
+    <div class="w-9 h-9 bg-violet-500/10 rounded-xl flex items-center justify-center">
+      <span class="material-symbols-outlined text-violet-500">hub</span>
     </div>
     <div>
-      <h2 class="text-lg font-black text-violet-500 leading-none">Kinetic</h2>
-      <p class="text-[10px] text-slate-500 tracking-widest uppercase">Observatory v1.0</p>
+      <h2 class="text-base font-black text-violet-500 leading-none">Dream Team</h2>
+      <p class="text-[9px] text-slate-500 tracking-widest uppercase">Dashboard v2.0</p>
     </div>
   </div>
-  <nav class="flex flex-col gap-2 flex-grow">
-    <a class="flex items-center gap-3 px-4 py-3 text-violet-400 font-semibold bg-violet-500/10 rounded-lg transition-all duration-200 ease-out" href="#">
-      <span class="material-symbols-outlined">dashboard</span>
-      <span class="text-sm font-medium font-['Inter']">Tổng quan</span>
+  <nav class="flex flex-col gap-1 flex-grow">
+    <a class="flex items-center gap-3 px-3 py-3 text-violet-400 font-semibold bg-violet-500/10 rounded-lg transition-all" href="#">
+      <span class="material-symbols-outlined text-lg">dashboard</span>
+      <span class="text-sm">Tổng quan</span>
     </a>
-    <a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-800/50 hover:text-slate-200 rounded-lg transition-all duration-200 ease-out" href="#">
-      <span class="material-symbols-outlined">insights</span>
-      <span class="text-sm font-medium font-['Inter']">Hiệu suất</span>
+    <a class="flex items-center gap-3 px-3 py-3 text-slate-500 hover:bg-slate-800/50 hover:text-slate-200 rounded-lg transition-all" href="#">
+      <span class="material-symbols-outlined text-lg">insights</span>
+      <span class="text-sm">Hiệu suất</span>
     </a>
-    <a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-800/50 hover:text-slate-200 rounded-lg transition-all duration-200 ease-out" href="#">
-      <span class="material-symbols-outlined">group</span>
-      <span class="text-sm font-medium font-['Inter']">Đội ngũ</span>
-    </a>
-    <a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-800/50 hover:text-slate-200 rounded-lg transition-all duration-200 ease-out" href="#">
-      <span class="material-symbols-outlined">folder_shared</span>
-      <span class="text-sm font-medium font-['Inter']">Dự án</span>
-    </a>
-    <a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-800/50 hover:text-slate-200 rounded-lg transition-all duration-200 ease-out" href="#">
-      <span class="material-symbols-outlined">analytics</span>
-      <span class="text-sm font-medium font-['Inter']">Báo cáo</span>
+    <a class="flex items-center gap-3 px-3 py-3 text-slate-500 hover:bg-slate-800/50 hover:text-slate-200 rounded-lg transition-all" href="#">
+      <span class="material-symbols-outlined text-lg">help</span>
+      <span class="text-sm">Hỗ trợ</span>
     </a>
   </nav>
-  <div class="flex flex-col gap-2 border-t border-slate-800/40 pt-4">
-    <a class="flex items-center gap-3 px-4 py-2 text-slate-500 hover:text-slate-200 transition-colors" href="#">
-      <span class="material-symbols-outlined text-sm">help</span>
-      <span class="text-sm font-medium">Hỗ trợ</span>
-    </a>
-    <a class="flex items-center gap-3 px-4 py-2 text-slate-500 hover:text-error transition-colors" href="#">
-      <span class="material-symbols-outlined text-sm">logout</span>
-      <span class="text-sm font-medium">Đăng xuất</span>
-    </a>
-  </div>
 </aside>
 
-<!-- Main Content Area -->
-<main class="md:ml-64 pt-20 pb-12 px-6">
+<!-- ===== MOBILE BOTTOM NAV ===== -->
+<nav class="bottom-nav fixed bottom-0 left-0 right-0 z-50 bg-surface-container/90 backdrop-blur-xl border-t border-outline-variant/10 flex md:hidden">
+  <div class="bottom-nav-item active" onclick="switchTab('today'); setActiveNav(this)">
+    <span class="material-symbols-outlined">dashboard</span>
+    <span>Tổng quan</span>
+  </div>
+  <div class="bottom-nav-item" onclick="switchTab('week'); setActiveNav(this)">
+    <span class="material-symbols-outlined">insights</span>
+    <span>Tuần</span>
+  </div>
+  <div class="bottom-nav-item">
+    <span class="material-symbols-outlined">help</span>
+    <span>Hỗ trợ</span>
+  </div>
+</nav>
 
-  <!-- ============ #11: ALERTS SECTION (top of dashboard) ============ -->
-  <section id="alerts-section" class="hidden mb-6">
+<!-- ===== MAIN CONTENT ===== -->
+<main class="main-content md:ml-56 pt-[72px] pb-8 px-4 md:px-6">
+
+  <!-- ALERTS -->
+  <section id="alerts-section" class="hidden mb-4">
     <div id="alerts-list" class="space-y-2"></div>
   </section>
 
-  <!-- ============ TAB: HÔM NAY ============ -->
-  <div id="view-today">
+  <!-- ===== TAB: HÔM NAY ===== -->
+  <div id="view-today" class="space-y-5">
 
-    <!-- KPI Scoreboard -->
-    <section id="kpi-section" class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6"></section>
+    <!-- 1. KPI Row (scrollable horizontal on mobile) -->
+    <section>
+      <div id="kpi-section" class="kpi-scroll no-scrollbar"></div>
+    </section>
 
-    <!-- #8: Resolution SLA -->
-    <section id="sla-section" class="mb-8">
-      <h2 class="text-sm font-bold uppercase tracking-[0.2em] text-on-surface-variant mb-4 flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-tertiary"></span>
-        Resolution SLA
-      </h2>
+    <!-- 2. Agent Cards -->
+    <section>
+      <!-- MiniSama: Featured CEO Card -->
+      <div id="minisama-card" class="mb-4"></div>
+      <!-- Primary agents: 2-col grid -->
+      <h3 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">Đội ngũ</h3>
+      <div id="agent-cards-primary" class="grid grid-cols-2 gap-3 mb-3"></div>
+      <!-- Secondary agents: small row -->
+      <div id="agent-cards-secondary" class="grid grid-cols-2 gap-3"></div>
+    </section>
+
+    <!-- 3. Project Health (stacked cards on mobile) -->
+    <section>
+      <h3 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">Sức khỏe dự án</h3>
+      <div id="project-cards-mobile" class="space-y-3"></div>
+    </section>
+
+    <!-- 4. Retro (collapsible, default collapsed on mobile) -->
+    <section class="bg-surface-container rounded-xl border border-outline-variant/10 overflow-hidden">
+      <button onclick="toggleCollapsible('retro-body', 'retro-chevron')" class="w-full flex items-center justify-between p-4 text-left min-h-[48px]">
+        <div class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-primary">history</span>
+          <div>
+            <h3 class="text-sm font-bold">Daily Retro</h3>
+            <div id="retro-quality-badge" class="mt-0.5"></div>
+          </div>
+        </div>
+        <span id="retro-chevron" class="material-symbols-outlined text-on-surface-variant collapsible-chevron">expand_more</span>
+      </button>
+      <div id="retro-body" class="collapsible-body">
+        <div id="retro-content" class="px-4 pb-4"></div>
+      </div>
+    </section>
+
+    <!-- 5. Action Items (collapsible, default collapsed on mobile) -->
+    <section class="bg-surface-container rounded-xl border border-outline-variant/10 overflow-hidden">
+      <button onclick="toggleCollapsible('action-items-body', 'action-items-chevron')" class="w-full flex items-center justify-between p-4 text-left min-h-[48px]">
+        <div class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-tertiary">task_alt</span>
+          <h3 class="text-sm font-bold">Action Items</h3>
+        </div>
+        <span id="action-items-chevron" class="material-symbols-outlined text-on-surface-variant collapsible-chevron">expand_more</span>
+      </button>
+      <div id="action-items-body" class="collapsible-body">
+        <div id="action-items-content" class="px-4 pb-4"></div>
+      </div>
+    </section>
+
+    <!-- 6. Feedback Feed (collapsible, default collapsed on mobile) -->
+    <section class="bg-surface-container rounded-xl border border-outline-variant/10 overflow-hidden">
+      <button onclick="toggleCollapsible('feedback-body', 'feedback-chevron')" class="w-full flex items-center justify-between p-4 text-left min-h-[48px]">
+        <div class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-secondary">forum</span>
+          <h3 class="text-sm font-bold">Feedback gần đây</h3>
+        </div>
+        <span id="feedback-chevron" class="material-symbols-outlined text-on-surface-variant collapsible-chevron">expand_more</span>
+      </button>
+      <div id="feedback-body" class="collapsible-body">
+        <div id="feedback-feed-list" class="px-4 pb-4"></div>
+      </div>
+    </section>
+
+    <!-- Resolution SLA (compact row) -->
+    <section>
+      <h3 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">Resolution SLA</h3>
       <div id="sla-grid" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
     </section>
 
-    <!-- #2: Active Tasks Section -->
-    <section id="active-tasks-section" class="mb-8">
-      <h2 class="text-sm font-bold uppercase tracking-[0.2em] text-on-surface-variant mb-4 flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-secondary"></span>
-        📋 Tasks đang chạy
-      </h2>
-      <div id="active-tasks-list"></div>
-    </section>
-
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-      <!-- Left Column: Agent Cards + Projects -->
-      <div class="lg:col-span-8 space-y-6">
-        <!-- Agent Performance Cards -->
-        <div>
-          <h2 class="text-sm font-bold uppercase tracking-[0.2em] text-on-surface-variant mb-4 flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-primary"></span>
-            Hiệu suất Agent chính
-          </h2>
-          <div id="agent-cards-primary" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"></div>
-          <div id="agent-cards-secondary" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
-        </div>
-
-        <!-- Project Health Table -->
-        <div class="mt-6">
-          <h2 class="text-sm font-bold uppercase tracking-[0.2em] text-on-surface-variant mb-4">Sức khỏe dự án</h2>
-          <div class="bg-surface-container rounded-xl overflow-hidden border border-outline-variant/10">
-            <table class="w-full text-left border-collapse">
-              <thead>
-                <tr class="bg-surface-container-high/50">
-                  <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Dự án</th>
-                  <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Tệp tin</th>
-                  <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Mới nhất</th>
-                  <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Trạng thái Git</th>
-                  <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Sức khỏe</th>
-                </tr>
-              </thead>
-              <tbody id="project-tbody" class="divide-y divide-outline-variant/5"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right Sidebar: Feedback Feed + Retro -->
-      <div class="lg:col-span-4 space-y-6">
-
-        <!-- #4: Feedback Feed (replaces static diagram) -->
-        <div class="bg-surface-container-high p-6 rounded-xl border border-outline-variant/10">
-          <h3 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-6">💬 Feedback gần đây</h3>
-          <div id="feedback-feed-list"></div>
-        </div>
-
-        <!-- Daily Retro Detail -->
-        <div class="bg-surface-container p-6 rounded-xl border border-outline-variant/10">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xs font-black uppercase tracking-widest text-on-surface-variant">Daily Retro Detail</h3>
-            <!-- #13: Retro Quality Score -->
-            <div id="retro-quality-badge"></div>
-          </div>
-          <div id="retro-content"></div>
-        </div>
-      </div>
-    </div>
   </div>
 
-  <!-- ============ TAB: 7 NGÀY ============ -->
-  <div id="view-week7" class="hidden">
+  <!-- ===== TAB: TUẦN ===== -->
+  <div id="view-week" class="hidden space-y-5">
 
-    <!-- #9: Feedback Matrix (Đội ngũ tab — also in week7 for now) -->
-    <section id="feedback-matrix-section" class="mb-8">
-      <h2 class="text-sm font-bold uppercase tracking-[0.2em] text-on-surface-variant mb-4 flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-primary"></span>
-        📊 Ma trận Feedback
-      </h2>
-      <div class="bg-surface-container-high p-6 rounded-xl border border-outline-variant/10">
-        <div id="feedback-matrix-grid"></div>
-      </div>
-    </section>
-
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-      <!-- Trend Charts -->
-      <div class="lg:col-span-2 bg-surface-container p-6 rounded-xl border border-outline-variant/10">
-        <div class="flex justify-between items-center mb-8">
-          <h3 class="text-sm font-bold uppercase tracking-widest">Biểu đồ xu hướng</h3>
-          <div class="flex gap-4">
-            <div class="flex items-center gap-1.5">
-              <span class="w-3 h-3 rounded-full bg-primary"></span>
-              <span class="text-[10px] text-on-surface-variant">Velocity</span>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <span class="w-3 h-3 rounded-full bg-secondary"></span>
-              <span class="text-[10px] text-on-surface-variant">Quality</span>
-            </div>
-          </div>
-        </div>
-        <div id="trend-chart" class="relative h-48 w-full"></div>
-        <div class="flex justify-between mt-2 px-2">
-          <span class="text-[10px] text-on-surface-variant">Thứ 2</span>
-          <span class="text-[10px] text-on-surface-variant">Thứ 3</span>
-          <span class="text-[10px] text-on-surface-variant">Thứ 4</span>
-          <span class="text-[10px] text-on-surface-variant">Thứ 5</span>
-          <span class="text-[10px] text-on-surface-variant">Thứ 6</span>
-          <span class="text-[10px] text-on-surface-variant">Thứ 7</span>
-        </div>
-        <!-- #5: Trend Annotations -->
-        <div id="trend-annotations" class="mt-4 space-y-1"></div>
-      </div>
-
-      <!-- Project Health (7-day view) -->
-      <div class="bg-surface-container-high p-6 rounded-xl border border-outline-variant/10">
-        <h3 class="text-xs font-black uppercase tracking-widest text-on-surface-variant mb-4">Sức khỏe dự án (7 ngày)</h3>
-        <div id="projects-7day"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ============ TAB: TUẦN ============ -->
-  <div id="view-week" class="hidden">
-
-    <!-- #10: Weekly Insight -->
-    <section id="weekly-insight-section" class="mb-8">
-      <div id="weekly-insight-card" class="relative overflow-hidden rounded-xl border border-primary/20 p-8" style="background: linear-gradient(135deg, rgba(109,59,215,0.2) 0%, rgba(17,19,25,0.9) 100%);">
+    <!-- Weekly Insight -->
+    <section>
+      <div id="weekly-insight-card" class="relative overflow-hidden rounded-xl border border-primary/20 p-6 md:p-8" style="background: linear-gradient(135deg, rgba(109,59,215,0.2) 0%, rgba(17,19,25,0.9) 100%);">
         <div class="relative z-10">
           <p class="text-[10px] font-black uppercase tracking-widest text-primary/70 mb-3">💡 Weekly Insight</p>
-          <p id="weekly-insight-text" class="text-lg font-semibold text-on-surface leading-relaxed"></p>
+          <p id="weekly-insight-text" class="text-base md:text-lg font-semibold text-on-surface leading-relaxed"></p>
         </div>
       </div>
     </section>
 
-    <!-- #7: Cost Metrics Section -->
-    <section id="cost-metrics-section" class="mb-8">
-      <h2 class="text-sm font-bold uppercase tracking-[0.2em] text-on-surface-variant mb-4 flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-tertiary"></span>
-        💰 Hiệu quả chi phí
-      </h2>
-      <div id="cost-metrics-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+    <!-- Trends Chart -->
+    <section class="bg-surface-container p-4 md:p-6 rounded-xl border border-outline-variant/10">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-sm font-bold uppercase tracking-widest">Biểu đồ xu hướng</h3>
+        <div class="flex gap-4">
+          <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-primary"></span><span class="text-[10px] text-on-surface-variant">Velocity</span></div>
+          <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-secondary"></span><span class="text-[10px] text-on-surface-variant">Quality</span></div>
+        </div>
+      </div>
+      <div id="trend-chart" class="relative h-48 w-full"></div>
+      <div class="flex justify-between mt-2 px-2">
+        <span class="text-[10px] text-on-surface-variant">T2</span>
+        <span class="text-[10px] text-on-surface-variant">T3</span>
+        <span class="text-[10px] text-on-surface-variant">T4</span>
+        <span class="text-[10px] text-on-surface-variant">T5</span>
+        <span class="text-[10px] text-on-surface-variant">T6</span>
+        <span class="text-[10px] text-on-surface-variant">T7</span>
+      </div>
+      <div id="trend-annotations" class="mt-4 space-y-1"></div>
     </section>
 
-    <!-- #14: Improvement Velocity Chart -->
-    <section id="improvement-velocity-section" class="mb-8">
-      <h2 class="text-sm font-bold uppercase tracking-[0.2em] text-on-surface-variant mb-4 flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-secondary"></span>
-        📈 Tốc độ cải thiện
-      </h2>
-      <div class="bg-surface-container-high p-6 rounded-xl border border-outline-variant/10">
-        <div id="improvement-chart"></div>
-        <div class="flex items-center justify-center gap-6 mt-4">
-          <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-primary/40"></span><span class="text-[10px] text-on-surface-variant">Observing</span></div>
-          <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-secondary/60"></span><span class="text-[10px] text-on-surface-variant">Promoted</span></div>
-          <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-tertiary/70"></span><span class="text-[10px] text-on-surface-variant">Rules</span></div>
-        </div>
+    <!-- Lessons Feed -->
+    <section class="bg-surface-container-high p-4 md:p-6 rounded-xl border border-outline-variant/10">
+      <h3 class="text-sm font-bold uppercase tracking-widest mb-4">Bài học kinh nghiệm</h3>
+      <div id="lesson-filters" class="flex flex-wrap gap-2 mb-4">
+        <button class="lesson-filter-btn active" onclick="filterLessons('all')">Tất cả</button>
+        <button class="lesson-filter-btn" onclick="filterLessons('observing')">👁 Observing</button>
+        <button class="lesson-filter-btn" onclick="filterLessons('promoted')">✅ Promoted</button>
+        <button class="lesson-filter-btn" onclick="filterLessons('adopted')">🔄 Adopted</button>
+      </div>
+      <div id="lessons-feed" class="space-y-4 max-h-[500px] overflow-y-auto no-scrollbar"></div>
+    </section>
+
+    <!-- Improvement Velocity -->
+    <section class="bg-surface-container-high p-4 md:p-6 rounded-xl border border-outline-variant/10">
+      <h3 class="text-sm font-bold uppercase tracking-widest mb-4">📈 Tốc độ cải thiện</h3>
+      <div id="improvement-chart"></div>
+      <div class="flex items-center justify-center gap-6 mt-4">
+        <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-primary/40"></span><span class="text-[10px] text-on-surface-variant">Observing</span></div>
+        <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-secondary/60"></span><span class="text-[10px] text-on-surface-variant">Promoted</span></div>
+        <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-tertiary/70"></span><span class="text-[10px] text-on-surface-variant">Rules</span></div>
       </div>
     </section>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Feedback Matrix -->
+    <section class="bg-surface-container-high p-4 md:p-6 rounded-xl border border-outline-variant/10">
+      <h3 class="text-sm font-bold uppercase tracking-widest mb-4">📊 Ma trận Feedback</h3>
+      <div id="feedback-matrix-grid"></div>
+    </section>
 
-      <!-- Weekly Summary -->
-      <div class="lg:col-span-2">
-        <div id="weekly-summary" class="bg-surface-container-highest/40 p-6 rounded-xl border border-outline-variant/20 relative overflow-hidden"></div>
-      </div>
-
-      <!-- Lessons Learned (#6 enhanced) -->
-      <div class="bg-surface-container-high p-6 rounded-xl border border-outline-variant/10">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-xs font-black uppercase tracking-widest text-on-surface-variant">Bài học kinh nghiệm</h3>
-        </div>
-        <!-- Lesson filter buttons -->
-        <div id="lesson-filters" class="flex flex-wrap gap-2 mb-4">
-          <button class="lesson-filter-btn active" onclick="filterLessons('all')">Tất cả</button>
-          <button class="lesson-filter-btn" onclick="filterLessons('observing')">👁 Observing</button>
-          <button class="lesson-filter-btn" onclick="filterLessons('promoted')">✅ Promoted</button>
-          <button class="lesson-filter-btn" onclick="filterLessons('adopted')">🔄 Adopted</button>
-        </div>
-        <div id="lessons-feed" class="space-y-4 relative before:content-[''] before:absolute before:left-2 before:top-2 before:bottom-2 before:w-[1px] before:bg-outline-variant/30 max-h-[500px] overflow-y-auto no-scrollbar"></div>
-      </div>
+    <!-- Cost Metrics + SLA -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <section id="cost-metrics-section" class="md:col-span-2">
+        <h3 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">💰 Hiệu quả chi phí</h3>
+        <div id="cost-metrics-grid" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
+      </section>
+      <section>
+        <h3 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">Resolution SLA</h3>
+        <div id="sla-grid-week" class="grid grid-cols-2 gap-3"></div>
+      </section>
     </div>
+
+    <!-- Weekly Summary -->
+    <section>
+      <div id="weekly-summary" class="bg-surface-container-high/40 p-4 md:p-6 rounded-xl border border-outline-variant/20 relative overflow-hidden"></div>
+    </section>
+
   </div>
 
 </main>
-
-<!-- Floating Action Button (FAB) -->
-<button class="fixed bottom-6 right-6 w-14 h-14 bg-primary text-on-primary-container rounded-full shadow-lg flex items-center justify-center scale-95 active:opacity-80 transition-transform z-50" onclick="showToast('⚡ Quick actions: Assign Task / Resolve Item — planned for next release')">
-  <span class="material-symbols-outlined text-3xl">add</span>
-</button>
 
 <script>
 // ============================================================
@@ -403,28 +376,17 @@ let currentTab = 'today';
 let currentLessonFilter = 'all';
 let dismissedAlerts = new Set();
 
-// Empty skeleton fallback
 const EMPTY_DATA = {
   generatedAt: null,
   scoreboard: {
-    tasksCompleted: 0,
-    tasksBlocked: 0,
-    actionItemsOpen: 0,
-    activeAgents: '0/7',
-    tokensToday: '0'
+    tasksCompleted: 0, tasksBlocked: 0, actionItemsOpen: 0,
+    activeAgents: '0/7', tokensToday: '0'
   },
   agents: [],
   projects: [],
   retros: {},
-  trends: {
-    velocity: [0,0,0,0,0,0,0],
-    quality: [0,0,0,0,0,0,0]
-  },
-  weeklySummary: {
-    wins: [],
-    improvements: [],
-    status: null
-  },
+  trends: { velocity: [0,0,0,0,0,0,0], quality: [0,0,0,0,0,0,0] },
+  weeklySummary: { wins: [], improvements: [], status: null },
   lessons: []
 };
 
@@ -436,7 +398,6 @@ async function loadDashboardData() {
     const res = await fetch('/data/dashboard-data.json?t=' + Date.now());
     if (!res.ok) throw new Error('HTTP ' + res.status);
     DASHBOARD_DATA = await res.json();
-    console.log('[Dashboard] Data loaded:', DASHBOARD_DATA.generatedAt);
   } catch (e) {
     console.warn('[Dashboard] Fetch failed, using empty skeleton:', e.message);
     DASHBOARD_DATA = { ...EMPTY_DATA, generatedAt: null };
@@ -444,7 +405,7 @@ async function loadDashboardData() {
 }
 
 // ============================================================
-// TOAST (#15)
+// TOAST
 // ============================================================
 function showToast(msg) {
   const el = document.getElementById('toast');
@@ -455,22 +416,47 @@ function showToast(msg) {
 }
 
 // ============================================================
+// COLLAPSIBLE SECTIONS
+// ============================================================
+function toggleCollapsible(bodyId, chevronId) {
+  const body = document.getElementById(bodyId);
+  const chevron = document.getElementById(chevronId);
+  body.classList.toggle('open');
+  chevron.classList.toggle('open');
+}
+
+// ============================================================
 // TAB SWITCHING
 // ============================================================
 function switchTab(tab) {
   currentTab = tab;
+  // Header tabs
   document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.className = 'tab-btn px-4 py-1.5 text-xs font-semibold rounded-md transition-all duration-200 text-slate-400 hover:text-slate-200';
+    btn.className = 'tab-btn px-4 py-2 text-xs font-semibold rounded-md transition-all duration-200 text-slate-400 hover:text-slate-200 min-h-[44px]';
   });
   const activeBtn = document.getElementById('tab-' + tab);
   if (activeBtn) {
-    activeBtn.className = 'tab-btn px-4 py-1.5 text-xs font-semibold rounded-md transition-all duration-200 bg-primary/20 text-primary';
+    activeBtn.className = 'tab-btn px-4 py-2 text-xs font-semibold rounded-md transition-all duration-200 bg-primary/20 text-primary min-h-[44px]';
   }
   document.getElementById('view-today').classList.toggle('hidden', tab !== 'today');
-  document.getElementById('view-week7').classList.toggle('hidden', tab !== 'week7');
   document.getElementById('view-week').classList.toggle('hidden', tab !== 'week');
-  if (tab === 'week7') { renderTrends(); renderTrendAnnotations(); renderFeedbackMatrix(); }
-  if (tab === 'week') { renderWeeklySummary(); renderWeeklyInsight(); renderCostMetrics(); renderImprovementVelocity(); renderLessons(DASHBOARD_DATA?.lessons); }
+
+  if (tab === 'week') {
+    renderTrends();
+    renderTrendAnnotations();
+    renderWeeklySummary();
+    renderWeeklyInsight();
+    renderCostMetrics();
+    renderImprovementVelocity();
+    renderLessons(DASHBOARD_DATA?.lessons);
+    renderFeedbackMatrix();
+    renderSLAWeek(DASHBOARD_DATA?.sla);
+  }
+}
+
+function setActiveNav(el) {
+  document.querySelectorAll('.bottom-nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
 }
 
 // ============================================================
@@ -516,9 +502,9 @@ function statusIcon(status) {
 }
 
 function emptyState(msg) {
-  return `<div class="flex flex-col items-center justify-center py-8 text-center">
-    <span class="material-symbols-outlined text-4xl text-outline-variant/40 mb-3">inbox</span>
-    <p class="text-xs text-on-surface-variant">${esc(msg)}</p>
+  return `<div class="flex flex-col items-center justify-center py-10 text-center">
+    <span class="material-symbols-outlined text-5xl text-outline-variant/30 mb-3">inbox</span>
+    <p class="text-sm text-on-surface-variant">${esc(msg)}</p>
   </div>`;
 }
 
@@ -533,233 +519,6 @@ function timeAgo(dateStr) {
   return `${diffDays} ngày trước`;
 }
 
-// ============================================================
-// RENDER: KPIs
-// ============================================================
-function renderKPIs(scoreboard) {
-  const sb = scoreboard || {};
-  const kpis = [
-    { label: 'Task hoàn thành', value: sb.tasksCompleted ?? '—', trend: sb.tasksCompletedTrend, trendIcon: 'trending_up' },
-    { label: 'Bị chặn', value: sb.tasksBlocked ?? '—', trend: sb.tasksBlockedTrend, trendIcon: 'priority_high' },
-    { label: 'Action Items Mở', value: sb.actionItemsOpen ?? '—', trend: sb.actionItemsOpenTrend, trendIcon: 'priority_high' },
-    { label: 'Agent hoạt động', value: sb.activeAgents ?? '—/7', pulse: true },
-    { label: 'Token hôm nay', value: sb.tokensToday ?? '—', trend: sb.tokensTrend, trendIcon: 'electric_bolt' }
-  ];
-
-  document.getElementById('kpi-section').innerHTML = kpis.map(k => `
-    <div class="bg-surface-container-high p-5 rounded-lg shadow-sm border border-outline-variant/5">
-      <p class="text-on-surface-variant text-xs font-semibold uppercase tracking-wider mb-2">${esc(k.label)}</p>
-      <div class="flex items-end justify-between">
-        <h3 class="text-3xl font-bold tracking-tight">${esc(String(k.value))}</h3>
-        ${k.pulse ? '<div class="w-2 h-2 rounded-full bg-secondary pulse-dot mb-2"></div>' : ''}
-        ${k.trend ? `<span class="text-${k.trend > 0 ? 'secondary' : k.trend < 0 ? 'error' : 'tertiary'} text-xs font-medium mb-1 flex items-center"><span class="material-symbols-outlined text-sm">${esc(k.trendIcon)}</span> ${k.trend > 0 ? '+' : ''}${k.trend}</span>` : ''}
-      </div>
-    </div>
-  `).join('');
-}
-
-// ============================================================
-// #12: HEALTH SCORE CIRCLE SVG
-// ============================================================
-function healthCircleSVG(score, trend) {
-  const pct = Math.max(0, Math.min(100, score ?? 0));
-  const circumference = 2 * Math.PI * 22;
-  const offset = circumference - (pct / 100) * circumference;
-  let color = '#ef4444'; // red <50
-  if (pct >= 80) color = '#4ae176'; // green
-  else if (pct >= 50) color = '#ffb95f'; // yellow
-  const trendArrow = trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→';
-  const trendColor = trend === 'up' ? '#4ae176' : trend === 'down' ? '#ef4444' : '#958ea0';
-  return `
-    <div class="health-circle flex-shrink-0">
-      <svg width="56" height="56" viewBox="0 0 56 56">
-        <circle cx="28" cy="28" r="22" fill="none" stroke="#33343b" stroke-width="4"/>
-        <circle cx="28" cy="28" r="22" fill="none" stroke="${color}" stroke-width="4" stroke-linecap="round"
-          stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"/>
-      </svg>
-      <div class="score-text" style="color:${color}">${pct}</div>
-    </div>
-    <span class="text-xs font-bold" style="color:${trendColor}">${trendArrow}</span>
-  `;
-}
-
-// ============================================================
-// #1 & #12: RENDER: AGENT CARDS (with status badges + health circles)
-// ============================================================
-function renderAgentStatusBadge(agent) {
-  const status = agent?.agentStatus || agent?.status || 'unknown';
-  const detail = agent?.statusDetail || '';
-  let badge = '', badgeClass = '';
-  switch(status) {
-    case 'working':
-      badge = '🟢 Đang làm việc'; badgeClass = 'bg-secondary/10 text-secondary border-secondary/20'; break;
-    case 'waiting':
-      badge = '🟡 Chờ task'; badgeClass = 'bg-tertiary/10 text-tertiary border-tertiary/20'; break;
-    case 'idle':
-      const days = agent?.idleDays ?? '?';
-      badge = `⚫ Idle ${days} ngày`; badgeClass = 'bg-outline-variant/10 text-on-surface-variant border-outline-variant/20'; break;
-    case 'reviewing':
-      badge = '🔵 Đang review'; badgeClass = 'bg-primary/10 text-primary border-primary/20'; break;
-    default:
-      badge = '⚪ Unknown'; badgeClass = 'bg-outline-variant/10 text-on-surface-variant border-outline-variant/20';
-  }
-  return `
-    <div class="mt-2 space-y-1">
-      <span class="text-[10px] ${badgeClass} px-2 py-0.5 rounded-full border uppercase font-bold tracking-tighter inline-block">${badge}</span>
-      ${detail ? `<p class="text-[10px] text-on-surface-variant italic">${esc(detail)}</p>` : ''}
-    </div>
-  `;
-}
-
-function renderAgents(agents) {
-  if (!agents || agents.length === 0) {
-    document.getElementById('agent-cards-primary').innerHTML = emptyState('Chưa có dữ liệu agent');
-    document.getElementById('agent-cards-secondary').innerHTML = '';
-    return;
-  }
-
-  const primary = agents.slice(0, 4);
-  const secondary = agents.slice(4);
-
-  const primaryIcons = ['smart_toy', 'psychology', 'code', 'verified'];
-  const primaryColors = ['primary', 'secondary', 'tertiary', 'primary'];
-
-  document.getElementById('agent-cards-primary').innerHTML = primary.map((a, i) => {
-    const color = primaryColors[i % primaryColors.length];
-    const icon = primaryIcons[i % primaryIcons.length];
-    const status = a.status || 'unknown';
-    const statusColor = status === 'active' ? 'secondary' : status === 'idle' ? 'tertiary' : 'error';
-    const statusLabel = status === 'active' ? 'Hoạt động' : status === 'idle' ? 'Chờ' : 'Lỗi';
-
-    // #12: Health score circle
-    const healthScore = a.healthScore ?? a.health ?? 0;
-    const healthTrend = a.healthTrend ?? null;
-    const healthBreakdown = a.healthBreakdown || null;
-
-    return `
-      <div class="bg-surface-container p-5 rounded-xl border border-outline-variant/10 hover:bg-surface-bright transition-all duration-200">
-        <div class="flex justify-between items-start mb-2">
-          <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-full bg-${color}/20 flex items-center justify-center border border-${color}/40">
-              <span class="material-symbols-outlined text-${color} text-2xl" data-weight="fill">${icon}</span>
-            </div>
-            <div>
-              <h4 class="font-bold text-lg leading-tight">${esc(a.name)}</h4>
-              <span class="text-[10px] bg-${statusColor}/10 text-${statusColor} px-2 py-0.5 rounded-full border border-${statusColor}/20 uppercase font-bold tracking-tighter">${esc(statusLabel)}</span>
-              ${renderAgentStatusBadge(a)}
-            </div>
-          </div>
-          <!-- #12: Health circle instead of plain number -->
-          <div class="flex flex-col items-center gap-1">
-            ${healthCircleSVG(healthScore, healthTrend)}
-            <p class="text-[9px] text-on-surface-variant">${esc(a.healthLabel || 'Health')}</p>
-          </div>
-        </div>
-        ${healthBreakdown ? `
-        <div class="mt-2 flex flex-wrap gap-x-3 gap-y-1">
-          ${healthBreakdown.map(b => `<span class="text-[9px] text-on-surface-variant"><span class="font-semibold">${esc(b.label)}</span>: ${esc(String(b.value))}</span>`).join('')}
-        </div>` : ''}
-        <div class="space-y-3 mt-3">
-          ${a.metric1Label ? `<div class="flex justify-between text-xs"><span class="text-on-surface-variant">${esc(a.metric1Label)}</span><span class="font-mono">${esc(String(a.metric1 ?? '—'))}</span></div>` : ''}
-          ${a.metric2Label ? `<div class="flex justify-between text-xs"><span class="text-on-surface-variant">${esc(a.metric2Label)}</span><span class="font-mono">${esc(String(a.metric2 ?? '—'))}</span></div>` : ''}
-          ${typeof a.barPct === 'number' ? `
-          <div class="w-full bg-surface-container-lowest h-1.5 rounded-full overflow-hidden mt-2">
-            <div class="bg-${color} h-full rounded-full" style="width: ${Math.min(100, Math.max(0, a.barPct))}%"></div>
-          </div>` : ''}
-        </div>
-      </div>
-    `;
-  }).join('');
-
-  // Secondary agents: with status badges + health circles
-  document.getElementById('agent-cards-secondary').innerHTML = secondary.map(a => {
-    const status = a.status || 'unknown';
-    const dotColor = status === 'active' ? 'bg-secondary pulse-dot' : status === 'idle' ? 'bg-tertiary' : 'bg-error';
-    const healthScore = a.healthScore ?? a.health ?? 0;
-    const healthTrend = a.healthTrend ?? null;
-    return `
-      <div class="bg-surface-container-low p-4 rounded-xl border border-outline-variant/5">
-        <div class="flex justify-between items-center mb-2">
-          <p class="text-[10px] font-bold text-on-surface-variant uppercase">${esc(a.name)}</p>
-          <div class="flex items-center gap-2">
-            ${healthCircleSVG(healthScore, healthTrend)}
-            <span class="w-2 h-2 ${dotColor} rounded-full"></span>
-          </div>
-        </div>
-        <p class="text-lg font-bold">${esc(String(a.mainValue ?? '—'))}</p>
-        <p class="text-[10px] text-on-surface-variant italic">${esc(a.mainLabel ?? '')}</p>
-        ${renderAgentStatusBadge(a)}
-      </div>
-    `;
-  }).join('');
-}
-
-// ============================================================
-// RENDER: PROJECTS
-// ============================================================
-function renderProjects(projects) {
-  const tbody = document.getElementById('project-tbody');
-  const projects7day = document.getElementById('projects-7day');
-
-  if (!projects || projects.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5">${emptyState('Chưa có dữ liệu dự án')}</td></tr>`;
-    projects7day.innerHTML = emptyState('Chưa có dữ liệu dự án');
-    return;
-  }
-
-  tbody.innerHTML = projects.map((p, i) => {
-    const rowBg = i % 2 === 1 ? 'bg-surface-container-low/30 ' : '';
-    const healthPct = p.health ?? 0;
-    const hColor = healthColor(healthPct);
-    const gitIcon = statusIcon(p.gitStatus);
-    return `
-      <tr class="${rowBg}hover:bg-surface-bright/50 transition-colors">
-        <td class="px-6 py-4">
-          <div class="flex flex-col">
-            <span class="font-bold text-sm">${esc(p.name)}</span>
-            <span class="text-[10px] text-on-surface-variant">${esc(p.branch || '')}</span>
-          </div>
-        </td>
-        <td class="px-6 py-4 font-mono text-xs">${esc(String(p.files ?? '—'))}</td>
-        <td class="px-6 py-4 text-xs">${esc(p.newestFile || '—')}</td>
-        <td class="px-6 py-4">
-          <div class="flex items-center gap-2">
-            ${gitIcon}
-            <span class="text-[10px] font-mono">${esc(p.gitDetail || '')}</span>
-          </div>
-        </td>
-        <td class="px-6 py-4">
-          <div class="w-12 h-1 bg-surface-container-lowest rounded-full overflow-hidden">
-            <div class="${hColor} h-full" style="width: ${Math.min(100, Math.max(0, healthPct))}%"></div>
-          </div>
-        </td>
-      </tr>
-    `;
-  }).join('');
-
-  projects7day.innerHTML = projects.map(p => {
-    const healthPct = p.health ?? 0;
-    const hColor = healthColor(healthPct);
-    const statusText = healthPct >= 70 ? 'Tốt' : healthPct >= 40 ? 'Cảnh báo' : 'Lỗi';
-    const statusTextColor = healthPct >= 70 ? 'text-secondary' : healthPct >= 40 ? 'text-tertiary' : 'text-error';
-    return `
-      <div class="flex items-center justify-between py-3 border-b border-outline-variant/5 last:border-0">
-        <div>
-          <p class="text-sm font-bold">${esc(p.name)}</p>
-          <p class="text-[10px] text-on-surface-variant">${esc(p.branch || '')} · ${esc(String(p.files ?? ''))} tệp</p>
-        </div>
-        <div class="text-right">
-          <p class="text-sm font-bold ${statusTextColor}">${statusText} ${healthPct}%</p>
-          <p class="text-[10px] text-on-surface-variant">${esc(p.newestFile || '')}</p>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-// ============================================================
-// #3: PRIORITY BADGES & AGE FOR ACTION ITEMS
-// ============================================================
 function priorityBadge(priority) {
   switch(priority) {
     case 0: case 'P0': return '<span class="text-[9px] font-bold bg-error/15 text-error px-1.5 py-0.5 rounded border border-error/20">🔴 P0</span>';
@@ -779,25 +538,289 @@ function priorityBorderColor(priority) {
 }
 
 // ============================================================
-// #13: RETRO QUALITY SCORE
+// HEALTH SCORE CIRCLE
+// ============================================================
+function healthCircleSVG(score, trend, size) {
+  const pct = Math.max(0, Math.min(100, score ?? 0));
+  const circumference = 2 * Math.PI * 20;
+  const offset = circumference - (pct / 100) * circumference;
+  let color = '#ef4444';
+  if (pct >= 80) color = '#4ae176';
+  else if (pct >= 50) color = '#ffb95f';
+  const trendArrow = trend === 'up' ? '↑' : trend === 'down' ? '↓' : '';
+  const trendColor = trend === 'up' ? '#4ae176' : trend === 'down' ? '#ef4444' : '#958ea0';
+  const sz = size || 48;
+  const r = (sz - 8) / 2;
+  const c = 2 * Math.PI * r;
+  const o = c - (pct / 100) * c;
+  return `
+    <div class="health-circle" style="width:${sz}px;height:${sz}px;">
+      <svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}">
+        <circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="#33343b" stroke-width="4"/>
+        <circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="${color}" stroke-width="4" stroke-linecap="round"
+          stroke-dasharray="${c}" stroke-dashoffset="${o}"/>
+      </svg>
+      <div class="score-text" style="color:${color};font-size:${sz > 50 ? 16 : 12}px">${pct}</div>
+    </div>
+    ${trendArrow ? `<span class="text-xs font-bold" style="color:${trendColor}">${trendArrow}</span>` : ''}
+  `;
+}
+
+// ============================================================
+// AGENT STATUS BADGE
+// ============================================================
+function renderAgentStatusBadge(agent) {
+  const status = agent?.agentStatus || agent?.status || 'unknown';
+  const detail = agent?.statusDetail || '';
+  let badge = '', badgeClass = '';
+  switch(status) {
+    case 'working': badge = '🟢 Đang làm'; badgeClass = 'bg-secondary/10 text-secondary border-secondary/20'; break;
+    case 'waiting': badge = '🟡 Chờ'; badgeClass = 'bg-tertiary/10 text-tertiary border-tertiary/20'; break;
+    case 'idle':
+      badge = `⚫ Idle`; badgeClass = 'bg-outline-variant/10 text-on-surface-variant border-outline-variant/20'; break;
+    case 'reviewing': badge = '🔵 Review'; badgeClass = 'bg-primary/10 text-primary border-primary/20'; break;
+    case 'active': badge = '🟢 Hoạt động'; badgeClass = 'bg-secondary/10 text-secondary border-secondary/20'; break;
+    default: badge = '⚪ Unknown'; badgeClass = 'bg-outline-variant/10 text-on-surface-variant border-outline-variant/20';
+  }
+  return `<span class="text-[10px] ${badgeClass} px-2 py-0.5 rounded-full border uppercase font-bold tracking-tighter inline-block">${badge}</span>
+    ${detail ? `<p class="text-[10px] text-on-surface-variant italic mt-0.5">${esc(detail)}</p>` : ''}`;
+}
+
+// ============================================================
+// RENDER: KPIs (horizontal scroll cards)
+// ============================================================
+function renderKPIs(scoreboard) {
+  const sb = scoreboard || {};
+  const kpis = [
+    { label: 'Hoàn thành', value: sb.tasksCompleted ?? '—', icon: 'task_alt', color: 'secondary' },
+    { label: 'Bị chặn', value: sb.tasksBlocked ?? '—', icon: 'block', color: 'error' },
+    { label: 'Action mở', value: sb.actionItemsOpen ?? '—', icon: 'pending_actions', color: 'tertiary' },
+    { label: 'Agent', value: sb.activeAgents ?? '—', icon: 'smart_toy', color: 'primary', pulse: true },
+    { label: 'Tokens', value: sb.tokensToday ?? '—', icon: 'electric_bolt', color: 'primary' }
+  ];
+
+  document.getElementById('kpi-section').innerHTML = kpis.map(k => `
+    <div class="bg-surface-container-high p-4 rounded-xl border border-outline-variant/10">
+      <div class="flex items-center justify-between mb-2">
+        <span class="material-symbols-outlined text-${k.color} text-lg">${k.icon}</span>
+        ${k.pulse ? '<div class="w-2 h-2 rounded-full bg-secondary pulse-dot"></div>' : ''}
+      </div>
+      <p class="text-2xl font-bold tracking-tight">${esc(String(k.value))}</p>
+      <p class="text-[10px] text-on-surface-variant mt-0.5">${esc(k.label)}</p>
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// RENDER: MINISAMA (CEO Featured Card)
+// ============================================================
+function renderMiniSama(agents) {
+  const container = document.getElementById('minisama-card');
+  const ms = agents?.find(a =>
+    (a.name || '').toLowerCase().includes('minisama') ||
+    (a.name || '').toLowerCase().includes('mini-sama') ||
+    (a.role || '').toLowerCase().includes('ceo') ||
+    (a.name || '').toLowerCase().includes('mini')
+  );
+
+  if (!ms) {
+    container.innerHTML = '';
+    return;
+  }
+
+  const healthScore = ms.healthScore ?? ms.health ?? 0;
+  const healthTrend = ms.healthTrend ?? null;
+
+  container.innerHTML = `
+    <div class="relative overflow-hidden rounded-xl border-2 border-primary/30 p-5 md:p-6" style="background: linear-gradient(135deg, rgba(109,59,215,0.15) 0%, rgba(30,31,38,1) 100%);">
+      <!-- CEO Badge -->
+      <div class="absolute top-3 right-3">
+        <span class="text-[10px] font-black bg-primary/20 text-primary px-2.5 py-1 rounded-full border border-primary/30 uppercase tracking-wider">👑 CEO</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center border-2 border-primary/40 flex-shrink-0">
+          <span class="material-symbols-outlined text-primary text-3xl" data-weight="fill">account_circle</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <h4 class="text-xl font-black text-slate-100 leading-tight">${esc(ms.name)}</h4>
+          <div class="mt-1.5 flex items-center gap-2 flex-wrap">
+            ${renderAgentStatusBadge(ms)}
+          </div>
+        </div>
+        <div class="flex flex-col items-center gap-1 flex-shrink-0">
+          ${healthCircleSVG(healthScore, healthTrend, 56)}
+          <p class="text-[9px] text-on-surface-variant">Health</p>
+        </div>
+      </div>
+      <!-- Metrics row -->
+      <div class="mt-4 grid grid-cols-3 gap-3">
+        ${ms.metric1Label ? `<div class="bg-surface-container-low/50 rounded-lg p-3 text-center">
+          <p class="text-lg font-bold">${esc(String(ms.metric1 ?? '—'))}</p>
+          <p class="text-[9px] text-on-surface-variant">${esc(ms.metric1Label)}</p>
+        </div>` : ''}
+        ${ms.metric2Label ? `<div class="bg-surface-container-low/50 rounded-lg p-3 text-center">
+          <p class="text-lg font-bold">${esc(String(ms.metric2 ?? '—'))}</p>
+          <p class="text-[9px] text-on-surface-variant">${esc(ms.metric2Label)}</p>
+        </div>` : ''}
+        <div class="bg-surface-container-low/50 rounded-lg p-3 text-center">
+          <p class="text-lg font-bold">${esc(String(ms.mainValue ?? '—'))}</p>
+          <p class="text-[9px] text-on-surface-variant">${esc(ms.mainLabel ?? 'Score')}</p>
+        </div>
+      </div>
+      ${typeof ms.barPct === 'number' ? `
+      <div class="mt-3 w-full bg-surface-container-lowest h-2 rounded-full overflow-hidden">
+        <div class="bg-primary h-full rounded-full" style="width: ${Math.min(100, Math.max(0, ms.barPct))}%"></div>
+      </div>` : ''}
+    </div>
+  `;
+}
+
+// ============================================================
+// RENDER: AGENT CARDS
+// ============================================================
+function renderAgents(agents) {
+  if (!agents || agents.length === 0) {
+    document.getElementById('agent-cards-primary').innerHTML = emptyState('Chưa có dữ liệu agent');
+    document.getElementById('agent-cards-secondary').innerHTML = '';
+    return;
+  }
+
+  // MiniSama is rendered separately
+  const primaryNames = ['coach', 'lebron', 'bronny', 'curry'];
+  const secondaryNames = ['tuvi', 'laoshi'];
+
+  const primary = agents.filter(a => !primaryNames.some(n => (a.name || '').toLowerCase().includes(n)) && !(a.name || '').toLowerCase().includes('mini'));
+  const secondary = agents.filter(a => secondaryNames.some(n => (a.name || '').toLowerCase().includes(n)));
+
+  const primaryIcons = ['smart_toy', 'psychology', 'code', 'verified'];
+  const primaryColors = ['primary', 'secondary', 'tertiary', 'primary'];
+
+  // Render primary agents (Coach, Lebron, Bronny, Curry) — compact, tap to expand
+  document.getElementById('agent-cards-primary').innerHTML = primary.slice(0, 4).map((a, i) => {
+    const color = primaryColors[i % primaryColors.length];
+    const icon = primaryIcons[i % primaryIcons.length];
+    const healthScore = a.healthScore ?? a.health ?? 0;
+    const healthTrend = a.healthTrend ?? null;
+    return `
+      <div class="agent-card bg-surface-container rounded-xl border border-outline-variant/10 p-4 cursor-pointer hover:bg-surface-bright transition-all" onclick="this.classList.toggle('expanded')">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-${color}/20 flex items-center justify-center border border-${color}/30 flex-shrink-0">
+            <span class="material-symbols-outlined text-${color} text-xl" data-weight="fill">${icon}</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <h4 class="font-bold text-sm leading-tight truncate">${esc(a.name)}</h4>
+            <div class="mt-1 flex items-center gap-2">
+              ${renderAgentStatusBadge(a)}
+            </div>
+          </div>
+          <div class="flex-shrink-0">
+            ${healthCircleSVG(healthScore, healthTrend, 40)}
+          </div>
+        </div>
+        <!-- Expandable details -->
+        <div class="agent-card-details">
+          <div class="mt-3 pt-3 border-t border-outline-variant/10 space-y-2">
+            ${a.metric1Label ? `<div class="flex justify-between text-xs"><span class="text-on-surface-variant">${esc(a.metric1Label)}</span><span class="font-mono font-semibold">${esc(String(a.metric1 ?? '—'))}</span></div>` : ''}
+            ${a.metric2Label ? `<div class="flex justify-between text-xs"><span class="text-on-surface-variant">${esc(a.metric2Label)}</span><span class="font-mono font-semibold">${esc(String(a.metric2 ?? '—'))}</span></div>` : ''}
+            ${typeof a.barPct === 'number' ? `
+            <div class="w-full bg-surface-container-lowest h-1.5 rounded-full overflow-hidden mt-2">
+              <div class="bg-${color} h-full rounded-full" style="width: ${Math.min(100, Math.max(0, a.barPct))}%"></div>
+            </div>` : ''}
+            ${a.mainLabel ? `<div class="flex justify-between text-xs"><span class="text-on-surface-variant">${esc(a.mainLabel)}</span><span class="font-mono font-semibold">${esc(String(a.mainValue ?? '—'))}</span></div>` : ''}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Render secondary agents (tuvi, laoshi) — small tiles
+  document.getElementById('agent-cards-secondary').innerHTML = secondary.map(a => {
+    const healthScore = a.healthScore ?? a.health ?? 0;
+    const healthTrend = a.healthTrend ?? null;
+    const status = a.status || 'unknown';
+    const dotColor = status === 'active' ? 'bg-secondary pulse-dot' : status === 'idle' ? 'bg-tertiary' : 'bg-error';
+    return `
+      <div class="bg-surface-container-low rounded-xl border border-outline-variant/5 p-4 min-h-[48px]">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 ${dotColor} rounded-full flex-shrink-0"></span>
+            <p class="text-xs font-bold text-on-surface truncate">${esc(a.name)}</p>
+          </div>
+          ${healthCircleSVG(healthScore, healthTrend, 36)}
+        </div>
+        <p class="text-base font-bold">${esc(String(a.mainValue ?? '—'))}</p>
+        <p class="text-[10px] text-on-surface-variant">${esc(a.mainLabel ?? '')}</p>
+        ${renderAgentStatusBadge(a)}
+      </div>
+    `;
+  }).join('');
+}
+
+// ============================================================
+// RENDER: PROJECT HEALTH (stacked cards)
+// ============================================================
+function renderProjects(projects) {
+  const container = document.getElementById('project-cards-mobile');
+  if (!projects || projects.length === 0) {
+    container.innerHTML = emptyState('Chưa có dữ liệu dự án');
+    return;
+  }
+
+  container.innerHTML = projects.map(p => {
+    const healthPct = p.health ?? 0;
+    let statusText, statusBg;
+    if (healthPct >= 70) { statusText = 'Tốt'; statusBg = 'bg-secondary/10 text-secondary'; }
+    else if (healthPct >= 40) { statusText = 'Cảnh báo'; statusBg = 'bg-tertiary/10 text-tertiary'; }
+    else { statusText = 'Lỗi'; statusBg = 'bg-error/10 text-error'; }
+
+    return `
+      <div class="bg-surface-container rounded-xl border border-outline-variant/10 p-4">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h4 class="font-bold text-sm">${esc(p.name)}</h4>
+            <p class="text-[10px] text-on-surface-variant mt-0.5">${esc(p.branch || '')} · ${esc(String(p.files ?? ''))} tệp</p>
+          </div>
+          <span class="text-[10px] font-bold ${statusBg} px-2 py-1 rounded-full">${statusText} ${healthPct}%</span>
+        </div>
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <p class="text-[9px] text-on-surface-variant uppercase">Git</p>
+            <div class="flex items-center gap-1 mt-1">
+              ${statusIcon(p.gitStatus)}
+              <span class="text-xs font-mono">${esc(p.gitDetail || '—')}</span>
+            </div>
+          </div>
+          <div>
+            <p class="text-[9px] text-on-surface-variant uppercase">Mới nhất</p>
+            <p class="text-xs mt-1 truncate">${esc(p.newestFile || '—')}</p>
+          </div>
+          <div>
+            <p class="text-[9px] text-on-surface-variant uppercase">Health</p>
+            <div class="mt-1.5 w-full bg-surface-container-lowest h-2 rounded-full overflow-hidden">
+              <div class="${healthColor(healthPct)} h-full rounded-full" style="width: ${Math.min(100, Math.max(0, healthPct))}%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ============================================================
+// RENDER: RETRO
 // ============================================================
 function renderRetroQualityBadge(retro) {
   const el = document.getElementById('retro-quality-badge');
   const score = retro?.qualityScore ?? retro?.quality ?? null;
   if (score === null) { el.innerHTML = ''; return; }
-
   let label, labelClass;
   if (score >= 90) { label = '✅ Perfect'; labelClass = 'bg-secondary/15 text-secondary border-secondary/30'; }
   else if (score >= 70) { label = '👍 Good'; labelClass = 'bg-primary/15 text-primary border-primary/30'; }
   else if (score >= 40) { label = '⚠️ Partial'; labelClass = 'bg-tertiary/15 text-tertiary border-tertiary/30'; }
   else { label = '❌ Minimal'; labelClass = 'bg-error/15 text-error border-error/30'; }
-
-  el.innerHTML = `<span class="text-[10px] font-bold ${labelClass} px-2.5 py-1 rounded-full border">${label} ${score}%</span>`;
+  el.innerHTML = `<span class="text-[10px] font-bold ${labelClass} px-2 py-0.5 rounded-full border">${label} ${score}%</span>`;
 }
 
-// ============================================================
-// RENDER: RETRO (with #3 priority + age, #13 quality badge)
-// ============================================================
 function renderRetro() {
   const container = document.getElementById('retro-content');
   const retros = DASHBOARD_DATA?.retros || {};
@@ -809,10 +832,9 @@ function renderRetro() {
     return;
   }
 
-  // #13: Quality badge
   renderRetroQualityBadge(retro);
 
-  let html = '<div class="space-y-4">';
+  let html = '<div class="space-y-3">';
 
   if (retro.wins && retro.wins.length > 0) {
     html += `<div class="p-3 bg-secondary/5 rounded-lg border-l-4 border-secondary">
@@ -837,9 +859,9 @@ function renderRetro() {
 
   html += '</div>';
 
-  // Action Items with #3: priority + age
+  // Action Items
   if (retro.actionItems && retro.actionItems.length > 0) {
-    html += '<div class="mt-6"><p class="text-[10px] font-bold text-on-surface-variant uppercase mb-3">Action Items</p><ul class="space-y-2">';
+    html += '<div class="mt-5"><p class="text-[10px] font-bold text-on-surface-variant uppercase mb-3">Action Items</p><ul class="space-y-3">';
     retro.actionItems.forEach(item => {
       const done = item.done || item.status === 'done';
       const icon = done ? 'check_box' : 'check_box_outline_blank';
@@ -849,9 +871,9 @@ function renderRetro() {
       const overdueDot = (ageDays !== null && ageDays > 3 && !done)
         ? '<span class="w-2 h-2 rounded-full bg-error pulse-red-dot inline-block ml-1"></span>' : '';
       const ageText = ageDays !== null && ageDays > 0
-        ? `<span class="text-[9px] text-on-surface-variant ml-auto flex-shrink-0">${esc(String(ageDays))} ngày trước</span>` : '';
-      html += `<li class="flex items-start gap-2 text-xs p-2 rounded-lg bg-surface-container-low/30 ${priorityBorderColor(priority)}">
-        <span class="material-symbols-outlined text-sm ${done ? 'text-secondary' : 'text-outline'} mt-0.5">${icon}</span>
+        ? `<span class="text-[9px] text-on-surface-variant ml-auto flex-shrink-0">${esc(String(ageDays))} ngày</span>` : '';
+      html += `<li class="flex items-start gap-3 text-sm p-3 rounded-lg bg-surface-container-low/30 ${priorityBorderColor(priority)}">
+        <span class="material-symbols-outlined text-lg ${done ? 'text-secondary' : 'text-outline'} mt-0.5 flex-shrink-0">${icon}</span>
         <div class="flex-1 min-w-0">
           <span class="${style}">${esc(item.text || item.action || '')}</span>
           ${priority !== null ? `<span class="ml-2 inline-flex">${priorityBadge(priority)}</span>` : ''}
@@ -867,35 +889,45 @@ function renderRetro() {
 }
 
 // ============================================================
-// #2: ACTIVE TASKS
+// RENDER: ACTION ITEMS (standalone section)
 // ============================================================
-function renderActiveTasks(tasks) {
-  const container = document.getElementById('active-tasks-list');
-  if (!tasks || tasks.length === 0) {
-    container.innerHTML = emptyState('Không có task đang chạy');
+function renderActionItems() {
+  const container = document.getElementById('action-items-content');
+  const retros = DASHBOARD_DATA?.retros || {};
+  const retro = retros[selectedDate];
+
+  if (!retro?.actionItems || retro.actionItems.length === 0) {
+    container.innerHTML = emptyState('Không có action item');
     return;
   }
 
-  container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-    ${tasks.map(t => {
-      const statusColor = t.status === 'running' ? 'bg-secondary' : t.status === 'blocked' ? 'bg-error' : 'bg-tertiary';
-      const statusLabel = t.status === 'running' ? 'Đang chạy' : t.status === 'blocked' ? 'Bị chặn' : 'Chờ';
-      return `
-        <div class="bg-surface-container-high p-4 rounded-xl border border-outline-variant/10 flex items-start gap-3 hover:bg-surface-bright transition-all">
-          <span class="text-2xl flex-shrink-0">${esc(t.agentEmoji || t.emoji || '📋')}</span>
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-bold truncate">${esc(t.name || t.task || '')}</p>
-            <p class="text-[10px] text-on-surface-variant mt-0.5">${esc(t.agent || '')} · ${esc(timeAgo(t.startedAt || t.startDate))}</p>
-            <span class="inline-block mt-1.5 text-[9px] font-bold uppercase tracking-tighter text-white px-2 py-0.5 rounded ${statusColor}">${esc(statusLabel)}</span>
-          </div>
-        </div>
-      `;
-    }).join('')}
-  </div>`;
+  let html = '<ul class="space-y-3">';
+  retro.actionItems.forEach(item => {
+    const done = item.done || item.status === 'done';
+    const icon = done ? 'check_box' : 'check_box_outline_blank';
+    const style = done ? 'line-through text-on-surface-variant' : '';
+    const priority = item.priority ?? item.priorityLevel ?? null;
+    const ageDays = item.ageDays ?? item.age ?? null;
+    const overdueDot = (ageDays !== null && ageDays > 3 && !done)
+      ? '<span class="w-2 h-2 rounded-full bg-error pulse-red-dot inline-block ml-1"></span>' : '';
+    const ageText = ageDays !== null && ageDays > 0
+      ? `<span class="text-[10px] text-on-surface-variant ml-auto flex-shrink-0">${esc(String(ageDays))} ngày</span>` : '';
+    html += `<li class="flex items-start gap-3 text-sm p-3 rounded-lg bg-surface-container-low/30 ${priorityBorderColor(priority)}">
+      <span class="material-symbols-outlined text-lg ${done ? 'text-secondary' : 'text-outline'} mt-0.5 flex-shrink-0">${icon}</span>
+      <div class="flex-1 min-w-0">
+        <span class="${style}">${esc(item.text || item.action || '')}</span>
+        ${priority !== null ? `<span class="ml-2 inline-flex">${priorityBadge(priority)}</span>` : ''}
+      </div>
+      ${overdueDot}
+      ${ageText}
+    </li>`;
+  });
+  html += '</ul>';
+  container.innerHTML = html;
 }
 
 // ============================================================
-// #4: FEEDBACK FEED
+// RENDER: FEEDBACK FEED
 // ============================================================
 function renderFeedbackFeed(feedback) {
   const container = document.getElementById('feedback-feed-list');
@@ -905,19 +937,19 @@ function renderFeedbackFeed(feedback) {
   }
 
   container.innerHTML = `<div class="feedback-timeline space-y-4">
-    ${feedback.map((f, i) => {
+    ${feedback.map((f) => {
       const typeIcon = f.type === 'coaching' ? '📋' : f.type === 'praise' ? '👍' : f.type === 'correction' ? '🔧' : '💬';
       const dotBg = f.type === 'coaching' ? 'bg-primary' : f.type === 'praise' ? 'bg-secondary' : f.type === 'correction' ? 'bg-tertiary' : 'bg-outline-variant';
       return `
         <div class="relative">
           <div class="feedback-dot ${dotBg}"></div>
           <div class="bg-surface-container-low/50 p-3 rounded-lg">
-            <div class="flex items-center gap-2 mb-1">
+            <div class="flex items-center gap-2 mb-1 flex-wrap">
               <span class="text-sm">${typeIcon}</span>
-              <span class="text-[10px] font-bold">${esc(f.from || '?')}</span>
-              <span class="text-[10px] text-on-surface-variant">→</span>
-              <span class="text-[10px] font-bold">${esc(f.to || '?')}</span>
-              <span class="text-[9px] text-on-surface-variant ml-auto">${esc(timeAgo(f.date || f.createdAt))}</span>
+              <span class="text-[11px] font-bold">${esc(f.from || '?')}</span>
+              <span class="text-[11px] text-on-surface-variant">→</span>
+              <span class="text-[11px] font-bold">${esc(f.to || '?')}</span>
+              <span class="text-[10px] text-on-surface-variant ml-auto">${esc(timeAgo(f.date || f.createdAt))}</span>
             </div>
             <p class="text-xs text-on-surface leading-relaxed">${esc(f.text || f.message || '')}</p>
           </div>
@@ -928,69 +960,17 @@ function renderFeedbackFeed(feedback) {
 }
 
 // ============================================================
-// #5: TREND ANNOTATIONS
-// ============================================================
-function renderTrendAnnotations() {
-  const container = document.getElementById('trend-annotations');
-  const annotations = DASHBOARD_DATA?.trendAnnotations || DASHBOARD_DATA?.annotations || DASHBOARD_DATA?.trends?.annotations || [];
-  if (!annotations || annotations.length === 0) {
-    container.innerHTML = '';
-    return;
-  }
-  container.innerHTML = annotations.map(a => `
-    <div class="flex items-center gap-2 text-[10px] text-on-surface-variant">
-      <span>${esc(a.icon || '📌')}</span>
-      <span class="font-semibold">${esc(a.date || '')}</span>
-      <span>—</span>
-      <span>${esc(a.text || a.label || '')}</span>
-    </div>
-  `).join('');
-}
-
-// ============================================================
-// #8: RESOLUTION SLA
-// ============================================================
-function renderSLA(sla) {
-  const container = document.getElementById('sla-grid');
-  if (!sla) {
-    // Try to derive from scoreboard or retro action items
-    container.innerHTML = emptyState('Chưa có dữ liệu SLA');
-    return;
-  }
-
-  const boxes = [
-    { label: '24h', value: sla.resolved24h ?? sla.within24h ?? 0, good: true },
-    { label: '48h', value: sla.resolved48h ?? sla.within48h ?? 0, good: true },
-    { label: '1 tuần', value: sla.resolvedWeek ?? sla.withinWeek ?? 0, good: true },
-    { label: 'Quá hạn', value: sla.overdue ?? sla.expired ?? 0, good: (sla.overdue ?? sla.expired ?? 0) === 0 }
-  ];
-
-  container.innerHTML = boxes.map(b => `
-    <div class="bg-surface-container-high p-4 rounded-xl border border-outline-variant/10 text-center">
-      <p class="text-2xl font-bold ${b.good ? 'text-secondary' : 'text-error'}">${esc(String(b.value))}</p>
-      <p class="text-[10px] text-on-surface-variant font-semibold uppercase mt-1">${esc(b.label)}</p>
-    </div>
-  `).join('');
-}
-
-// ============================================================
-// #11: ALERTS
+// RENDER: ALERTS
 // ============================================================
 function renderAlerts(alerts) {
   const section = document.getElementById('alerts-section');
   const container = document.getElementById('alerts-list');
-  if (!alerts || alerts.length === 0) {
-    section.classList.add('hidden');
-    return;
-  }
+  if (!alerts || alerts.length === 0) { section.classList.add('hidden'); return; }
   const visibleAlerts = alerts.filter((a, i) => !dismissedAlerts.has(i));
-  if (visibleAlerts.length === 0) {
-    section.classList.add('hidden');
-    return;
-  }
+  if (visibleAlerts.length === 0) { section.classList.add('hidden'); return; }
 
   section.classList.remove('hidden');
-  container.innerHTML = visibleAlerts.map((a, origIdx) => {
+  container.innerHTML = visibleAlerts.map((a) => {
     const idx = alerts.indexOf(a);
     const isCritical = a.level === 'critical' || a.severity === 'critical';
     const bg = isCritical ? 'bg-error/10 border-error/30' : 'bg-tertiary/10 border-tertiary/30';
@@ -1000,8 +980,8 @@ function renderAlerts(alerts) {
       <div class="flex items-center gap-3 px-4 py-3 rounded-lg border ${bg}">
         <span class="text-lg flex-shrink-0">${icon}</span>
         <p class="text-sm ${textColor} flex-1">${esc(a.message || a.text || '')}</p>
-        ${a.agent ? `<span class="text-[10px] font-bold bg-surface-container-lowest px-2 py-0.5 rounded-full text-on-surface-variant">${esc(a.agent)}</span>` : ''}
-        <button onclick="dismissAlert(${idx})" class="text-on-surface-variant hover:text-on-surface transition-colors flex-shrink-0">
+        ${a.agent ? `<span class="text-[10px] font-bold bg-surface-container-lowest px-2 py-0.5 rounded-full text-on-surface-variant flex-shrink-0">${esc(a.agent)}</span>` : ''}
+        <button onclick="dismissAlert(${idx})" class="text-on-surface-variant hover:text-on-surface transition-colors flex-shrink-0 min-w-[44px] min-h-[44px] flex items-center justify-center">
           <span class="material-symbols-outlined text-sm">close</span>
         </button>
       </div>
@@ -1015,7 +995,40 @@ function dismissAlert(idx) {
 }
 
 // ============================================================
-// RENDER: TRENDS (7-day chart)
+// RENDER: SLA
+// ============================================================
+function renderSLA(sla) {
+  renderSLAWeek(sla);
+}
+
+function renderSLAWeek(sla) {
+  const container = document.getElementById('sla-grid') || document.getElementById('sla-grid-week');
+  if (!sla) {
+    if (container) container.innerHTML = emptyState('Chưa có dữ liệu SLA');
+    return;
+  }
+  const boxes = [
+    { label: '24h', value: sla.resolved24h ?? sla.within24h ?? 0, good: true },
+    { label: '48h', value: sla.resolved48h ?? sla.within48h ?? 0, good: true },
+    { label: '1 tuần', value: sla.resolvedWeek ?? sla.withinWeek ?? 0, good: true },
+    { label: 'Quá hạn', value: sla.overdue ?? sla.expired ?? 0, good: (sla.overdue ?? sla.expired ?? 0) === 0 }
+  ];
+
+  // Render in both containers
+  ['sla-grid', 'sla-grid-week'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = boxes.map(b => `
+      <div class="bg-surface-container-high p-4 rounded-xl border border-outline-variant/10 text-center">
+        <p class="text-2xl font-bold ${b.good ? 'text-secondary' : 'text-error'}">${esc(String(b.value))}</p>
+        <p class="text-[10px] text-on-surface-variant font-semibold uppercase mt-1">${esc(b.label)}</p>
+      </div>
+    `).join('');
+  });
+}
+
+// ============================================================
+// RENDER: TRENDS
 // ============================================================
 function renderTrends() {
   const container = document.getElementById('trend-chart');
@@ -1029,8 +1042,7 @@ function renderTrends() {
   const maxVal = Math.max(...trends.velocity, ...trends.quality, 1);
   const toY = (v) => 100 - (v / maxVal) * 80 - 10;
 
-  let velPath = '';
-  let qualPath = '';
+  let velPath = '', qualPath = '';
   trends.velocity.forEach((v, i) => {
     const x = (i / (trends.velocity.length - 1)) * 400;
     const y = toY(v);
@@ -1054,6 +1066,23 @@ function renderTrends() {
 }
 
 // ============================================================
+// RENDER: TREND ANNOTATIONS
+// ============================================================
+function renderTrendAnnotations() {
+  const container = document.getElementById('trend-annotations');
+  const annotations = DASHBOARD_DATA?.trendAnnotations || DASHBOARD_DATA?.annotations || DASHBOARD_DATA?.trends?.annotations || [];
+  if (!annotations || annotations.length === 0) { container.innerHTML = ''; return; }
+  container.innerHTML = annotations.map(a => `
+    <div class="flex items-center gap-2 text-[10px] text-on-surface-variant">
+      <span>${esc(a.icon || '📌')}</span>
+      <span class="font-semibold">${esc(a.date || '')}</span>
+      <span>—</span>
+      <span>${esc(a.text || a.label || '')}</span>
+    </div>
+  `).join('');
+}
+
+// ============================================================
 // RENDER: WEEKLY SUMMARY
 // ============================================================
 function renderWeeklySummary() {
@@ -1066,13 +1095,11 @@ function renderWeeklySummary() {
   }
 
   let html = '';
-
   if (ws.status) {
     html += `<div class="absolute top-0 right-0 p-2">
       <span class="text-[10px] font-bold bg-secondary text-on-secondary px-2 py-0.5 rounded-bl-lg">${esc(ws.status)}</span>
     </div>`;
   }
-
   html += '<h3 class="text-xs font-black uppercase tracking-widest text-on-surface-variant mb-4">Tổng kết tuần</h3>';
 
   if (ws.wins && ws.wins.length > 0) {
@@ -1080,7 +1107,7 @@ function renderWeeklySummary() {
     ws.wins.forEach((w, i) => {
       html += `<div class="flex items-start gap-2">
         <span class="text-secondary font-bold text-xs mt-0.5">${String(i + 1).padStart(2, '0')}</span>
-        <p class="text-xs">${esc(w)}</p>
+        <p class="text-sm">${esc(w)}</p>
       </div>`;
     });
     html += '</div>';
@@ -1092,7 +1119,7 @@ function renderWeeklySummary() {
     ws.improvements.forEach((imp, i) => {
       html += `<div class="flex items-start gap-2">
         <span class="text-tertiary font-bold text-xs mt-0.5">${String(i + 1).padStart(2, '0')}</span>
-        <p class="text-xs">${esc(imp)}</p>
+        <p class="text-sm">${esc(imp)}</p>
       </div>`;
     });
     html += '</div>';
@@ -1102,7 +1129,25 @@ function renderWeeklySummary() {
 }
 
 // ============================================================
-// #6: LESSON ADOPTION TRACKING + FILTER
+// RENDER: WEEKLY INSIGHT
+// ============================================================
+function renderWeeklyInsight() {
+  const el = document.getElementById('weekly-insight-text');
+  const insight = DASHBOARD_DATA?.weeklyInsight || DASHBOARD_DATA?.weeklySummary?.insight || null;
+  if (!insight) {
+    const ws = DASHBOARD_DATA?.weeklySummary;
+    if (ws?.wins?.length) {
+      el.textContent = `Tuần này Dream Team hoàn thành ${ws.wins.length} wins. ${ws.improvements?.length ? `Cần cải thiện ${ws.improvements.length} điểm.` : ''}`;
+    } else {
+      el.textContent = 'Chưa có insight cho tuần này. Dữ liệu sẽ được cập nhật sau retro Chủ nhật.';
+    }
+    return;
+  }
+  el.textContent = insight;
+}
+
+// ============================================================
+// RENDER: LESSONS
 // ============================================================
 function filterLessons(filter) {
   currentLessonFilter = filter;
@@ -1121,7 +1166,6 @@ function renderLessons(lessons) {
   }
 
   const filtered = filter === 'all' ? lessons : lessons.filter(l => (l.adoptionStatus || l.status) === filter);
-
   if (filtered.length === 0) {
     container.innerHTML = emptyState(`Không có bài học "${filter}" nào`);
     return;
@@ -1137,12 +1181,12 @@ function renderLessons(lessons) {
       case 'promoted': statusBadge = '<span class="text-[9px] bg-secondary/15 text-secondary px-1.5 py-0.5 rounded border border-secondary/20">✅ Promoted</span>'; break;
       case 'adopted': statusBadge = '<span class="text-[9px] bg-primary/15 text-primary px-1.5 py-0.5 rounded border border-primary/20">🔄 Adopted</span>'; break;
     }
-    const adoptedDate = l.adoptedDate ? `<p class="text-[9px] text-on-surface-variant italic mt-1">Đã áp dụng lại ${esc(timeAgo(l.adoptedDate))}</p>` : '';
+    const adoptedDate = l.adoptedDate ? `<p class="text-[9px] text-on-surface-variant italic mt-1">Đã áp dụng ${esc(timeAgo(l.adoptedDate))}</p>` : '';
     return `
       <div class="relative pl-8">
         <div class="absolute left-0 top-1 w-4 h-4 rounded-full ${dotColor} border-4 border-surface-container-high"></div>
         <p class="text-xs font-bold mb-1">${esc(l.title || '')}</p>
-        <p class="text-[10px] text-on-surface-variant mb-2">${esc(l.body || '')}</p>
+        <p class="text-[11px] text-on-surface-variant mb-2">${esc(l.body || '')}</p>
         <div class="flex items-center gap-2 flex-wrap">
           ${l.tag ? `<span class="text-[8px] bg-surface-container px-2 py-0.5 rounded border border-outline-variant/20 uppercase font-black ${tagColor}">${esc(l.tag)}</span>` : ''}
           ${statusBadge}
@@ -1154,12 +1198,11 @@ function renderLessons(lessons) {
 }
 
 // ============================================================
-// #7: COST METRICS
+// RENDER: COST METRICS
 // ============================================================
 function renderCostMetrics() {
   const container = document.getElementById('cost-metrics-grid');
   const cm = DASHBOARD_DATA?.costMetrics || DASHBOARD_DATA?.cost;
-  const agents = DASHBOARD_DATA?.agents || [];
 
   if (!cm) {
     container.innerHTML = `<div class="md:col-span-3">${emptyState('Chưa có dữ liệu chi phí')}</div>`;
@@ -1170,30 +1213,24 @@ function renderCostMetrics() {
   const costPerTask = cm.costPerTask ?? null;
   const totalCost = cm.totalCost ?? cm.estimatedCost ?? null;
 
-  // KPI card
   let html = `
-    <div class="bg-surface-container-high p-6 rounded-xl border border-outline-variant/10 text-center">
+    <div class="bg-surface-container-high p-5 rounded-xl border border-outline-variant/10 text-center">
       <p class="text-[10px] text-on-surface-variant font-semibold uppercase mb-2">Cost / Task</p>
-      <p class="text-3xl font-bold ${costPerTask !== null && costPerTask > 0 ? 'text-tertiary' : 'text-outline-variant'}">${costPerTask !== null ? '$' + esc(String(costPerTask)) : '—'}</p>
+      <p class="text-2xl font-bold ${costPerTask !== null && costPerTask > 0 ? 'text-tertiary' : 'text-outline-variant'}">${costPerTask !== null ? '$' + esc(String(costPerTask)) : '—'}</p>
       ${totalCost !== null ? `<p class="text-[10px] text-on-surface-variant mt-1">Tổng: $${esc(String(totalCost))}</p>` : ''}
     </div>
-  `;
-
-  // Token count card
-  html += `
-    <div class="bg-surface-container-high p-6 rounded-xl border border-outline-variant/10 text-center">
+    <div class="bg-surface-container-high p-5 rounded-xl border border-outline-variant/10 text-center">
       <p class="text-[10px] text-on-surface-variant font-semibold uppercase mb-2">Tokens</p>
-      <p class="text-3xl font-bold ${totalTokens > 0 ? 'text-primary' : 'text-outline-variant'}">${totalTokens > 0 ? Number(totalTokens).toLocaleString() : '—'}</p>
-      <p class="text-[10px] text-on-surface-variant mt-1">${totalTokens > 0 ? 'tuần này' : 'Chưa có dữ liệu token'}</p>
+      <p class="text-2xl font-bold ${totalTokens > 0 ? 'text-primary' : 'text-outline-variant'}">${totalTokens > 0 ? Number(totalTokens).toLocaleString() : '—'}</p>
+      <p class="text-[10px] text-on-surface-variant mt-1">${totalTokens > 0 ? 'tuần này' : ''}</p>
     </div>
   `;
 
-  // Agent cost breakdown (CSS bars)
   const agentCosts = cm.agentBreakdown || cm.byAgent || [];
   if (agentCosts.length > 0) {
     const maxCost = Math.max(...agentCosts.map(a => a.cost ?? a.tokens ?? 0), 1);
-    html += `<div class="bg-surface-container-high p-6 rounded-xl border border-outline-variant/10 md:col-span-1">
-      <p class="text-[10px] text-on-surface-variant font-semibold uppercase mb-4">Chi phí theo Agent</p>
+    html += `<div class="bg-surface-container-high p-5 rounded-xl border border-outline-variant/10">
+      <p class="text-[10px] text-on-surface-variant font-semibold uppercase mb-4">Theo Agent</p>
       <div class="space-y-3">
         ${agentCosts.map(a => {
           const val = a.cost ?? a.tokens ?? 0;
@@ -1213,8 +1250,8 @@ function renderCostMetrics() {
       </div>
     </div>`;
   } else {
-    html += `<div class="bg-surface-container-high p-6 rounded-xl border border-outline-variant/10 flex items-center justify-center">
-      ${emptyState('Chưa có breakdown agent')}
+    html += `<div class="bg-surface-container-high p-5 rounded-xl border border-outline-variant/10 flex items-center justify-center">
+      ${emptyState('Chưa có breakdown')}
     </div>`;
   }
 
@@ -1222,7 +1259,7 @@ function renderCostMetrics() {
 }
 
 // ============================================================
-// #9: FEEDBACK MATRIX
+// RENDER: FEEDBACK MATRIX
 // ============================================================
 function renderFeedbackMatrix() {
   const container = document.getElementById('feedback-matrix-grid');
@@ -1235,7 +1272,6 @@ function renderFeedbackMatrix() {
     return;
   }
 
-  // Build matrix from raw feedback if no pre-computed matrix
   let counts = {};
   if (matrix) {
     counts = matrix;
@@ -1255,11 +1291,9 @@ function renderFeedbackMatrix() {
 
   const maxCount = Math.max(...Object.values(counts), 1);
 
-  let html = `<div class="overflow-x-auto"><table class="w-full text-center text-xs">`;
-  // Header row
+  let html = `<div class="overflow-x-auto no-scrollbar"><table class="w-full text-center text-xs min-w-[400px]">`;
   html += `<tr><th class="p-2"></th>${allAgents.map(a => `<th class="p-2 text-[10px] font-bold text-on-surface-variant">${esc(a)}</th>`).join('')}</tr>`;
 
-  // Data rows
   allAgents.forEach(from => {
     html += `<tr><td class="p-2 text-[10px] font-bold text-on-surface-variant text-right">${esc(from)}</td>`;
     allAgents.forEach(to => {
@@ -1279,25 +1313,7 @@ function renderFeedbackMatrix() {
 }
 
 // ============================================================
-// #10: WEEKLY INSIGHT
-// ============================================================
-function renderWeeklyInsight() {
-  const el = document.getElementById('weekly-insight-text');
-  const insight = DASHBOARD_DATA?.weeklyInsight || DASHBOARD_DATA?.weeklySummary?.insight || null;
-  if (!insight) {
-    const ws = DASHBOARD_DATA?.weeklySummary;
-    if (ws?.wins?.length) {
-      el.textContent = `Tuần này Dream Team hoàn thành ${ws.wins.length} wins. ${ws.improvements?.length ? `Cần cải thiện ${ws.improvements.length} điểm.` : ''}`;
-    } else {
-      el.textContent = 'Chưa có insight cho tuần này. Dữ liệu sẽ được cập nhật sau retro Chủ nhật.';
-    }
-    return;
-  }
-  el.textContent = insight;
-}
-
-// ============================================================
-// #14: IMPROVEMENT VELOCITY CHART
+// RENDER: IMPROVEMENT VELOCITY
 // ============================================================
 function renderImprovementVelocity() {
   const container = document.getElementById('improvement-chart');
@@ -1305,15 +1321,13 @@ function renderImprovementVelocity() {
   const lessons = DASHBOARD_DATA?.lessons || [];
 
   if (!data || !data.weeks || data.weeks.length === 0) {
-    // Derive from lessons if no pre-computed data
     if (lessons.length > 0) {
-      // Group lessons by week
       const weekMap = {};
       lessons.forEach(l => {
         if (!l.date) return;
         const d = new Date(l.date);
         const weekStart = new Date(d);
-        weekStart.setDate(d.getDate() - d.getDay() + 1); // Monday
+        weekStart.setDate(d.getDate() - d.getDay() + 1);
         const key = weekStart.toISOString().split('T')[0];
         if (!weekMap[key]) weekMap[key] = { observing: 0, promoted: 0, adopted: 0 };
         const status = l.adoptionStatus || l.status || 'observing';
@@ -1351,7 +1365,6 @@ function renderImprovementVelocity() {
     return;
   }
 
-  // Pre-computed data
   const { weeks, observing, promoted, rules } = data;
   const maxVal = Math.max(...weeks.map((_, i) => (observing?.[i] ?? 0) + (promoted?.[i] ?? 0) + (rules?.[i] ?? 0)), 1);
 
@@ -1384,25 +1397,27 @@ function renderImprovementVelocity() {
 async function init() {
   initDatePicker();
 
-  // Render all sections from data
+  // Render Today tab
   renderKPIs(DASHBOARD_DATA?.scoreboard);
+  renderMiniSama(DASHBOARD_DATA?.agents);
   renderAgents(DASHBOARD_DATA?.agents);
   renderProjects(DASHBOARD_DATA?.projects);
   renderRetro();
-  renderLessons(DASHBOARD_DATA?.lessons);
-  renderActiveTasks(DASHBOARD_DATA?.activeTasks);
+  renderActionItems();
   renderFeedbackFeed(DASHBOARD_DATA?.feedback);
   renderSLA(DASHBOARD_DATA?.sla);
   renderAlerts(DASHBOARD_DATA?.alerts);
 
-  // Pre-render hidden views
+  // Pre-render Week tab
   renderTrends();
   renderTrendAnnotations();
   renderWeeklySummary();
   renderWeeklyInsight();
   renderCostMetrics();
   renderImprovementVelocity();
+  renderLessons(DASHBOARD_DATA?.lessons);
   renderFeedbackMatrix();
+  renderSLAWeek(DASHBOARD_DATA?.sla);
 
   // Hide loading overlay
   const overlay = document.getElementById('loading-overlay');
@@ -1413,7 +1428,6 @@ async function init() {
   }
 }
 
-// Boot
 document.addEventListener('DOMContentLoaded', async () => {
   await loadDashboardData();
   init();

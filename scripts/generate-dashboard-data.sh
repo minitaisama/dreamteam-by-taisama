@@ -261,7 +261,22 @@ if [ -x "$PROJECT_STATUS_SCRIPT" ]; then
     pnote="Active"
     [ "$pfiles" -eq 0 ] && pnote="Empty domain"
     
-    echo "{\"id\":\"$(jstr_arg "$dom")\",\"name\":\"$(jstr_arg "$dom")\",\"status\":\"${pstatus}\",\"files\":${pfiles},\"newest\":\"$(jstr_arg "$pnewest")\",\"recentCommits\":${pcommits},\"note\":\"$(jstr_arg "$pnote")\"}"
+    # Health: 100 if has commits, 60 if has files, 20 if empty
+    phealth=60
+    [ "$pfiles" -gt 0 ] && phealth=60
+    [ "$pcommits" != "[]" ] && phealth=90
+    [ "$pfiles" -eq 0 ] && phealth=20
+    
+    # Git status/detail
+    pgitstatus="clean"
+    pgitdetail=""
+    if [ "$pcommits" != "[]" ]; then
+      pgitstatus="ahead"
+      # Extract first commit message as detail
+      pgitdetail=$(echo "$pcommits" | sed 's/\[//;s/\]//;s/"//g' | head -c 40)
+    fi
+    
+    echo "{\"id\":\"$(jstr_arg "$dom")\",\"name\":\"$(jstr_arg "$dom")\",\"status\":\"${pstatus}\",\"files\":${pfiles},\"newestFile\":\"$(jstr_arg "$pnewest")\",\"branch\":\"main\",\"gitStatus\":\"${pgitstatus}\",\"gitDetail\":\"$(jstr_arg "$pgitdetail")\",\"health\":${phealth},\"note\":\"$(jstr_arg "$pnote")\"}"
   done < "$TMPDIR_RETRO/project_blocks.txt" > "$TMPDIR_RETRO/projects_raw.txt"
   
   # Collect project JSON lines
@@ -301,7 +316,7 @@ if [ -f "$PROCESS_MEM" ]; then
       [[ "$text" =~ [Pp]romote ]] && status="promoted"
       
       [ -n "$local_lessons" ] && local_lessons="$local_lessons,"
-      local_lessons="${local_lessons}{\"date\":\"${TODAY}\",\"text\":\"$(jstr_arg "$text")\",\"tag\":\"${tag}\",\"status\":\"${status}\"}"
+      local_lessons="${local_lessons}{\"date\":\"${TODAY}\",\"title\":\"$(jstr_arg "$text")\",\"body\":\"$(jstr_arg "$text")\",\"tag\":\"${tag}\",\"status\":\"${status}\"}"
     fi
   done < "$PROCESS_MEM"
   
@@ -373,19 +388,77 @@ echo "$AGENT_MAP" | grep '|' | while IFS='|' read -r folder id name role emoji c
     coach|lebron|bronny|curry) tasks_7d=$((total_tasks / 4)) ;;
   esac
   
-  # Health
-  health="yellow"
+  # Health (number 0-100 for bar)
+  health_num=50
   if [ "$TODAY_ACTIVE" -gt 0 ] && [ "$TODAY_DONE" -gt 0 ]; then
-    health="green"
+    health_num=80
   elif [ "$TODAY_BLOCKED" -gt 0 ]; then
-    health="red"
+    health_num=30
   fi
   
-  # Status note
-  status_note="Idle"
-  [ -f "$TMPDIR_RETRO/$TODAY/notes.txt" ] && [ -s "$TMPDIR_RETRO/$TODAY/notes.txt" ] && status_note="Active"
+  # Status (lowercase string)
+  status="idle"
+  [ -f "$TMPDIR_RETRO/$TODAY/notes.txt" ] && [ -s "$TMPDIR_RETRO/$TODAY/notes.txt" ] && status="active"
+  [ "$TODAY_ACTIVE" -gt 0 ] && status="active"
   
-  echo "{\"id\":\"${id}\",\"name\":\"${name}\",\"role\":\"${role}\",\"emoji\":\"${emoji}\",\"color\":\"${color}\",\"health\":\"${health}\",\"tasks7d\":${tasks_7d},\"statusNote\":\"${status_note}\",\"feedbackReceived\":0,\"lessonsContributed\":0}"
+  # Role-specific metrics
+  metric1_label=""
+  metric1_val=""
+  metric2_label=""
+  metric2_val=""
+  bar_pct=""
+  health_label="Health"
+  main_value=""
+  main_label=""
+  
+  case "$id" in
+    coach)
+      metric1_label="Tasks handled"
+      metric1_val="${tasks_7d}"
+      metric2_label="Action items"
+      metric2_val="${TOTAL_PENDING}"
+      bar_pct=${health_num}
+      health_label="Tasks/week"
+      ;;
+    lebron)
+      metric1_label="Tasks shipped"
+      metric1_val="${tasks_7d}"
+      metric2_label="Lessons"
+      metric2_val="0"
+      bar_pct=${health_num}
+      health_label="Tasks/week"
+      ;;
+    bronny)
+      metric1_label="Tasks shipped"
+      metric1_val="${tasks_7d}"
+      metric2_label="Components"
+      metric2_val="0"
+      bar_pct=${health_num}
+      health_label="Tasks/week"
+      ;;
+    curry)
+      metric1_label="Tasks reviewed"
+      metric1_val="${tasks_7d}"
+      metric2_label="Issues found"
+      metric2_val="0"
+      bar_pct=${health_num}
+      health_label="Tasks/week"
+      ;;
+    tuvi)
+      main_value="Domain"
+      main_label="Specialist"
+      ;;
+    laoshi)
+      main_value="Mandarin"
+      main_label="Teacher"
+      ;;
+    minisama)
+      main_value="CEO"
+      main_label="Operations"
+      ;;
+  esac
+  
+  echo "{\"id\":\"${id}\",\"name\":\"${name}\",\"role\":\"${role}\",\"emoji\":\"${emoji}\",\"color\":\"${color}\",\"status\":\"${status}\",\"health\":${health_num},\"healthLabel\":\"${health_label}\",\"metric1Label\":\"${metric1_label}\",\"metric1\":${metric1_val:-0},\"metric2Label\":\"${metric2_label}\",\"metric2\":${metric2_val:-0},\"barPct\":${bar_pct:-0},\"mainValue\":\"${main_value}\",\"mainLabel\":\"${main_label}\"}"
 done > "$TMPDIR_RETRO/agents_raw.txt"
 
 AGENTS_JSON=""
@@ -488,6 +561,39 @@ for i in $(seq 0 6); do
   TRENDS_BLOCKED="${TRENDS_BLOCKED}${b}"
 done
 
+# ─── Build weekly summary (aggregate from retros) ─────────────────────
+
+WEEKLY_JSON="{}"
+
+# Collect wins from all retros this week
+WEEKLY_WINS=""
+WEEKLY_IMPROVEMENTS=""
+for datedir in "$TMPDIR_RETRO"/*/; do
+  [ ! -d "$datedir" ] && continue
+  date=$(basename "$datedir")
+  [[ ! "$date" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] && continue
+  
+  if [ -s "$datedir/wins.txt" ]; then
+    while IFS= read -r wline; do
+      [ -z "$wline" ] && continue
+      [ -n "$WEEKLY_WINS" ] && WEEKLY_WINS="$WEEKLY_WINS,"
+      WEEKLY_WINS="${WEEKLY_WINS}\"$(jstr_arg "$wline")\""
+    done < "$datedir/wins.txt"
+  fi
+  
+  if [ -s "$datedir/problems.txt" ]; then
+    while IFS= read -r pline; do
+      [ -z "$pline" ] && continue
+      [ -n "$WEEKLY_IMPROVEMENTS" ] && WEEKLY_IMPROVEMENTS="$WEEKLY_IMPROVEMENTS,"
+      WEEKLY_IMPROVEMENTS="${WEEKLY_IMPROVEMENTS}\"$(jstr_arg "$pline")\""
+    done < "$datedir/problems.txt"
+  fi
+done
+
+if [ -n "$WEEKLY_WINS" ] || [ -n "$WEEKLY_IMPROVEMENTS" ]; then
+  WEEKLY_JSON="{\"status\":\"Weekly\",\"wins\":[${WEEKLY_WINS}],\"improvements\":[${WEEKLY_IMPROVEMENTS}]}"
+fi
+
 # ─── Assemble final JSON ──────────────────────────────────────────────
 
 cat > "$OUTPUT_FILE" << ENDJSON
@@ -497,13 +603,15 @@ cat > "$OUTPUT_FILE" << ENDJSON
     "date": "${TODAY}"
   },
   "scoreboard": {
-    "tasksDone": ${TODAY_DONE},
+    "tasksCompleted": ${TODAY_DONE},
+    "tasksCompletedTrend": $((TODAY_DONE - PREV_DONE)),
     "tasksBlocked": ${TODAY_BLOCKED},
-    "actionPending": ${TOTAL_PENDING},
-    "actionResolved": ${TOTAL_RESOLVED},
-    "activeAgents": ${ACTIVE_AGENTS_JSON},
-    "prevDone": ${PREV_DONE},
-    "prevBlocked": ${PREV_BLOCKED}
+    "tasksBlockedTrend": $((TODAY_BLOCKED - PREV_BLOCKED)),
+    "actionItemsOpen": ${TOTAL_PENDING},
+    "actionItemsOpenTrend": 0,
+    "activeAgents": ${TODAY_ACTIVE},
+    "tokensToday": 0,
+    "tokensTrend": 0
   },
   "agents": [${AGENTS_JSON}],
   "projects": ${PROJECTS_JSON},
@@ -512,9 +620,11 @@ cat > "$OUTPUT_FILE" << ENDJSON
   "trends": {
     "dates": [${TRENDS_DATES}],
     "velocity": [${TRENDS_VELOCITY}],
-    "blocked": [${TRENDS_BLOCKED}]
+    "blocked": [${TRENDS_BLOCKED}],
+    "quality": [${TRENDS_BLOCKED}]
   },
-  "lessons": ${LESSONS_JSON}
+  "lessons": ${LESSONS_JSON},
+  "weeklySummary": ${WEEKLY_JSON}
 }
 ENDJSON
 

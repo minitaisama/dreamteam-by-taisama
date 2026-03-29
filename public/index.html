@@ -1,1555 +1,365 @@
-<!DOCTYPE html>
-<html class="dark" lang="vi">
+<!doctype html>
+<html lang="vi">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
-<title>Dream Team Dashboard</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-  tailwind.config = {
-    darkMode: "class",
-    theme: {
-      extend: {
-        colors: {
-          "on-primary": "#3c0091",
-          "outline": "#958ea0",
-          "error": "#ffb4ab",
-          "primary-container": "#a078ff",
-          "error-container": "#93000a",
-          "on-background": "#e2e2eb",
-          "surface": "#111319",
-          "surface-variant": "#33343b",
-          "outline-variant": "#494454",
-          "surface-container": "#1e1f26",
-          "inverse-primary": "#6d3bd7",
-          "on-primary-container": "#340080",
-          "tertiary": "#ffb95f",
-          "on-surface": "#e2e2eb",
-          "primary": "#d0bcff",
-          "surface-container-high": "#282a30",
-          "secondary-fixed-dim": "#4ae176",
-          "tertiary-fixed-dim": "#ffb95f",
-          "surface-bright": "#373940",
-          "background": "#111319",
-          "surface-container-low": "#191b22",
-          "secondary-container": "#00b954",
-          "on-secondary": "#003915",
-          "secondary": "#4ae176",
-          "surface-container-lowest": "#0c0e14",
-          "on-surface-variant": "#d8d2e6",
-        },
-        fontFamily: {
-          "headline": ["Inter"],
-          "body": ["Inter"],
-          "label": ["Inter"]
-        },
-      },
-    },
-  }
-</script>
-<style>
-  body { font-family: 'Inter', sans-serif; }
-  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-  .pulse-dot { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-  @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .5; transform: scale(1.2); } }
-  .no-scrollbar::-webkit-scrollbar { display: none; }
-  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .spin { animation: spin 1s linear infinite; }
-  @keyframes pulse-red { 0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(239,68,68,0.7); } 50% { opacity: .8; box-shadow: 0 0 0 6px rgba(239,68,68,0); } }
-  .pulse-red-dot { animation: pulse-red 1.5s ease-in-out infinite; }
-
-  /* Health score circle */
-  .health-circle { position: relative; width: 48px; height: 48px; flex-shrink: 0; }
-  .health-circle svg { transform: rotate(-90deg); }
-  .health-circle .score-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; }
-
-  /* Feedback timeline */
-  .feedback-timeline { position: relative; padding-left: 20px; }
-  .feedback-timeline::before { content: ''; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px; background: rgba(73,68,84,0.4); }
-  .feedback-dot { position: absolute; left: -16px; top: 6px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid #33343b; }
-
-  /* Toast */
-  .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); padding: 12px 24px; border-radius: 12px; background: #282a30; border: 1px solid rgba(73,68,84,0.3); color: #e2e2eb; font-size: 13px; z-index: 200; opacity: 0; transition: opacity 0.3s; pointer-events: none; max-width: calc(100vw - 32px); text-align: center; }
-  .toast.show { opacity: 1; pointer-events: auto; }
-
-  /* Collapsible sections */
-  .collapsible-body { max-height: 0; overflow: hidden; transition: max-height 0.35s ease, opacity 0.25s ease; opacity: 0; }
-  .collapsible-body.open { max-height: 2000px; opacity: 1; }
-  .collapsible-chevron { transition: transform 0.25s ease; }
-  .collapsible-chevron.open { transform: rotate(180deg); }
-
-  /* Velocity bars */
-  .velocity-bar { transition: width 0.6s ease; }
-
-  /* Lesson filter buttons */
-  .lesson-filter-btn { padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: 1px solid rgba(73,68,84,0.3); color: #cbc3d7; background: transparent; min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; }
-  .lesson-filter-btn.active { background: rgba(208,188,255,0.15); color: #d0bcff; border-color: rgba(208,188,255,0.3); }
-  .lesson-filter-btn:hover { background: rgba(208,188,255,0.08); }
-
-  /* Matrix cell */
-  .matrix-cell { display: flex; align-items: center; justify-content: center; min-height: 36px; font-size: 13px; font-weight: 700; border-radius: 6px; transition: background 0.2s; }
-
-  /* Mobile bottom nav */
-  .bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 0; font-size: 11px; color: #cbc3d7; cursor: pointer; transition: color 0.2s; min-height: 48px; justify-content: center; flex: 1; }
-  .bottom-nav-item.active { color: #d0bcff; }
-  .bottom-nav-item .material-symbols-outlined { font-size: 22px; }
-
-  /* KPI horizontal scroll */
-  .kpi-scroll { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px; scroll-snap-type: x mandatory; }
-  .kpi-scroll > div { scroll-snap-align: start; flex-shrink: 0; width: 140px; }
-
-  /* Agent card tap */
-  .agent-card-details { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
-  .agent-card.expanded .agent-card-details { max-height: 500px; }
-
-  /* Desktop sidebar */
-  @media (min-width: 768px) {
-    .bottom-nav { display: none !important; }
-  }
-  @media (max-width: 767px) {
-    .desktop-sidebar { display: none !important; }
-    .main-content { padding-bottom: 80px !important; }
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bảng điều khiển hiệu suất Agent</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #242736;
+      --surface3: #2c3144;
+      --border: #2e3146;
+      --text: #e2e4ed;
+      --text2: #9ca0b8;
+      --text3: #6b7094;
+      --purple: #8b5cf6;
+      --purple2: #a78bfa;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow: 0 20px 50px rgba(0,0,0,.28);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: radial-gradient(circle at top right, rgba(139,92,246,.18), transparent 32%), var(--bg); color: var(--text); font-family: Inter, system-ui, -apple-system, sans-serif; }
+    body { min-height: 100vh; }
+    .app { max-width: 1440px; margin: 0 auto; padding: 24px; }
+    .topbar { display: flex; gap: 16px; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; }
+    .title-wrap h1 { margin: 0; font-size: 28px; line-height: 1.05; letter-spacing: -.03em; }
+    .title-wrap p { margin: 8px 0 0; color: var(--text2); font-size: 14px; }
+    .controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .pillset, .datebox { background: rgba(36,39,54,.7); border: 1px solid rgba(255,255,255,.08); border-radius: 999px; padding: 6px; display: flex; gap: 6px; }
+    .datebox { padding: 10px 14px; border-radius: 14px; }
+    input[type="date"] { background: transparent; color: var(--text); border: none; outline: none; font: inherit; }
+    button.toggle { border: none; background: transparent; color: var(--text2); padding: 10px 14px; border-radius: 999px; cursor: pointer; transition: .2s ease; }
+    button.toggle.active { background: linear-gradient(135deg, rgba(139,92,246,.28), rgba(139,92,246,.12)); color: white; }
+    .grid { display: grid; gap: 16px; }
+    .scoreboard { grid-template-columns: repeat(6, minmax(0, 1fr)); margin-bottom: 20px; }
+    .card { background: linear-gradient(180deg, rgba(36,39,54,.92), rgba(26,29,39,.96)); border: 1px solid rgba(255,255,255,.07); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    .card:hover { transform: translateY(-2px); transition: transform .2s ease; }
+    .kpi { padding: 18px; min-height: 128px; position: relative; }
+    .micro { color: var(--text3); text-transform: uppercase; letter-spacing: .12em; font-size: 11px; font-weight: 700; }
+    .metric { margin-top: 14px; font-size: 34px; font-weight: 800; letter-spacing: -.03em; }
+    .subtext, .delta { margin-top: 10px; color: var(--text2); font-size: 13px; }
+    .delta strong { color: white; }
+    .tone-green .metric, .tone-green .status-dot { color: var(--green); background: var(--green); }
+    .tone-red .metric, .tone-red .status-dot { color: var(--red); background: var(--red); }
+    .tone-amber .metric, .tone-amber .status-dot { color: var(--amber); background: var(--amber); }
+    .tone-purple .metric, .tone-purple .status-dot { color: var(--purple2); background: var(--purple2); }
+    .main-layout { grid-template-columns: 1.2fr .8fr; align-items: start; }
+    .section { padding: 18px; }
+    .section h2 { margin: 0 0 14px; font-size: 13px; text-transform: uppercase; letter-spacing: .14em; color: var(--text2); }
+    .agent-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .agent-card { padding: 18px; position: relative; min-height: 210px; }
+    .agent-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 10px; }
+    .agent-name { font-size: 20px; font-weight: 800; }
+    .agent-role { color: var(--text2); font-size: 13px; line-height: 1.45; min-height: 36px; }
+    .status { display: inline-flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 999px; background: rgba(255,255,255,.05); color: var(--text2); font-size: 12px; margin-top: 12px; }
+    .status-dot { width: 8px; height: 8px; border-radius: 999px; display: inline-block; box-shadow: 0 0 0 rgba(255,255,255,.2); animation: pulse 1.8s infinite; }
+    .stats-row { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; margin-top: 16px; }
+    .mini-stat { background: rgba(255,255,255,.035); border-radius: 12px; padding: 10px; }
+    .mini-stat .v { font-size: 20px; font-weight: 800; margin-top: 6px; }
+    .projects-table { width: 100%; border-collapse: collapse; }
+    .projects-table th, .projects-table td { text-align: left; padding: 12px 10px; vertical-align: top; border-bottom: 1px solid rgba(255,255,255,.05); font-size: 13px; }
+    .projects-table th { color: var(--text3); text-transform: uppercase; font-size: 11px; letter-spacing: .12em; }
+    .badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 999px; font-size: 12px; }
+    .badge.green { background: rgba(34,197,94,.14); color: #8df0af; }
+    .badge.amber { background: rgba(245,158,11,.14); color: #ffd27a; }
+    .badge.red { background: rgba(239,68,68,.14); color: #ff9f9f; }
+    .retro-panel { display: grid; gap: 14px; }
+    .highlight { padding: 14px; border-radius: 14px; border-left: 4px solid; background: rgba(255,255,255,.035); }
+    .highlight.good { border-color: var(--green); }
+    .highlight.bad { border-color: var(--red); }
+    .highlight.warn { border-color: var(--amber); }
+    .highlight h3 { margin: 0 0 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .12em; }
+    .highlight p { margin: 0; color: var(--text2); font-size: 14px; line-height: 1.55; }
+    .action-list, .lesson-list, .feedback-list, .summary-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+    .action-item, .lesson-item, .feedback-item, .summary-item { padding: 12px 14px; border-radius: 12px; background: rgba(255,255,255,.035); }
+    .feedback-arrow { color: var(--purple2); font-weight: 700; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .trend-bars { display: grid; gap: 14px; }
+    .trend-row { display: grid; grid-template-columns: 120px 1fr 160px; gap: 12px; align-items: center; }
+    .bar-stack { display: flex; height: 12px; border-radius: 999px; overflow: hidden; background: rgba(255,255,255,.06); }
+    .bar.done { background: linear-gradient(90deg, #16a34a, #22c55e); }
+    .bar.blocked { background: linear-gradient(90deg, #dc2626, #ef4444); }
+    .bar.progress { background: linear-gradient(90deg, #7c3aed, #a78bfa); }
+    .trend-metrics { color: var(--text2); font-size: 12px; }
+    .empty { color: var(--text3); padding: 18px; border-radius: 14px; background: rgba(255,255,255,.025); }
+    .footer-note { margin-top: 20px; color: var(--text3); font-size: 12px; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255,255,255,.35);} 70% { box-shadow: 0 0 0 10px rgba(255,255,255,0);} 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0);} }
+    @media (max-width: 1200px) {
+      .scoreboard { grid-template-columns: repeat(3, minmax(0,1fr)); }
+      .agent-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .main-layout, .two-col { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 720px) {
+      .app { padding: 16px; }
+      .scoreboard, .agent-grid { grid-template-columns: 1fr; }
+      .trend-row { grid-template-columns: 1fr; }
+      .topbar { align-items: flex-start; }
+    }
+  </style>
 </head>
-<body class="bg-background text-on-surface min-h-screen overflow-x-hidden">
-
-<!-- Loading Overlay -->
-<div id="loading-overlay" class="fixed inset-0 z-[100] bg-background flex items-center justify-center">
-  <div class="text-center">
-    <span class="material-symbols-outlined text-primary text-5xl spin">progress_activity</span>
-    <p class="mt-4 text-on-surface-variant text-sm">Đang tải dữ liệu...</p>
-  </div>
-</div>
-
-<!-- Toast notification -->
-<div id="toast" class="toast"></div>
-
-<!-- ===== HEADER ===== -->
-<header class="fixed top-0 w-full z-50 bg-surface-container/80 backdrop-blur-xl border-b border-outline-variant/10">
-  <div class="flex items-center justify-between px-4 py-3 md:px-6">
-    <!-- Title -->
-    <div class="flex items-center gap-3">
-      <div class="w-8 h-8 bg-primary/15 rounded-lg flex items-center justify-center flex-shrink-0">
-        <span class="material-symbols-outlined text-primary text-lg">hub</span>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="title-wrap">
+        <h1>Bảng điều khiển hiệu suất Agent</h1>
+        <p id="header-subtitle">Dream Team data layer — đang nạp…</p>
       </div>
-      <h1 class="text-lg font-bold text-slate-100 tracking-tight">Dream Team</h1>
-      <span id="last-updated" class="text-[10px] text-on-surface-variant hidden"></span>
-    </div>
-
-    <!-- Tabs: Hôm nay | Tuần -->
-    <div class="flex gap-1 bg-surface-container-lowest rounded-lg p-1 border border-outline-variant/10">
-      <button onclick="switchTab('today')" id="tab-today" class="tab-btn px-4 py-2 text-xs font-semibold rounded-md transition-all duration-200 bg-primary/20 text-primary min-h-[44px]">Hôm nay</button>
-      <button onclick="switchTab('week')" id="tab-week" class="tab-btn px-4 py-2 text-xs font-semibold rounded-md transition-all duration-200 text-slate-400 hover:text-slate-200 min-h-[44px]">Tuần</button>
-    </div>
-
-  </div>
-</header>
-
-<!-- ===== DESKTOP SIDEBAR (md+) ===== -->
-<aside class="desktop-sidebar hidden md:flex h-screen w-56 fixed left-0 top-0 bg-[#111319] border-r border-slate-800/20 flex-col p-4 gap-6 z-40 pt-20">
-  <div class="flex items-center gap-3 px-2">
-    <div class="w-9 h-9 bg-violet-500/10 rounded-xl flex items-center justify-center">
-      <span class="material-symbols-outlined text-violet-500">hub</span>
-    </div>
-    <div>
-      <h2 class="text-base font-black text-violet-500 leading-none">Dream Team</h2>
-      <p class="text-[11px] text-slate-500 tracking-widest uppercase">Dashboard v2.0</p>
-    </div>
-  </div>
-  <nav class="flex flex-col gap-1 flex-grow">
-    <span class="flex items-center gap-3 px-3 py-3 text-violet-400 font-semibold bg-violet-500/10 rounded-lg transition-all">
-      <span class="material-symbols-outlined text-lg">dashboard</span>
-      <span class="text-sm">Tổng quan</span>
-    </span>
-
-  </nav>
-</aside>
-
-<!-- ===== MOBILE BOTTOM NAV ===== -->
-<nav class="bottom-nav fixed bottom-0 left-0 right-0 z-50 bg-surface-container/90 backdrop-blur-xl border-t border-outline-variant/10 flex md:hidden">
-  <div class="bottom-nav-item active" id="bnav-today" onclick="switchTab('today')">
-    <span class="material-symbols-outlined">dashboard</span>
-    <span>Tổng quan</span>
-  </div>
-  <div class="bottom-nav-item" id="bnav-week" onclick="switchTab('week')">
-    <span class="material-symbols-outlined">insights</span>
-    <span>Tuần</span>
-  </div>
-
-</nav>
-
-<!-- ===== MAIN CONTENT ===== -->
-<main class="main-content md:ml-56 pt-[72px] pb-8 px-4 md:px-6">
-
-  <!-- ALERTS -->
-  <section id="alerts-section" class="hidden mb-4">
-    <div id="alerts-list" class="space-y-2"></div>
-  </section>
-
-  <!-- ===== TAB: HÔM NAY ===== -->
-  <div id="view-today" class="space-y-5">
-
-    <!-- 1. KPI Row (scrollable horizontal on mobile) -->
-    <section>
-      <div id="kpi-section" class="kpi-scroll no-scrollbar"></div>
-    </section>
-
-    <!-- 2. Agent Cards -->
-    <section>
-      <!-- MiniSama: Featured CEO Card -->
-      <div id="minisama-card" class="mb-4"></div>
-      <!-- Primary agents: 2-col grid -->
-      <h3 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">Đội ngũ</h3>
-      <div id="agent-cards-primary" class="grid grid-cols-2 gap-3 mb-3"></div>
-      <!-- Secondary agents: small row -->
-      <div id="agent-cards-secondary" class="grid grid-cols-2 gap-3"></div>
-    </section>
-
-    <!-- 3. Project Health (stacked cards on mobile) -->
-    <section>
-      <h3 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">Sức khỏe dự án</h3>
-      <div id="project-cards-mobile" class="space-y-3"></div>
-    </section>
-
-    <!-- 4. Retro (collapsible, default collapsed on mobile) -->
-    <section class="bg-surface-container rounded-xl border border-outline-variant/10 overflow-hidden">
-      <button onclick="toggleCollapsible('retro-body', 'retro-chevron')" class="w-full flex items-center justify-between p-4 text-left min-h-[48px]">
-        <div class="flex items-center gap-3">
-          <span class="material-symbols-outlined text-primary">history</span>
-          <div>
-            <h3 class="text-sm font-bold">📋 Daily Retro</h3>
-          </div>
+      <div class="controls">
+        <div class="datebox">
+          <input id="datePicker" type="date" />
         </div>
-        <span id="retro-chevron" class="material-symbols-outlined text-on-surface-variant collapsible-chevron">expand_more</span>
-      </button>
-      <div id="retro-body" class="collapsible-body">
-        <div class="px-4 pt-2 pb-1">
-          <div class="flex items-center gap-2 flex-wrap">
-            <button onclick="selectRetroDay(1)" id="retro-day-1" class="retro-day-btn text-xs px-4 py-2 rounded-lg font-medium transition-all min-h-[44px]">Hôm qua</button>
-            <button onclick="selectRetroDay(2)" id="retro-day-2" class="retro-day-btn text-xs px-4 py-2 rounded-lg font-medium transition-all min-h-[44px]">2 ngày trước</button>
-            <button onclick="selectRetroDay(3)" id="retro-day-3" class="retro-day-btn text-xs px-4 py-2 rounded-lg font-medium transition-all min-h-[44px]">3 ngày trước</button>
-            <span id="retro-date-label" class="text-xs text-on-surface-variant ml-auto"></span>
-          </div>
-          <div id="retro-quality-badge" class="mt-1"></div>
-        </div>
-        <div id="retro-content" class="px-4 pb-4"></div>
-      </div>
-    </section>
-
-    <!-- 5. Action Items (collapsible, default collapsed on mobile) -->
-    <section class="bg-surface-container rounded-xl border border-outline-variant/10 overflow-hidden">
-      <button onclick="toggleCollapsible('action-items-body', 'action-items-chevron')" class="w-full flex items-center justify-between p-4 text-left min-h-[48px]">
-        <div class="flex items-center gap-3">
-          <span class="material-symbols-outlined text-tertiary">task_alt</span>
-          <div>
-            <h3 class="text-sm font-bold">✅ Action Items <span id="action-count-badge" class="text-[11px] bg-tertiary/15 text-tertiary px-2 py-0.5 rounded-full ml-1 hidden">0</span></h3>
-            <p id="action-preview" class="text-[11px] text-on-surface-variant mt-0.5 hidden"></p>
-          </div>
-        </div>
-        <span id="action-items-chevron" class="material-symbols-outlined text-on-surface-variant collapsible-chevron open">expand_more</span>
-      </button>
-      <div id="action-items-body" class="collapsible-body open">
-        <div id="action-items-content" class="px-4 pb-4"></div>
-      </div>
-    </section>
-
-    <!-- 6. Feedback Feed (collapsible, default collapsed on mobile) -->
-    <section class="bg-surface-container rounded-xl border border-outline-variant/10 overflow-hidden">
-      <button onclick="toggleCollapsible('feedback-body', 'feedback-chevron')" class="w-full flex items-center justify-between p-4 text-left min-h-[48px]">
-        <div class="flex items-center gap-3">
-          <span class="material-symbols-outlined text-secondary">forum</span>
-          <div>
-            <h3 class="text-sm font-bold">💬 Feedback gần đây <span id="feedback-count-badge" class="text-[11px] bg-secondary/15 text-secondary px-2 py-0.5 rounded-full ml-1 hidden">0</span></h3>
-            <p id="feedback-preview" class="text-[11px] text-on-surface-variant mt-0.5 hidden"></p>
-          </div>
-        </div>
-        <span id="feedback-chevron" class="material-symbols-outlined text-on-surface-variant collapsible-chevron">expand_more</span>
-      </button>
-      <div id="feedback-body" class="collapsible-body">
-        <div id="feedback-feed-list" class="px-4 pb-4"></div>
-      </div>
-    </section>
-
-    <!-- Tốc độ xử lý (compact row) -->
-    <section id="sla-section-today">
-      <h3 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">⏱ Tốc độ xử lý</h3>
-      <div id="sla-grid" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
-    </section>
-
-  </div>
-
-  <!-- ===== TAB: TUẦN ===== -->
-  <div id="view-week" class="hidden space-y-5">
-
-    <!-- Weekly Insight -->
-    <section>
-      <div id="weekly-insight-card" class="relative overflow-hidden rounded-xl border border-primary/20 p-6 md:p-8" style="background: linear-gradient(135deg, rgba(109,59,215,0.2) 0%, rgba(17,19,25,0.9) 100%);">
-        <div class="relative z-10">
-          <p class="text-[11px] font-black uppercase tracking-widest text-primary/70 mb-3">💡 Weekly Insight</p>
-          <p id="weekly-insight-text" class="text-base md:text-lg font-semibold text-on-surface leading-relaxed"></p>
+        <div class="pillset">
+          <button class="toggle active" data-view="today">Hôm nay</button>
+          <button class="toggle" data-view="7d">7 ngày</button>
+          <button class="toggle" data-view="week">Tuần</button>
         </div>
       </div>
+    </header>
+
+    <section id="scoreboard" class="grid scoreboard"></section>
+
+    <section class="card section" style="margin-bottom:20px;">
+      <h2>Hiệu suất agent chính</h2>
+      <div id="agentsGrid" class="grid agent-grid"></div>
     </section>
 
-    <!-- Trends Chart -->
-    <section class="bg-surface-container p-4 md:p-6 rounded-xl border border-outline-variant/10">
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="text-sm font-bold uppercase tracking-widest">Biểu đồ xu hướng</h3>
-        <div class="flex gap-4">
-          <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-primary"></span><span class="text-[11px] text-on-surface-variant">Velocity</span></div>
-          <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-secondary"></span><span class="text-[11px] text-on-surface-variant">Quality</span></div>
+    <div class="grid main-layout">
+      <section class="card section">
+        <h2>Sức khỏe dự án</h2>
+        <div style="overflow:auto;">
+          <table class="projects-table">
+            <thead>
+              <tr>
+                <th>Dự án</th>
+                <th>Trạng thái</th>
+                <th>Tệp</th>
+                <th>Mới nhất</th>
+                <th>Git</th>
+              </tr>
+            </thead>
+            <tbody id="projectsBody"></tbody>
+          </table>
         </div>
-      </div>
-      <div id="trend-chart" class="relative h-48 w-full"></div>
-      <div class="flex justify-between mt-2 px-2">
-        <span class="text-[11px] text-on-surface-variant">T2</span>
-        <span class="text-[11px] text-on-surface-variant">T3</span>
-        <span class="text-[11px] text-on-surface-variant">T4</span>
-        <span class="text-[11px] text-on-surface-variant">T5</span>
-        <span class="text-[11px] text-on-surface-variant">T6</span>
-        <span class="text-[11px] text-on-surface-variant">T7</span>
-      </div>
-      <div id="trend-annotations" class="mt-4 space-y-1"></div>
-    </section>
-
-    <!-- Lessons Feed -->
-    <section class="bg-surface-container-high p-4 md:p-6 rounded-xl border border-outline-variant/10">
-      <h3 class="text-sm font-bold uppercase tracking-widest mb-4">Bài học kinh nghiệm</h3>
-      <div id="lesson-filters" class="flex flex-wrap gap-2 mb-4">
-        <button class="lesson-filter-btn active" onclick="filterLessons('all')">Tất cả</button>
-        <button class="lesson-filter-btn" onclick="filterLessons('observing')">👁 Observing</button>
-        <button class="lesson-filter-btn" onclick="filterLessons('promoted')">✅ Promoted</button>
-        <button class="lesson-filter-btn" onclick="filterLessons('adopted')">🔄 Adopted</button>
-      </div>
-      <div id="lessons-feed" class="space-y-4 max-h-[500px] overflow-y-auto no-scrollbar"></div>
-    </section>
-
-    <!-- Tiến trình bài học -->
-    <section class="bg-surface-container-high p-4 md:p-6 rounded-xl border border-outline-variant/10">
-      <h3 class="text-sm font-bold uppercase tracking-widest mb-4">📊 Tiến trình bài học</h3>
-      <div id="improvement-chart"></div>
-      <div class="flex items-center justify-center gap-6 mt-4">
-        <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-primary/40"></span><span class="text-[11px] text-on-surface-variant">Observing</span></div>
-        <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-secondary/60"></span><span class="text-[11px] text-on-surface-variant">Promoted</span></div>
-        <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-tertiary/70"></span><span class="text-[11px] text-on-surface-variant">Rules</span></div>
-      </div>
-    </section>
-
-    <!-- Feedback Matrix -->
-    <section class="bg-surface-container-high p-4 md:p-6 rounded-xl border border-outline-variant/10">
-      <h3 class="text-sm font-bold uppercase tracking-widest mb-4">📊 Ma trận Feedback</h3>
-      <div id="feedback-matrix-grid"></div>
-    </section>
-
-    <!-- Cost Metrics + SLA -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <section id="cost-metrics-section" class="md:col-span-2">
-        <h3 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">💰 Hiệu quả chi phí</h3>
-        <div id="cost-metrics-grid" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
       </section>
-      <section id="sla-section-week">
-        <h3 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">⏱ Tốc độ xử lý</h3>
-        <div id="sla-grid-week" class="grid grid-cols-2 gap-3"></div>
+
+      <section class="card section">
+        <h2>Daily Retro View</h2>
+        <div id="retroView" class="retro-panel"></div>
       </section>
     </div>
 
-    <!-- Weekly Summary -->
-    <section>
-      <div id="weekly-summary" class="bg-surface-container-high/40 p-4 md:p-6 rounded-xl border border-outline-variant/20 relative overflow-hidden"></div>
-    </section>
+    <div class="grid two-col" style="margin-top:20px;">
+      <section class="card section">
+        <h2>Feedback & improvement loop</h2>
+        <ul id="feedbackList" class="feedback-list"></ul>
+      </section>
+      <section class="card section">
+        <h2>Lessons learned feed</h2>
+        <ul id="lessonList" class="lesson-list"></ul>
+      </section>
+    </div>
 
+    <div class="grid two-col" style="margin-top:20px;">
+      <section class="card section">
+        <h2>7-day trends</h2>
+        <div id="trendsView" class="trend-bars"></div>
+      </section>
+      <section class="card section">
+        <h2>Weekly retro summary</h2>
+        <ul id="weeklySummary" class="summary-list"></ul>
+        <div style="height:14px"></div>
+        <h2 style="margin-top:0">Top improvements</h2>
+        <ul id="weeklyImprovements" class="action-list"></ul>
+      </section>
+    </div>
+
+    <p class="footer-note">Data source: <span class="mono">dashboard-data.json</span> • Built from retros + process memory + domain status</p>
   </div>
 
-</main>
-
-<script>
-// ============================================================
-// GLOBAL STATE
-// ============================================================
-let DASHBOARD_DATA = null;
-let selectedDate = '';
-let currentTab = 'today';
-let currentLessonFilter = 'all';
-let dismissedAlerts = new Set();
-
-const EMPTY_DATA = {
-  generatedAt: null,
-  scoreboard: {
-    tasksCompleted: 0, tasksBlocked: 0, actionItemsOpen: 0,
-    activeAgents: '0/7', tokensToday: '0'
-  },
-  agents: [],
-  projects: [],
-  retros: {},
-  trends: { velocity: [0,0,0,0,0,0,0], quality: [0,0,0,0,0,0,0] },
-  weeklySummary: { wins: [], improvements: [], status: null },
-  lessons: []
-};
-
-// ============================================================
-// DATA LOADER
-// ============================================================
-async function loadDashboardData() {
-  try {
-    const res = await fetch('/data/dashboard-data.json?t=' + Date.now());
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    DASHBOARD_DATA = await res.json();
-  } catch (e) {
-    console.warn('[Dashboard] Fetch failed, using empty skeleton:', e.message);
-    DASHBOARD_DATA = { ...EMPTY_DATA, generatedAt: null };
-  }
-}
-
-// ============================================================
-// TOAST
-// ============================================================
-function showToast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(el._timer);
-  el._timer = setTimeout(() => el.classList.remove('show'), 3000);
-}
-
-// ============================================================
-// COLLAPSIBLE SECTIONS
-// ============================================================
-function toggleCollapsible(bodyId, chevronId) {
-  const body = document.getElementById(bodyId);
-  const chevron = document.getElementById(chevronId);
-  body.classList.toggle('open');
-  chevron.classList.toggle('open');
-}
-
-// ============================================================
-// TAB SWITCHING
-// ============================================================
-function switchTab(tab) {
-  currentTab = tab;
-  // Header tabs
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.className = 'tab-btn px-4 py-2 text-xs font-semibold rounded-md transition-all duration-200 text-slate-400 hover:text-slate-200 min-h-[44px]';
-  });
-  const activeBtn = document.getElementById('tab-' + tab);
-  if (activeBtn) {
-    activeBtn.className = 'tab-btn px-4 py-2 text-xs font-semibold rounded-md transition-all duration-200 bg-primary/20 text-primary min-h-[44px]';
-  }
-  document.getElementById('view-today').classList.toggle('hidden', tab !== 'today');
-  document.getElementById('view-week').classList.toggle('hidden', tab !== 'week');
-
-  // Sync bottom nav
-  document.querySelectorAll('.bottom-nav-item').forEach(n => n.classList.remove('active'));
-  const bnav = document.getElementById('bnav-' + tab);
-
-// ============================================================
-// RETRO DATE NAVIGATION — simple 3-day buttons
-// ============================================================
-const DAY_NAMES_VI = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
-
-function getDayOffsetDate(daysAgo) {
-  const d = new Date();
-  d.setDate(d.getDate() - daysAgo);
-  return d.toISOString().split('T')[0];
-}
-
-function getDayNameVi(dateStr) {
-  try {
-    const d = new Date(dateStr + 'T00:00:00');
-    return DAY_NAMES_VI[d.getDay()];
-  } catch { return ''; }
-}
-
-function selectRetroDay(daysAgo) {
-  const dateStr = getDayOffsetDate(daysAgo);
-  selectedDate = dateStr;
-  // Update button styles
-  document.querySelectorAll('.retro-day-btn').forEach(btn => {
-    btn.className = 'retro-day-btn text-xs px-4 py-2 rounded-lg font-medium transition-all min-h-[44px] bg-surface-container-high text-on-surface-variant border border-outline-variant/10';
-  });
-  const activeBtn = document.getElementById('retro-day-' + daysAgo);
-  if (activeBtn) {
-    activeBtn.className = 'retro-day-btn text-xs px-4 py-2 rounded-lg font-medium transition-all min-h-[44px] bg-primary/20 text-primary border border-primary/30';
-  }
-  // Update date label
-  const label = document.getElementById('retro-date-label');
-  if (label) label.textContent = dateStr + ' (' + getDayNameVi(dateStr) + ')';
-  renderRetro();
-}
-
-function initDatePicker() {
-  selectRetroDay(1);
-}
-
-// Check if all agents share the same health score (no real data)
-function allAgentsSameScore(agents) {
-  if (!agents || agents.length <= 1) return true;
-  const scores = agents.map(a => a.healthScore ?? a.health ?? 0);
-  return scores.every(s => s === scores[0]);
-}
-
-function hScore(agent, agents, size) {
-  const score = agent?.healthScore ?? agent?.health ?? 0;
-  const showNA = allAgentsSameScore(agents);
-  return healthCircleSVG(score, agent?.healthTrend ?? null, size, showNA);
-}
-
-// ============================================================
-// HELPERS
-// ============================================================
-function esc(str) {
-  if (!str) return '';
-  const div = document.createElement('div');
-  div.textContent = String(str);
-  return div.innerHTML;
-}
-
-function healthColor(pct) {
-  if (pct >= 70) return 'bg-secondary';
-  if (pct >= 40) return 'bg-tertiary';
-  return 'bg-error';
-}
-
-function healthTextColor(pct) {
-  if (pct >= 70) return 'text-secondary';
-  if (pct >= 40) return 'text-tertiary';
-  return 'text-error';
-}
-
-function statusIcon(status) {
-  if (status === 'clean' || status === 'ok') return '<span class="material-symbols-outlined text-sm text-secondary">check_circle</span>';
-  if (status === 'behind' || status === 'warn') return '<span class="material-symbols-outlined text-sm text-tertiary">history</span>';
-  return '<span class="material-symbols-outlined text-sm text-error">error</span>';
-}
-
-function emptyState(title, subtitle) {
-  return `<div class="flex flex-col items-center justify-center py-10 text-center">
-    <span class="material-symbols-outlined text-5xl text-outline-variant/30 mb-3">inbox</span>
-    <p class="text-sm text-on-surface-variant font-medium">${esc(title)}</p>
-    ${subtitle ? `<p class="text-[11px] text-on-surface-variant/60 mt-1 max-w-xs">${esc(subtitle)}</p>` : ''}
-  </div>`;
-}
-
-function timeAgo(dateStr) {
-  if (!dateStr) return '';
-  const d = new Date(dateStr);
-  const now = new Date();
-  const diffMs = now - d;
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  if (diffDays === 0) return 'Hôm nay';
-  if (diffDays === 1) return 'Hôm qua';
-  return `${diffDays} ngày trước`;
-}
-
-function priorityBadge(priority) {
-  switch(priority) {
-    case 0: case 'P0': return '<span class="text-[11px] font-bold bg-error/15 text-error px-1.5 py-0.5 rounded border border-error/20">🔴 P0</span>';
-    case 1: case 'P1': return '<span class="text-[11px] font-bold bg-tertiary/15 text-tertiary px-1.5 py-0.5 rounded border border-tertiary/20">🟡 P1</span>';
-    case 2: case 'P2': return '<span class="text-[11px] font-bold bg-outline-variant/15 text-on-surface-variant px-1.5 py-0.5 rounded border border-outline-variant/20">⚪ P2</span>';
-    default: return '';
-  }
-}
-
-function priorityBorderColor(priority) {
-  switch(priority) {
-    case 0: case 'P0': return 'border-l-4 border-l-error';
-    case 1: case 'P1': return 'border-l-4 border-l-tertiary';
-    case 2: case 'P2': return 'border-l-4 border-l-outline-variant';
-    default: return '';
-  }
-}
-
-// ============================================================
-// HEALTH SCORE CIRCLE
-// ============================================================
-function healthCircleSVG(score, trend, size, showNA) {
-  const pct = Math.max(0, Math.min(100, score ?? 0));
-  const isNA = showNA === true;
-  const circumference = 2 * Math.PI * 20;
-  const offset = circumference - (pct / 100) * circumference;
-  let color = '#ef4444';
-  if (pct >= 80) color = '#4ae176';
-  else if (pct >= 50) color = '#ffb95f';
-  const trendArrow = trend === 'up' ? '↑' : trend === 'down' ? '↓' : '';
-  const trendColor = trend === 'up' ? '#4ae176' : trend === 'down' ? '#ef4444' : '#958ea0';
-  const sz = size || 48;
-  const r = (sz - 8) / 2;
-  const c = 2 * Math.PI * r;
-  const o = c - (pct / 100) * c;
-  const displayText = isNA ? '' : pct;
-  const displayColor = isNA ? '#958ea0' : color;
-  return `
-    <div class="health-circle" style="width:${sz}px;height:${sz}px;" title="Điểm sức khỏe = tổng hợp hiệu suất, chất lượng, phản hồi. 70+ Tốt, 40-69 Bình thường, <40 Cần chú ý">
-      <svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}">
-        <circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="#33343b" stroke-width="4"/>
-        ${!isNA ? `<circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="${color}" stroke-width="4" stroke-linecap="round"
-          stroke-dasharray="${c}" stroke-dashoffset="${o}"/>` : ''}
-      </svg>
-      <div class="score-text" style="color:${displayColor};font-size:${sz > 50 ? 16 : 12}px">${displayText}</div>
-    </div>
-    ${trendArrow ? `<span class="text-xs font-bold" style="color:${trendColor}">${trendArrow}</span>` : ''}
-  `;
-}
-
-// ============================================================
-// AGENT STATUS BADGE
-// ============================================================
-function renderAgentStatusBadge(agent) {
-  const status = agent?.agentStatus || agent?.status || 'unknown';
-  const detail = agent?.statusDetail || '';
-  let badge = '', badgeClass = '';
-  switch(status) {
-    case 'working': badge = '🟢 Đang làm'; badgeClass = 'bg-secondary/10 text-secondary border-secondary/20'; break;
-    case 'waiting': badge = '🟡 Chờ'; badgeClass = 'bg-tertiary/10 text-tertiary border-tertiary/20'; break;
-    case 'idle':
-      badge = `⚫ Idle`; badgeClass = 'bg-outline-variant/10 text-on-surface-variant border-outline-variant/20'; break;
-    case 'reviewing': badge = '🔵 Review'; badgeClass = 'bg-primary/10 text-primary border-primary/20'; break;
-    case 'active': badge = '🟢 Hoạt động'; badgeClass = 'bg-secondary/10 text-secondary border-secondary/20'; break;
-    default: badge = '⚪ Unknown'; badgeClass = 'bg-outline-variant/10 text-on-surface-variant border-outline-variant/20';
-  }
-  return `<span class="text-[11px] ${badgeClass} px-2 py-0.5 rounded-full border uppercase font-bold tracking-tighter inline-block">${badge}</span>
-    ${detail ? `<p class="text-[11px] text-on-surface-variant italic mt-0.5">${esc(detail)}</p>` : ''}`;
-}
-
-// ============================================================
-// RENDER: KPIs (horizontal scroll cards)
-// ============================================================
-function renderKPIs(scoreboard) {
-  const sb = scoreboard || {};
-  const tc = sb.tasksCompleted;
-  const tb = sb.tasksBlocked;
-  const tokens = sb.tokensToday;
-  const agents = sb.activeAgents;
-  const aio = sb.actionItemsOpen;
-
-  const kpis = [
-    { label: 'Hoàn thành', value: (tc !== undefined && tc !== null && tc === 0) ? '—' : (tc ?? '—'), icon: 'task_alt', color: 'secondary', muted: (tc === 0) },
-    { label: 'Bị chặn', value: (tb !== undefined && tb !== null && tb === 0) ? '—' : (tb ?? '—'), icon: 'block', color: 'error', muted: (tb === 0) },
-    { label: 'Action mở', value: aio ?? '—', icon: 'pending_actions', color: 'tertiary' },
-    { label: 'Agent', value: (agents === 0 || agents === '0') ? '0/7' : (agents ?? '—'), icon: 'smart_toy', color: 'primary', pulse: true },
-    { label: 'Tokens', value: (tokens !== undefined && tokens !== null && (tokens === 0 || tokens === '0')) ? '—' : (tokens ?? '—'), icon: 'electric_bolt', color: 'primary', muted: (tokens === 0 || tokens === '0') }
-  ];
-
-  document.getElementById('kpi-section').innerHTML = kpis.map(k => `
-    <div class="bg-surface-container-high p-4 rounded-xl border border-outline-variant/10">
-      <div class="flex items-center justify-between mb-2">
-        <span class="material-symbols-outlined text-${k.color} text-lg">${k.icon}</span>
-        ${k.pulse ? '<div class="w-2 h-2 rounded-full bg-secondary pulse-dot"></div>' : ''}
-      </div>
-      <p class="text-2xl font-bold tracking-tight ${k.muted ? 'text-outline-variant' : ''}">${esc(String(k.value))}</p>
-      <p class="text-xs text-on-surface-variant mt-0.5">${esc(k.label)}</p>
-    </div>
-  `).join('');
-}
-
-// ============================================================
-// RENDER: MINISAMA (CEO Featured Card)
-// ============================================================
-function renderMiniSama(agents) {
-  const container = document.getElementById('minisama-card');
-  const ms = agents?.find(a =>
-    (a.name || '').toLowerCase().includes('minisama') ||
-    (a.name || '').toLowerCase().includes('mini-sama') ||
-    (a.role || '').toLowerCase().includes('ceo') ||
-    (a.name || '').toLowerCase().includes('mini')
-  );
-
-  if (!ms) {
-    container.innerHTML = '';
-    return;
-  }
-
-  container.innerHTML = `
-    <div class="flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3">
-      <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30 flex-shrink-0">
-        <span class="material-symbols-outlined text-primary text-2xl" data-weight="fill">account_circle</span>
-      </div>
-      <div class="flex-1 min-w-0">
-        <div class="flex items-center gap-2">
-          <h4 class="text-sm font-bold text-slate-100 leading-tight truncate">${esc(ms.name)}</h4>
-          <span class="text-[10px] font-black bg-primary/20 text-primary px-2 py-0.5 rounded-full border border-primary/20 uppercase tracking-wider flex-shrink-0">👑 CEO</span>
-        </div>
-        <div class="mt-0.5 flex items-center gap-2">
-          ${renderAgentStatusBadge(ms)}
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-// ============================================================
-// RENDER: AGENT CARDS
-// ============================================================
-function renderAgents(agents) {
-  if (!agents || agents.length === 0) {
-    document.getElementById('agent-cards-primary').innerHTML = emptyState('Chưa có dữ liệu agent');
-    document.getElementById('agent-cards-secondary').innerHTML = '';
-    return;
-  }
-
-  // MiniSama is rendered separately
-  const primaryNames = ['coach', 'lebron', 'bronny', 'curry'];
-  const secondaryNames = [];
-
-  const primary = agents.filter(a => primaryNames.some(n => (a.name || '').toLowerCase().includes(n)));
-  const secondary = agents.filter(a => secondaryNames.some(n => (a.name || '').toLowerCase().includes(n)));
-
-  const primaryIcons = ['smart_toy', 'psychology', 'code', 'verified'];
-  const primaryColors = ['primary', 'secondary', 'tertiary', 'primary'];
-
-  // Render primary agents (Coach, Lebron, Bronny, Curry) — compact, tap to expand
-  document.getElementById('agent-cards-primary').innerHTML = primary.slice(0, 4).map((a, i) => {
-    const color = primaryColors[i % primaryColors.length];
-    const icon = primaryIcons[i % primaryIcons.length];
-    const healthScore = a.healthScore ?? a.health ?? 0;
-    const healthTrend = a.healthTrend ?? null;
-    return `
-      <div class="agent-card bg-surface-container rounded-xl border border-outline-variant/10 p-4 cursor-pointer hover:bg-surface-bright transition-all" onclick="this.classList.toggle('expanded')">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full bg-${color}/20 flex items-center justify-center border border-${color}/30 flex-shrink-0">
-            <span class="material-symbols-outlined text-${color} text-xl" data-weight="fill">${icon}</span>
-          </div>
-          <div class="flex-1 min-w-0">
-            <h4 class="font-bold text-sm leading-snug line-clamp-2">${esc(a.name)}</h4>
-            <div class="mt-1 flex items-center gap-2">
-              ${renderAgentStatusBadge(a)}
-            </div>
-          </div>
-          <div class="flex-shrink-0">
-            ${hScore(a, agents, 40)}
-          </div>
-        </div>
-        <!-- Expandable details -->
-        <div class="agent-card-details">
-          <div class="mt-3 pt-3 border-t border-outline-variant/10 space-y-2">
-            ${a.metric1Label ? `<div class="flex justify-between text-xs"><span class="text-on-surface-variant">${esc(a.metric1Label)}</span><span class="font-mono font-semibold">${esc(String((a.metric1 ?? 0) === 0 || a.metric1 === '' || a.metric1 === '0' ? '—' : a.metric1))}</span></div>` : ''}
-            ${a.metric2Label ? `<div class="flex justify-between text-xs"><span class="text-on-surface-variant">${esc(a.metric2Label)}</span><span class="font-mono font-semibold">${esc(String((a.metric2 ?? 0) === 0 || a.metric2 === '' || a.metric2 === '0' ? '—' : a.metric2))}</span></div>` : ''}
-            ${typeof a.barPct === 'number' ? `
-            <div class="w-full bg-surface-container-lowest h-1.5 rounded-full overflow-hidden mt-2">
-              <div class="bg-${color} h-full rounded-full" style="width: ${Math.min(100, Math.max(0, a.barPct))}%"></div>
-            </div>` : ''}
-            ${a.mainLabel ? `<div class="flex justify-between text-xs"><span class="text-on-surface-variant">${esc(a.mainLabel)}</span><span class="font-mono font-semibold">${esc(String((a.mainValue ?? 0) === 0 || a.mainValue === '' || a.mainValue === '0' ? '—' : a.mainValue))}</span></div>` : ''}
-          </div>
-        </div>
-      </div>
-    `;
-  }).join('');
-
-  // Render secondary agents (tuvi, laoshi) — small tiles
-  document.getElementById('agent-cards-secondary').innerHTML = secondary.map(a => {
-    const healthScore = a.healthScore ?? a.health ?? 0;
-    const healthTrend = a.healthTrend ?? null;
-    const status = a.status || 'unknown';
-    const dotColor = status === 'active' ? 'bg-secondary pulse-dot' : status === 'idle' ? 'bg-tertiary' : 'bg-error';
-    return `
-      <div class="bg-surface-container-low rounded-xl border border-outline-variant/5 p-4 min-h-[48px]">
-        <div class="flex items-center justify-between mb-2">
-          <div class="flex items-center gap-2">
-            <span class="w-2 h-2 ${dotColor} rounded-full flex-shrink-0"></span>
-            <p class="text-xs font-bold text-on-surface truncate">${esc(a.name)}</p>
-          </div>
-          ${hScore(a, agents, 36)}
-        </div>
-        <p class="text-base font-bold">${esc(String((a.mainValue === 0 || a.mainValue === '0' || a.mainValue === '' || !a.mainValue) ? '—' : a.mainValue))}</p>
-        <p class="text-[11px] text-on-surface-variant">${esc(a.mainLabel ?? '')}</p>
-        ${renderAgentStatusBadge(a)}
-      </div>
-    `;
-  }).join('');
-}
-
-// ============================================================
-// RENDER: PROJECT HEALTH (stacked cards)
-// ============================================================
-function renderProjects(projects) {
-  const container = document.getElementById('project-cards-mobile');
-  if (!projects || projects.length === 0) {
-    container.innerHTML = emptyState('Chưa có dữ liệu dự án', 'Dự án sẽ hiển thị khi được kết nối với repo.');
-    return;
-  }
-
-  container.innerHTML = projects.map(p => {
-    const healthPct = p.health ?? 0;
-    let statusText, statusBg;
-    if (healthPct >= 70) { statusText = 'Tốt'; statusBg = 'bg-secondary/10 text-secondary'; }
-    else if (healthPct >= 40) { statusText = 'Cảnh báo'; statusBg = 'bg-tertiary/10 text-tertiary'; }
-    else { statusText = 'Lỗi'; statusBg = 'bg-error/10 text-error'; }
-
-    return `
-      <div class="bg-surface-container rounded-xl border border-outline-variant/10 p-4">
-        <div class="flex items-center justify-between mb-3">
-          <div>
-            <h4 class="font-bold text-sm">${esc(p.name)}</h4>
-            <p class="text-[11px] text-on-surface-variant mt-0.5">${esc(p.branch || '')} · ${esc(String(p.files ?? ''))} tệp</p>
-          </div>
-          <span class="text-[11px] font-bold ${statusBg} px-2 py-1 rounded-full">${statusText} ${healthPct}%</span>
-        </div>
-        <div class="grid grid-cols-3 gap-3">
-          <div>
-            <p class="text-[11px] text-on-surface-variant uppercase">Git</p>
-            <div class="flex items-center gap-1 mt-1">
-              ${statusIcon(p.gitStatus)}
-              <span class="text-xs font-mono">${esc(p.gitDetail || '—')}</span>
-            </div>
-          </div>
-          <div>
-            <p class="text-[11px] text-on-surface-variant uppercase">Mới nhất</p>
-            <p class="text-xs mt-1 truncate">${esc(p.newestFile && p.newestFile !== 'null' ? p.newestFile : 'Chưa có file')}</p>
-          </div>
-          <div>
-            <p class="text-[11px] text-on-surface-variant uppercase">Health</p>
-            <div class="mt-1.5 w-full bg-surface-container-lowest h-2 rounded-full overflow-hidden">
-              <div class="${healthColor(healthPct)} h-full rounded-full" style="width: ${Math.min(100, Math.max(0, healthPct))}%"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-// ============================================================
-// RENDER: RETRO
-// ============================================================
-function renderRetroQualityBadge(retro) {
-  
-}
-
-function renderRetro() {
-  const container = document.getElementById('retro-content');
-  const retros = DASHBOARD_DATA?.retros || {};
-  const retro = retros[selectedDate];
-
-  if (!retro) {
-    container.innerHTML = emptyState('Chưa có retro cho ngày này', 'Retro chưa chạy cho ngày này. Chọn ngày khác hoặc đợi 23:59.');
-    return;
-  }
-
-  renderRetroQualityBadge(retro);
-
-  let html = '<div class="space-y-3">';
-
-  if (retro.wins && retro.wins.length > 0) {
-    html += `<div class="p-3 bg-secondary/5 rounded-lg border-l-4 border-secondary">
-      <p class="text-[11px] font-bold text-secondary uppercase mb-1">Điều làm tốt</p>
-      ${retro.wins.map(w => `<p class="text-xs text-on-surface leading-relaxed">• ${esc(w)}</p>`).join('')}
-    </div>`;
-  }
-
-  if (retro.problems && retro.problems.length > 0) {
-    html += `<div class="p-3 bg-error/5 rounded-lg border-l-4 border-error">
-      <p class="text-[11px] font-bold text-error uppercase mb-1">Điều chưa tốt</p>
-      ${retro.problems.map(p => `<p class="text-xs text-on-surface leading-relaxed">• ${esc(p)}</p>`).join('')}
-    </div>`;
-  }
-
-  if (retro.rootCauses && retro.rootCauses.length > 0) {
-    html += `<div class="p-3 bg-tertiary/5 rounded-lg border-l-4 border-tertiary">
-      <p class="text-[11px] font-bold text-tertiary uppercase mb-1">Nguyên nhân gốc</p>
-      ${retro.rootCauses.map(r => `<p class="text-xs text-on-surface leading-relaxed">• ${esc(r)}</p>`).join('')}
-    </div>`;
-  }
-
-  html += '</div>';
-
-  // Action Items
-  if (retro.actionItems && retro.actionItems.length > 0) {
-    html += '<div class="mt-5"><p class="text-[11px] font-bold text-on-surface-variant uppercase mb-3">Action Items</p><ul class="space-y-3">';
-    retro.actionItems.forEach(item => {
-      const done = item.done || item.status === 'done';
-      const icon = done ? 'check_box' : 'check_box_outline_blank';
-      const style = done ? 'line-through text-on-surface-variant' : '';
-      const priority = item.priority ?? item.priorityLevel ?? null;
-      const ageDays = item.ageDays ?? item.age ?? null;
-      const overdueDot = (ageDays !== null && ageDays > 3 && !done)
-        ? '<span class="w-2 h-2 rounded-full bg-error pulse-red-dot inline-block ml-1"></span>' : '';
-      const ageText = ageDays !== null && ageDays > 0
-        ? `<span class="text-[11px] text-on-surface-variant ml-auto flex-shrink-0">${esc(String(ageDays))} ngày</span>` : '';
-      html += `<li class="flex items-start gap-3 text-sm p-3 rounded-lg bg-surface-container-low/30 ${priorityBorderColor(priority)}">
-        <span class="material-symbols-outlined text-lg ${done ? 'text-secondary' : 'text-outline'} mt-0.5 flex-shrink-0">${icon}</span>
-        <div class="flex-1 min-w-0">
-          <span class="${style}">${esc(item.text || item.action || '')}</span>
-          ${priority !== null ? `<span class="ml-2 inline-flex">${priorityBadge(priority)}</span>` : ''}
-        </div>
-        ${overdueDot}
-        ${ageText}
-      </li>`;
-    });
-    html += '</ul></div>';
-  }
-
-  container.innerHTML = html;
-}
-
-// ============================================================
-// RENDER: ACTION ITEMS (standalone section)
-// ============================================================
-function renderActionItems() {
-  const container = document.getElementById('action-items-content');
-  const retros = DASHBOARD_DATA?.retros || {};
-  const retro = retros[selectedDate];
-
-  if (!retro?.actionItems || retro.actionItems.length === 0) {
-    container.innerHTML = emptyState('Không có action item', 'Action items sẽ xuất hiện sau khi retro hoàn thành.');
-    return;
-  }
-
-  let html = '<ul class="space-y-3">';
-  retro.actionItems.forEach(item => {
-    const done = item.done || item.status === 'done';
-    const icon = done ? 'check_box' : 'check_box_outline_blank';
-    const style = done ? 'line-through text-on-surface-variant' : '';
-    const priority = item.priority ?? item.priorityLevel ?? null;
-    const ageDays = item.ageDays ?? item.age ?? null;
-    const overdueDot = (ageDays !== null && ageDays > 3 && !done)
-      ? '<span class="w-2 h-2 rounded-full bg-error pulse-red-dot inline-block ml-1"></span>' : '';
-    const ageText = ageDays !== null && ageDays > 0
-      ? `<span class="text-[11px] text-on-surface-variant ml-auto flex-shrink-0">${esc(String(ageDays))} ngày</span>` : '';
-    html += `<li class="flex items-start gap-3 text-sm p-3 rounded-lg bg-surface-container-low/30 ${priorityBorderColor(priority)}">
-      <span class="material-symbols-outlined text-lg ${done ? 'text-secondary' : 'text-outline'} mt-0.5 flex-shrink-0">${icon}</span>
-      <div class="flex-1 min-w-0">
-        <span class="${style}">${esc(item.text || item.action || '')}</span>
-        ${priority !== null ? `<span class="ml-2 inline-flex">${priorityBadge(priority)}</span>` : ''}
-      </div>
-      ${overdueDot}
-      ${ageText}
-    </li>`;
-  });
-  html += '</ul>';
-  container.innerHTML = html;
-}
-
-// ============================================================
-// RENDER: FEEDBACK FEED
-// ============================================================
-function renderFeedbackFeed(feedback) {
-  const container = document.getElementById('feedback-feed-list');
-  if (!feedback || feedback.length === 0) {
-    container.innerHTML = emptyState('Chưa có feedback', 'Feedback sẽ xuất hiện khi agents giao tiếp trong retro.');
-    return;
-  }
-
-  container.innerHTML = `<div class="feedback-timeline space-y-4">
-    ${feedback.map((f) => {
-      const typeIcon = f.type === 'coaching' ? '📋' : f.type === 'praise' ? '👍' : f.type === 'correction' ? '🔧' : '💬';
-      const dotBg = f.type === 'coaching' ? 'bg-primary' : f.type === 'praise' ? 'bg-secondary' : f.type === 'correction' ? 'bg-tertiary' : 'bg-outline-variant';
-      return `
-        <div class="relative">
-          <div class="feedback-dot ${dotBg}"></div>
-          <div class="bg-surface-container-low/50 p-3 rounded-lg">
-            <div class="flex items-center gap-2 mb-1 flex-wrap">
-              <span class="text-sm">${typeIcon}</span>
-              <span class="text-[11px] font-bold">${esc(f.from || '?')}</span>
-              <span class="text-[11px] text-on-surface-variant">→</span>
-              <span class="text-[11px] font-bold">${esc(f.to || '?')}</span>
-              <span class="text-[11px] text-on-surface-variant ml-auto">${esc(timeAgo(f.date || f.createdAt))}</span>
-            </div>
-            <p class="text-xs text-on-surface leading-relaxed">${esc(f.text || f.message || '')}</p>
-          </div>
-        </div>
-      `;
-    }).join('')}
-  </div>`;
-}
-
-// ============================================================
-// RENDER: ALERTS
-// ============================================================
-function renderAlerts(alerts) {
-  const section = document.getElementById('alerts-section');
-  const container = document.getElementById('alerts-list');
-  if (!alerts || alerts.length === 0) { section.classList.add('hidden'); return; }
-  const visibleAlerts = alerts.filter((a, i) => !dismissedAlerts.has(i));
-  if (visibleAlerts.length === 0) { section.classList.add('hidden'); return; }
-
-  section.classList.remove('hidden');
-  container.innerHTML = visibleAlerts.map((a) => {
-    const idx = alerts.indexOf(a);
-    const isCritical = a.level === 'critical' || a.severity === 'critical';
-    const bg = isCritical ? 'bg-error/10 border-error/30' : 'bg-tertiary/10 border-tertiary/30';
-    const icon = isCritical ? '⚠️' : '⚡';
-    const textColor = isCritical ? 'text-error' : 'text-tertiary';
-    return `
-      <div class="flex items-center gap-3 px-4 py-3 rounded-lg border ${bg}">
-        <span class="text-lg flex-shrink-0">${icon}</span>
-        <p class="text-sm ${textColor} flex-1">${esc(a.message || a.text || '')}</p>
-        ${a.agent ? `<span class="text-[11px] font-bold bg-surface-container-lowest px-2 py-0.5 rounded-full text-on-surface-variant flex-shrink-0">${esc(a.agent)}</span>` : ''}
-        <button onclick="dismissAlert(${idx})" class="text-on-surface-variant hover:text-on-surface transition-colors flex-shrink-0 min-w-[44px] min-h-[44px] flex items-center justify-center">
-          <span class="material-symbols-outlined text-sm">close</span>
-        </button>
-      </div>
-    `;
-  }).join('');
-}
-
-function dismissAlert(idx) {
-  dismissedAlerts.add(idx);
-  renderAlerts(DASHBOARD_DATA?.alerts);
-}
-
-// ============================================================
-// RENDER: SLA
-// ============================================================
-function setSectionVisible(sectionId, visible) {
-  const section = document.getElementById(sectionId);
-  if (section) section.style.display = visible ? '' : 'none';
-}
-
-function renderSLA(sla) {
-  renderSLAWeek(sla);
-}
-
-function renderSLAWeek(sla) {
-  const containers = ['sla-grid', 'sla-grid-week'];
-  if (!sla) {
-    containers.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.innerHTML = '';
-    });
-    setSectionVisible('sla-section-today', false);
-    setSectionVisible('sla-section-week', false);
-    return;
-  }
-  const r24 = sla.resolved24h ?? sla.within24h ?? 0;
-  const r48 = sla.resolved48h ?? sla.within48h ?? 0;
-  const rw = sla.resolvedWeek ?? sla.withinWeek ?? 0;
-  const od = sla.overdue ?? sla.expired ?? 0;
-
-  const allZero = (r24 === 0 && r48 === 0 && rw === 0 && od === 0);
-  if (allZero) {
-    containers.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.innerHTML = '';
-    });
-    setSectionVisible('sla-section-today', false);
-    setSectionVisible('sla-section-week', false);
-    return;
-  }
-
-  setSectionVisible('sla-section-today', true);
-  setSectionVisible('sla-section-week', true);
-
-  const boxes = [
-    { label: '24h', value: r24, good: true },
-    { label: '48h', value: r48, good: true },
-    { label: '1 tuần', value: rw, good: true },
-    { label: 'Quá hạn', value: od, good: od === 0 }
-  ];
-
-  containers.forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.innerHTML = boxes.map(b => `
-      <div class="bg-surface-container-high p-4 rounded-xl border border-outline-variant/10 text-center">
-        <p class="text-2xl font-bold ${b.good ? 'text-secondary' : 'text-error'}">${esc(String(b.value))}</p>
-        <p class="text-[11px] text-on-surface-variant font-semibold uppercase mt-1">${esc(b.label)}</p>
-      </div>
-    `).join('');
-  });
-}
-
-// ============================================================
-// RENDER: TRENDS
-// ============================================================
-function renderTrends() {
-  const container = document.getElementById('trend-chart');
-  const trends = DASHBOARD_DATA?.trends;
-
-  if (!trends || !trends.velocity || trends.velocity.length === 0) {
-    container.innerHTML = emptyState('Chưa có dữ liệu xu hướng');
-    return;
-  }
-
-  // Check if fewer than 2 non-zero velocity values
-  const nonZeroVelocity = (trends.velocity || []).filter(v => v > 0).length;
-  if (nonZeroVelocity < 2) {
-    container.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-center">
-      <span class="material-symbols-outlined text-4xl text-outline-variant/30 mb-2">trending_up</span>
-      <p class="text-sm text-on-surface-variant font-medium">Chưa đủ dữ liệu xu hướng</p>
-      <p class="text-[11px] text-on-surface-variant/60 mt-1">Cần ≥ 2 ngày hoạt động</p>
-    </div>`;
-    return;
-  }
-
-  const maxVal = Math.max(...trends.velocity, ...trends.quality, 1);
-  const toY = (v) => 100 - (v / maxVal) * 80 - 10;
-
-  let velPath = '', qualPath = '';
-  trends.velocity.forEach((v, i) => {
-    const x = (i / (trends.velocity.length - 1)) * 400;
-    const y = toY(v);
-    velPath += (i === 0 ? 'M' : 'L') + `${x} ${y} `;
-  });
-  trends.quality.forEach((v, i) => {
-    const x = (i / (trends.quality.length - 1)) * 400;
-    const y = toY(v);
-    qualPath += (i === 0 ? 'M' : 'L') + `${x} ${y} `;
-  });
-
-  container.innerHTML = `
-    <svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 400 100">
-      <line class="text-outline-variant/10" stroke="currentColor" stroke-width="1" x1="0" x2="400" y1="20" y2="20"></line>
-      <line class="text-outline-variant/10" stroke="currentColor" stroke-width="1" x1="0" x2="400" y1="50" y2="50"></line>
-      <line class="text-outline-variant/10" stroke="currentColor" stroke-width="1" x1="0" x2="400" y1="80" y2="80"></line>
-      <path class="text-primary" d="${esc(velPath)}" fill="none" stroke="currentColor" stroke-width="2"></path>
-      <path class="text-secondary" d="${esc(qualPath)}" fill="none" stroke="currentColor" stroke-width="2"></path>
-    </svg>
-  `;
-}
-
-// ============================================================
-// RENDER: TREND ANNOTATIONS
-// ============================================================
-function renderTrendAnnotations() {
-  const container = document.getElementById('trend-annotations');
-  const annotations = DASHBOARD_DATA?.trendAnnotations || DASHBOARD_DATA?.annotations || DASHBOARD_DATA?.trends?.annotations || [];
-  if (!annotations || annotations.length === 0) { container.innerHTML = ''; return; }
-  container.innerHTML = annotations.map(a => `
-    <div class="flex items-center gap-2 text-[11px] text-on-surface-variant">
-      <span>${esc(a.icon || '📌')}</span>
-      <span class="font-semibold">${esc(a.date || '')}</span>
-      <span>—</span>
-      <span>${esc(a.text || a.label || '')}</span>
-    </div>
-  `).join('');
-}
-
-// ============================================================
-// RENDER: WEEKLY SUMMARY
-// ============================================================
-function renderWeeklySummary() {
-  const container = document.getElementById('weekly-summary');
-  const ws = DASHBOARD_DATA?.weeklySummary;
-
-  if (!ws || (!ws.wins?.length && !ws.improvements?.length)) {
-    container.innerHTML = emptyState('Chưa có tổng kết tuần');
-    return;
-  }
-
-  let html = '';
-  if (ws.status) {
-    html += `<div class="absolute top-0 right-0 p-2">
-      <span class="text-[11px] font-bold bg-secondary text-on-secondary px-2 py-0.5 rounded-bl-lg">${esc(ws.status)}</span>
-    </div>`;
-  }
-  html += '<h3 class="text-xs font-black uppercase tracking-widest text-on-surface-variant mb-4">Tổng kết tuần</h3>';
-
-  if (ws.wins && ws.wins.length > 0) {
-    html += '<div class="space-y-3 mb-6">';
-    ws.wins.forEach((w, i) => {
-      html += `<div class="flex items-start gap-2">
-        <span class="text-secondary font-bold text-xs mt-0.5">${String(i + 1).padStart(2, '0')}</span>
-        <p class="text-sm">${esc(w)}</p>
-      </div>`;
-    });
-    html += '</div>';
-  }
-
-  if (ws.improvements && ws.improvements.length > 0) {
-    html += '<h4 class="text-xs font-bold uppercase tracking-widest text-tertiary mb-3">Cần cải thiện</h4>';
-    html += '<div class="space-y-3">';
-    ws.improvements.forEach((imp, i) => {
-      html += `<div class="flex items-start gap-2">
-        <span class="text-tertiary font-bold text-xs mt-0.5">${String(i + 1).padStart(2, '0')}</span>
-        <p class="text-sm">${esc(imp)}</p>
-      </div>`;
-    });
-    html += '</div>';
-  }
-
-  container.innerHTML = html;
-}
-
-// ============================================================
-// RENDER: WEEKLY INSIGHT
-// ============================================================
-function renderWeeklyInsight() {
-  const el = document.getElementById('weekly-insight-text');
-  const insight = DASHBOARD_DATA?.weeklyInsight || DASHBOARD_DATA?.weeklySummary?.insight || null;
-  if (!insight) {
-    const ws = DASHBOARD_DATA?.weeklySummary;
-    if (ws?.wins?.length) {
-      el.textContent = `Tuần này Dream Team hoàn thành ${ws.wins.length} wins. ${ws.improvements?.length ? `Cần cải thiện ${ws.improvements.length} điểm.` : ''}`;
-    } else {
-      el.textContent = 'Chưa có insight cho tuần này. Dữ liệu sẽ được cập nhật sau retro Chủ nhật.';
+  <script>
+    let DASHBOARD_DATA = null;
+    let currentDate = null;
+    let currentView = 'today';
+
+    const el = (id) => document.getElementById(id);
+    const toneClass = (tone) => `tone-${tone || 'purple'}`;
+    const badgeClass = (health) => health === 'green' ? 'green' : health === 'red' ? 'red' : 'amber';
+    const escapeHtml = (s='') => s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+    function setHeader() {
+      const meta = DASHBOARD_DATA.meta;
+      el('header-subtitle').textContent = `Nguồn: retro ${meta.availableDates[0]} → ${meta.availableDates[meta.availableDates.length - 1]} • generated ${meta.generatedAt}`;
     }
-    return;
-  }
-  el.textContent = insight;
-}
 
-// ============================================================
-// RENDER: LESSONS
-// ============================================================
-function filterLessons(filter) {
-  currentLessonFilter = filter;
-  document.querySelectorAll('.lesson-filter-btn').forEach(btn => btn.classList.remove('active'));
-  event.target.classList.add('active');
-  renderLessons(DASHBOARD_DATA?.lessons);
-}
-
-function renderLessons(lessons) {
-  const container = document.getElementById('lessons-feed');
-  const filter = currentLessonFilter;
-
-  if (!lessons || lessons.length === 0) {
-    container.innerHTML = emptyState('Chưa có bài học');
-    return;
-  }
-
-  const filtered = filter === 'all' ? lessons : lessons.filter(l => (l.adoptionStatus || l.status) === filter);
-  if (filtered.length === 0) {
-    container.innerHTML = emptyState(`Không có bài học "${filter}" nào`);
-    return;
-  }
-
-  container.innerHTML = filtered.map((l, i) => {
-    const dotColor = i % 2 === 0 ? 'bg-primary' : 'bg-secondary';
-    const tagColor = i % 2 === 0 ? 'text-primary' : 'text-secondary';
-    const status = l.adoptionStatus || l.status || 'observing';
-    let statusBadge = '';
-    switch(status) {
-      case 'observing': statusBadge = '<span class="text-[11px] bg-outline-variant/15 text-on-surface-variant px-1.5 py-0.5 rounded border border-outline-variant/20">👁 Observing</span>'; break;
-      case 'promoted': statusBadge = '<span class="text-[11px] bg-secondary/15 text-secondary px-1.5 py-0.5 rounded border border-secondary/20">✅ Promoted</span>'; break;
-      case 'adopted': statusBadge = '<span class="text-[11px] bg-primary/15 text-primary px-1.5 py-0.5 rounded border border-primary/20">🔄 Adopted</span>'; break;
+    function renderScoreboard() {
+      el('scoreboard').innerHTML = DASHBOARD_DATA.scoreboard.map(item => `
+        <article class="card kpi ${toneClass(item.tone)}">
+          <div class="micro">${escapeHtml(item.label)}</div>
+          <div class="metric">${escapeHtml(String(item.value))}</div>
+          <div class="delta"><strong>${item.delta > 0 ? '+' : ''}${item.delta || 0}</strong> ${escapeHtml(item.subtext || '')}</div>
+        </article>
+      `).join('');
     }
-    const adoptedDate = l.adoptedDate ? `<p class="text-[11px] text-on-surface-variant italic mt-1">Đã áp dụng ${esc(timeAgo(l.adoptedDate))}</p>` : '';
-    return `
-      <div class="relative pl-8">
-        <div class="absolute left-0 top-1 w-4 h-4 rounded-full ${dotColor} border-4 border-surface-container-high"></div>
-        <p class="text-xs font-bold mb-1">${esc(l.title || '')}</p>
-        <p class="text-[11px] text-on-surface-variant mb-2">${esc(l.body || '')}</p>
-        <div class="flex items-center gap-2 flex-wrap">
-          ${l.tag ? `<span class="text-[10px] bg-surface-container px-2 py-0.5 rounded border border-outline-variant/20 uppercase font-black ${tagColor}">${esc(l.tag)}</span>` : ''}
-          ${statusBadge}
-        </div>
-        ${adoptedDate}
-      </div>
-    `;
-  }).join('');
-}
 
-// ============================================================
-// RENDER: COST METRICS
-// ============================================================
-function renderCostMetrics() {
-  const container = document.getElementById('cost-metrics-grid');
-  const section = document.getElementById('cost-metrics-section');
-  const cm = DASHBOARD_DATA?.costMetrics || DASHBOARD_DATA?.cost;
-
-  if (!cm) {
-    if (container) container.innerHTML = '';
-    setSectionVisible('cost-metrics-section', false);
-    return;
-  }
-
-  const totalTokens = cm.totalTokens ?? cm.tokens ?? cm.totalTokensToday ?? 0;
-  const costPerTask = cm.costPerTask ?? null;
-  const totalCost = cm.totalCost ?? cm.estimatedCost ?? null;
-  const tasksCompleted = cm.tasksCompleted ?? 0;
-
-  // Check if all cost values are zero
-  const agentCosts = cm.agentBreakdown || cm.byAgent || cm.agentCosts || {};
-  const agentCostsArr = Array.isArray(agentCosts) ? agentCosts : Object.entries(agentCosts).map(([k,v]) => ({agent:k, ...v}));
-  const allAgentCostsZero = agentCostsArr.every(a => (a.cost ?? a.tokens ?? 0) === 0);
-  const allZero = totalTokens === 0 && (costPerTask === null || costPerTask === 0) && (totalCost === null || totalCost === 0) && tasksCompleted === 0 && allAgentCostsZero;
-
-  if (allZero) {
-    if (container) container.innerHTML = '';
-    setSectionVisible('cost-metrics-section', false);
-    return;
-  }
-
-  setSectionVisible('cost-metrics-section', true);
-
-  let html = `
-    <div class="bg-surface-container-high p-5 rounded-xl border border-outline-variant/10 text-center">
-      <p class="text-[11px] text-on-surface-variant font-semibold uppercase mb-2">Cost / Task</p>
-      <p class="text-2xl font-bold ${costPerTask !== null && costPerTask > 0 ? 'text-tertiary' : 'text-outline-variant'}">${costPerTask !== null ? '$' + esc(String(costPerTask)) : '—'}</p>
-      ${totalCost !== null ? `<p class="text-[11px] text-on-surface-variant mt-1">Tổng: $${esc(String(totalCost))}</p>` : ''}
-    </div>
-    <div class="bg-surface-container-high p-5 rounded-xl border border-outline-variant/10 text-center">
-      <p class="text-[11px] text-on-surface-variant font-semibold uppercase mb-2">Tokens</p>
-      <p class="text-2xl font-bold ${totalTokens > 0 ? 'text-primary' : 'text-outline-variant'}">${totalTokens > 0 ? Number(totalTokens).toLocaleString() : '—'}</p>
-      <p class="text-[11px] text-on-surface-variant mt-1">${totalTokens > 0 ? 'tuần này' : ''}</p>
-    </div>
-  `;
-
-  if (agentCostsArr.length > 0) {
-    const maxCost = Math.max(...agentCostsArr.map(a => a.cost ?? a.tokens ?? 0), 1);
-    html += `<div class="bg-surface-container-high p-5 rounded-xl border border-outline-variant/10">
-      <p class="text-[11px] text-on-surface-variant font-semibold uppercase mb-4">Theo Agent</p>
-      <div class="space-y-3">
-        ${agentCostsArr.map(a => {
-          const val = a.cost ?? a.tokens ?? 0;
-          const pct = (val / maxCost) * 100;
-          return `
+    function renderAgents() {
+      el('agentsGrid').innerHTML = DASHBOARD_DATA.agents.map(agent => `
+        <article class="card agent-card">
+          <div class="agent-head">
             <div>
-              <div class="flex justify-between text-[11px] mb-1">
-                <span class="font-semibold">${esc(a.agent || a.name || '?')}</span>
-                <span class="text-on-surface-variant">${esc(String(a.cost ? '$' + a.cost : a.tokens ? Number(a.tokens).toLocaleString() + ' tok' : val))}</span>
-              </div>
-              <div class="w-full bg-surface-container-lowest h-2 rounded-full overflow-hidden">
-                <div class="bg-primary/60 h-full rounded-full" style="width: ${Math.min(100, pct)}%"></div>
-              </div>
+              <div class="micro">${escapeHtml(agent.id)}</div>
+              <div class="agent-name">${escapeHtml(agent.name)}</div>
             </div>
-          `;
-        }).join('')}
-      </div>
-    </div>`;
-  } else {
-    html += `<div class="bg-surface-container-high p-5 rounded-xl border border-outline-variant/10 flex items-center justify-center">
-      ${emptyState('Chưa có breakdown')}
-    </div>`;
-  }
+            <div class="badge ${badgeClass(agent.health)}"><span class="status-dot"></span>${escapeHtml(agent.health)}</div>
+          </div>
+          <div class="agent-role">${escapeHtml(agent.role || agent.description || '')}</div>
+          <div class="status"><span class="status-dot"></span>${escapeHtml(agent.status)} — ${escapeHtml(agent.current || 'No update')}</div>
+          <div class="stats-row">
+            <div class="mini-stat"><div class="micro">Tasks 7d</div><div class="v">${escapeHtml(String(agent.tasks7d))}</div></div>
+            <div class="mini-stat"><div class="micro">Avg duration</div><div class="v">${escapeHtml(agent.avgDuration)}</div></div>
+            <div class="mini-stat"><div class="micro">Feedback</div><div class="v">${escapeHtml(String(agent.feedbackCount))}</div></div>
+            <div class="mini-stat"><div class="micro">Token efficiency</div><div class="v">${escapeHtml(agent.tokenEfficiency)}</div></div>
+          </div>
+        </article>
+      `).join('');
+    }
 
-  container.innerHTML = html;
-}
+    function renderProjects() {
+      el('projectsBody').innerHTML = DASHBOARD_DATA.projects.map(p => `
+        <tr>
+          <td><strong>${escapeHtml(p.name)}</strong><div style="color:var(--text3); margin-top:6px;">${escapeHtml(p.summary || '')}</div></td>
+          <td><span class="badge ${badgeClass(p.health)}">${escapeHtml(p.activity)}</span></td>
+          <td>${escapeHtml(String(p.files))}</td>
+          <td class="mono" style="font-size:12px;">${escapeHtml(p.newest || 'n/a')}</td>
+          <td>${(p.git && p.git.length) ? p.git.map(g => `<div class="mono" style="font-size:12px; margin-bottom:4px;">${escapeHtml(g)}</div>`).join('') : '<span style="color:var(--text3)">n/a</span>'}</td>
+        </tr>
+      `).join('');
+    }
 
-// ============================================================
-// RENDER: FEEDBACK MATRIX
-// ============================================================
-function renderFeedbackMatrix() {
-  const container = document.getElementById('feedback-matrix-grid');
-  const matrix = DASHBOARD_DATA?.feedbackMatrix || null;
-  const feedback = DASHBOARD_DATA?.feedbackFeed || [];
-  const agents = (DASHBOARD_DATA?.agents || []).map(a => a.name);
-
-  if (!matrix && feedback.length === 0) {
-    container.innerHTML = emptyState('Chưa có dữ liệu feedback');
-    return;
-  }
-
-  let counts = {};
-  if (matrix) {
-    counts = matrix;
-  } else {
-    feedback.forEach(f => {
-      const from = f.from || '?';
-      const to = f.to || '?';
-      counts[`${from}->${to}`] = (counts[`${from}->${to}`] || 0) + 1;
-    });
-  }
-
-  const allAgents = matrix ? (matrix.agents || agents) : agents;
-  if (allAgents.length === 0) {
-    container.innerHTML = emptyState('Chưa có dữ liệu agent', 'Agents sẽ xuất hiện khi team được cấu hình.');
-    return;
-  }
-
-  const hasCrossAgentFeedback = allAgents.some(from => allAgents.some(to => from !== to && ((counts[`${from}->${to}`] || 0) > 0)));
-  if (!hasCrossAgentFeedback) {
-    container.innerHTML = emptyState('Chưa có feedback chéo giữa các agent');
-    return;
-  }
-
-  const numericCounts = Object.entries(counts)
-    .filter(([key, value]) => {
-      const [from, to] = key.split('->');
-      return from && to && from !== to && Number(value) > 0;
-    })
-    .map(([, value]) => Number(value));
-  const maxCount = Math.max(...numericCounts, 1);
-
-  let html = `<div class="overflow-x-auto no-scrollbar"><table class="w-full text-center text-xs min-w-[400px]">`;
-  html += `<tr><th class="p-2"></th>${allAgents.map(a => `<th class="p-2 text-[11px] font-bold text-on-surface-variant">${esc(a)}</th>`).join('')}</tr>`;
-
-  allAgents.forEach(from => {
-    html += `<tr><td class="p-2 text-[11px] font-bold text-on-surface-variant text-right">${esc(from)}</td>`;
-    allAgents.forEach(to => {
-      const key = `${from}->${to}`;
-      const count = Number(counts[key] || 0);
-      const isSelf = from === to;
-      const intensity = count > 0 ? Math.min(count / maxCount, 1) : 0;
-      const bgColor = isSelf ? 'rgba(51,52,59,0.3)' : `rgba(208,188,255,${intensity * 0.5})`;
-      const textColor = count > 0 && !isSelf ? `rgba(208,188,255,${0.5 + intensity * 0.5})` : 'rgba(203,195,215,0.3)';
-      html += `<td class="p-1"><div class="matrix-cell" style="background:${bgColor};color:${textColor}">${count > 0 && !isSelf ? count : '—'}</div></td>`;
-    });
-    html += `</tr>`;
-  });
-
-  html += `</table></div>`;
-  container.innerHTML = html;
-}
-
-// ============================================================
-// RENDER: IMPROVEMENT VELOCITY
-// ============================================================
-function renderImprovementVelocity() {
-  const container = document.getElementById('improvement-chart');
-  const data = DASHBOARD_DATA?.improvementVelocity || DASHBOARD_DATA?.lessonVelocity || null;
-  const lessons = DASHBOARD_DATA?.lessons || [];
-
-  if (!data || !data.weeks || data.weeks.length === 0) {
-    if (lessons.length > 0) {
-      const weekMap = {};
-      lessons.forEach(l => {
-        if (!l.date) return;
-        const d = new Date(l.date);
-        const weekStart = new Date(d);
-        weekStart.setDate(d.getDate() - d.getDay() + 1);
-        const key = weekStart.toISOString().split('T')[0];
-        if (!weekMap[key]) weekMap[key] = { observing: 0, promoted: 0, adopted: 0 };
-        const status = l.adoptionStatus || l.status || 'observing';
-        if (status === 'adopted') weekMap[key].adopted++;
-        else if (status === 'promoted') weekMap[key].promoted++;
-        else weekMap[key].observing++;
-      });
-
-      const weeks = Object.keys(weekMap).sort();
-      const values = weeks.map(w => weekMap[w]);
-      const maxVal = Math.max(...values.map(v => v.observing + v.promoted + v.adopted), 1);
-
-      container.innerHTML = `
-        <div class="flex items-end gap-3 h-40">
-          ${weeks.map((w, i) => {
-            const v = values[i];
-            const total = v.observing + v.promoted + v.adopted;
-            return `
-              <div class="flex-1 flex flex-col items-center gap-1">
-                <span class="text-[11px] font-bold text-on-surface">${total > 0 ? total : ''}</span>
-                <div class="w-full flex flex-col gap-0.5" style="height: 140px; justify-content: flex-end;">
-                  <div class="w-full rounded-t" style="height: ${(v.adopted / maxVal) * 100}%; background: rgba(255,185,95,0.7); min-height: ${v.adopted > 0 ? '4px' : '0'}"></div>
-                  <div class="w-full" style="height: ${(v.promoted / maxVal) * 100}%; background: rgba(74,225,118,0.6); min-height: ${v.promoted > 0 ? '4px' : '0'}"></div>
-                  <div class="w-full rounded-b" style="height: ${(v.observing / maxVal) * 100}%; background: rgba(208,188,255,0.4); min-height: ${v.observing > 0 ? '4px' : '0'}"></div>
-                </div>
-                <span class="text-[10px] text-on-surface-variant">${esc(w.slice(5))}</span>
-              </div>
-            `;
-          }).join('')}
+    function renderRetro(date) {
+      const retro = DASHBOARD_DATA.retrosByDate[date];
+      if (!retro) {
+        el('retroView').innerHTML = '<div class="empty">Không có retro cho ngày này.</div>';
+        return;
+      }
+      const highlights = (retro.highlights || []).map(h => `
+        <div class="highlight ${escapeHtml(h.tone)}">
+          <h3>${escapeHtml(h.label)}</h3>
+          <p>${escapeHtml(h.text)}</p>
+        </div>
+      `).join('');
+      const actions = (retro.actionItems || []).map(a => `
+        <li class="action-item">
+          <div><strong>${escapeHtml(a.text || '')}</strong></div>
+          <div style="color:var(--text2); font-size:12px; margin-top:6px;">Owner: ${escapeHtml(a.owner || 'n/a')} • Due: ${escapeHtml(a.due || 'n/a')} • Status: ${escapeHtml(a.status || (a.done ? 'done' : 'open'))}</div>
+        </li>
+      `).join('') || '<div class="empty">Không có action item.</div>';
+      el('retroView').innerHTML = `
+        <div>
+          <div class="micro">${escapeHtml(retro.date)}</div>
+          <div style="font-size:22px; font-weight:800; margin-top:8px;">${escapeHtml(retro.title || retro.date)}</div>
+        </div>
+        ${highlights}
+        <div>
+          <h2 style="margin-bottom:10px;">Action items</h2>
+          <ul class="action-list">${actions}</ul>
         </div>
       `;
-    } else {
-      container.innerHTML = emptyState('Chưa có dữ liệu cải thiện');
     }
-    return;
-  }
 
-  const { weeks, observing, promoted, rules } = data;
-  const maxVal = Math.max(...weeks.map((_, i) => (observing?.[i] ?? 0) + (promoted?.[i] ?? 0) + (rules?.[i] ?? 0)), 1);
+    function renderFeedback(date) {
+      const retro = DASHBOARD_DATA.retrosByDate[date];
+      const items = retro?.feedback || [];
+      el('feedbackList').innerHTML = items.length ? items.map(f => `
+        <li class="feedback-item">
+          <div class="micro">${escapeHtml(f.type || 'feedback')} • ${escapeHtml(f.status || 'observed')}</div>
+          <div style="margin-top:8px;"><strong>${escapeHtml(f.from)}</strong> <span class="feedback-arrow">→</span> <strong>${escapeHtml(f.to)}</strong></div>
+          <div style="color:var(--text2); margin-top:8px; line-height:1.5;">${escapeHtml(f.text || '')}</div>
+        </li>
+      `).join('') : '<div class="empty">Chưa có feedback loop cho ngày này.</div>';
+    }
 
-  container.innerHTML = `
-    <div class="flex items-end gap-3 h-40">
-      ${weeks.map((w, i) => {
-        const obs = observing?.[i] ?? 0;
-        const pro = promoted?.[i] ?? 0;
-        const rul = rules?.[i] ?? 0;
-        const total = obs + pro + rul;
+    function renderLessons() {
+      el('lessonList').innerHTML = DASHBOARD_DATA.lessons.map(l => `
+        <li class="lesson-item">
+          <div class="micro">${escapeHtml(l.tag)} • ${escapeHtml(l.status)}</div>
+          <div style="margin-top:8px; line-height:1.55;">${escapeHtml(l.text)}</div>
+          <div style="color:var(--text3); margin-top:8px;">Impact: ${escapeHtml(String(l.impact))}</div>
+        </li>
+      `).join('');
+    }
+
+    function renderTrends() {
+      const trends = DASHBOARD_DATA.trends || [];
+      const max = Math.max(1, ...trends.map(t => t.done + t.blocked + t.inProgress));
+      el('trendsView').innerHTML = trends.map(t => {
+        const total = t.done + t.blocked + t.inProgress;
         return `
-          <div class="flex-1 flex flex-col items-center gap-1">
-            <span class="text-[11px] font-bold text-on-surface">${total > 0 ? total : ''}</span>
-            <div class="w-full flex flex-col gap-0.5" style="height: 140px; justify-content: flex-end;">
-              <div class="w-full rounded-t velocity-bar" style="height: ${(rul / maxVal) * 100}%; background: rgba(255,185,95,0.7); min-height: ${rul > 0 ? '4px' : '0'}"></div>
-              <div class="w-full velocity-bar" style="height: ${(pro / maxVal) * 100}%; background: rgba(74,225,118,0.6); min-height: ${pro > 0 ? '4px' : '0'}"></div>
-              <div class="w-full rounded-b velocity-bar" style="height: ${(obs / maxVal) * 100}%; background: rgba(208,188,255,0.4); min-height: ${obs > 0 ? '4px' : '0'}"></div>
+          <div class="trend-row">
+            <div><div class="micro">${escapeHtml(t.date)}</div><div style="margin-top:6px; font-weight:700;">${total} task signal</div></div>
+            <div class="bar-stack">
+              <div class="bar done" style="width:${(t.done/max)*100}%"></div>
+              <div class="bar blocked" style="width:${(t.blocked/max)*100}%"></div>
+              <div class="bar progress" style="width:${(t.inProgress/max)*100}%"></div>
             </div>
-            <span class="text-[10px] text-on-surface-variant">${esc(w)}</span>
+            <div class="trend-metrics">Q ${escapeHtml(String(t.qualityScore))}% • Block ${escapeHtml(String(t.blockerRate))}% • Open ${escapeHtml(String(t.actionOpen))}</div>
           </div>
         `;
-      }).join('')}
-    </div>
-  `;
-}
+      }).join('');
+    }
 
-// ============================================================
-// COLLAPSIBLE COUNT BADGES + PREVIEWS
-// ============================================================
-function renderCollapsibleBadges() {
-  const retros = DASHBOARD_DATA?.retros || {};
-  const retro = retros[selectedDate];
+    function renderWeekly() {
+      const weekly = DASHBOARD_DATA.weekly || { summary: [], improvements: [] };
+      el('weeklySummary').innerHTML = (weekly.summary || []).map(s => `<li class="summary-item">${escapeHtml(s)}</li>`).join('');
+      el('weeklyImprovements').innerHTML = (weekly.improvements || []).map(a => `<li class="action-item"><strong>${escapeHtml(a.text || '')}</strong><div style="color:var(--text2); font-size:12px; margin-top:6px;">${escapeHtml(a.owner || '')}</div></li>`).join('');
+    }
 
-  // Retro count badge
-  
-  // Skip old retro-count-badge / retro-preview — those elements removed
+    function applyDate(date) {
+      currentDate = date;
+      el('datePicker').value = date;
+      renderRetro(date);
+      renderFeedback(date);
+    }
 
-  // Action Items count badge
-  const actionBadge = document.getElementById('action-count-badge');
-  const actionPreview = document.getElementById('action-preview');
-  const actionItems = retro?.actionItems || [];
-  if (actionItems.length > 0) {
-    const open = actionItems.filter(a => !(a.done || a.status === 'done')).length;
-    const overdue = actionItems.filter(a => (a.ageDays ?? a.age ?? 0) > 3 && !(a.done || a.status === 'done')).length;
-    actionBadge.textContent = open;
-    actionBadge.classList.remove('hidden');
-    actionPreview.textContent = `${open} items mở${overdue > 0 ? ` · ${overdue} quá hạn` : ''}`;
-    actionPreview.classList.remove('hidden');
-  }
+    function bind() {
+      el('datePicker').addEventListener('change', (e) => applyDate(e.target.value));
+      document.querySelectorAll('.toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.toggle').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentView = btn.dataset.view;
+          if (currentView === 'today') applyDate(DASHBOARD_DATA.meta.latestDate);
+          else if (currentView === '7d') applyDate(DASHBOARD_DATA.meta.availableDates[DASHBOARD_DATA.meta.availableDates.length - 1]);
+          else applyDate(DASHBOARD_DATA.meta.availableDates[0]);
+        });
+      });
+    }
 
-  // Feedback count badge
-  const feedbackBadge = document.getElementById('feedback-count-badge');
-  const feedbackPreview = document.getElementById('feedback-preview');
-  const feedback = DASHBOARD_DATA?.feedbackFeed || [];
-  if (feedback.length > 0) {
-    feedbackBadge.textContent = feedback.length;
-    feedbackBadge.classList.remove('hidden');
-    feedbackPreview.textContent = `${feedback.length} feedback${feedback.length > 1 ? ' gần đây' : ''}`;
-    feedbackPreview.classList.remove('hidden');
-  }
-}
+    function init() {
+      setHeader();
+      renderScoreboard();
+      renderAgents();
+      renderProjects();
+      renderLessons();
+      renderTrends();
+      renderWeekly();
+      applyDate(DASHBOARD_DATA.meta.latestDate);
+      bind();
+    }
 
-// ============================================================
-// LAST UPDATED INDICATOR
-// ============================================================
-function renderLastUpdated() {
-  const el = document.getElementById('last-updated');
-  const iso = DASHBOARD_DATA?.generatedAt;
-  if (!iso || !el) return;
-  try {
-    const d = new Date(iso);
-    const hh = String(d.getHours()).padStart(2, '0');
-    const mm = String(d.getMinutes()).padStart(2, '0');
-    el.textContent = `Cập nhật lúc: ${hh}:${mm}`;
-    el.classList.remove('hidden');
-  } catch (e) { /* ignore parse errors */ }
-}
-
-// ============================================================
-// INIT
-// ============================================================
-async function init() {
-  initDatePicker();
-
-  // Render Today tab
-  renderKPIs(DASHBOARD_DATA?.scoreboard);
-  renderMiniSama(DASHBOARD_DATA?.agents);
-  renderAgents(DASHBOARD_DATA?.agents);
-  renderProjects(DASHBOARD_DATA?.projects);
-  renderRetro();
-  renderActionItems();
-  renderFeedbackFeed(DASHBOARD_DATA?.feedbackFeed);
-  renderCollapsibleBadges();
-  // retro date nav handled by selectRetroDay()
-  renderSLA(DASHBOARD_DATA?.sla);
-  renderAlerts(DASHBOARD_DATA?.alerts);
-  renderLastUpdated();
-
-  // Pre-render Week tab
-  renderTrends();
-  renderTrendAnnotations();
-  renderWeeklySummary();
-  renderWeeklyInsight();
-  renderCostMetrics();
-  renderImprovementVelocity();
-  renderLessons(DASHBOARD_DATA?.lessons);
-  renderFeedbackMatrix();
-  renderSLAWeek(DASHBOARD_DATA?.sla);
-
-  // Hide loading overlay
-  const overlay = document.getElementById('loading-overlay');
-  if (overlay) {
-    overlay.style.transition = 'opacity 0.3s';
-    overlay.style.opacity = '0';
-    setTimeout(() => overlay.remove(), 300);
-  }
-}
-
-document.addEventListener('DOMContentLoaded', async () => {
-  await loadDashboardData();
-  init();
-});
-</script>
+    fetch('./data/dashboard-data.json?t=' + Date.now(), { cache: 'no-store' })
+      .then(r => r.json())
+      .then(data => { DASHBOARD_DATA = data; init(); })
+      .catch(err => {
+        el('header-subtitle').textContent = 'Load data fail';
+        console.error('dashboard load fail', err);
+      });
+  </script>
 </body>
 </html>
